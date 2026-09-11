@@ -51,15 +51,57 @@ function mulberry32(seed: number): () => number {
 
 export type TopicFact = { marker: string; text: string; messageIndex: number };
 
+/**
+ * How the two topics' facts are worded.
+ *
+ * `shared` is the original form: both topics write their facts with one schema
+ * (`cohort=… n=371 gene=… freq=… stat=…`), and the pending request uses that same
+ * schema's words. That shared shape is a lexical bridge between a question about
+ * B and the facts of A, so the topic A column partly measures our own wording —
+ * `benchmark:topic-diagnosis` puts about 78% of A's advantage over filler on it.
+ *
+ * `decorrelated` gives each topic its own field vocabulary and its own marker
+ * word, and phrases the request in B's words only. Topic is then the sole thing
+ * separating an A fact from the request, which is what the table claims to
+ * measure. Both are reported so the difference stays visible.
+ */
+export type FactStyle = "shared" | "decorrelated";
+
 /** The pending request at the end of the transcript: it is about topic B. */
-export const TOPIC_SWITCH_QUERY =
-  "Now answer the TCGA-BRCA gene frequency questions from the exact values recorded above.";
+export const TOPIC_SWITCH_QUERIES: Record<FactStyle, string> = {
+  shared: "Now answer the TCGA-BRCA gene frequency questions from the exact values recorded above.",
+  decorrelated: "Now answer the breast marker questions from the recorded numbers.",
+};
+
+/** Back-compat alias for the original style. */
+export const TOPIC_SWITCH_QUERY = TOPIC_SWITCH_QUERIES.shared;
+
+function factText(options: {
+  style: FactStyle;
+  topic: "A" | "B";
+  marker: string;
+  gene: string;
+  freq: string;
+  stat: string;
+}): string {
+  const { style, topic, marker, gene, freq, stat } = options;
+  if (style === "shared") {
+    return `${marker}: cohort=${topic === "A" ? "TCGA-LIHC" : "TCGA-BRCA"} n=371 gene=${gene} freq=${freq} stat=${stat}`;
+  }
+  // Disjoint vocabularies: nothing here appears in both topics, and only B's
+  // words appear in the request.
+  return topic === "A"
+    ? `${marker}: liver amplicon ${gene} reading ${freq} dispersion ${stat}`
+    : `${marker}: breast marker ${gene} value ${freq} spread ${stat}`;
+}
 
 export function buildTranscript(options: {
   seed: number;
   pairsPerTopic: number;
   factsPerTopic: number;
+  factStyle?: FactStyle;
 }): { messages: CanonicalMessage[]; factsA: TopicFact[]; factsB: TopicFact[] } {
+  const style = options.factStyle ?? "shared";
   const random = mulberry32(options.seed);
   const messages: CanonicalMessage[] = [];
   const factsA: TopicFact[] = [];
@@ -73,11 +115,17 @@ export function buildTranscript(options: {
       const shouldInject = index % spacing === 0 && facts.length < factsPerTopic;
       let userText: string;
       if (shouldInject) {
-        const marker = `${topic}-FACT${facts.length + 1}`;
+        // The marker is part of the scored text, so it must not be a bridge
+        // either: the two topics get different marker words.
+        const marker = style === "shared"
+          ? `${topic}-FACT${facts.length + 1}`
+          : topic === "A"
+            ? `A-RUN${facts.length + 1}`
+            : `B-MARK${facts.length + 1}`;
         const gene = genes[Math.floor(random() * genes.length)]!;
         const freq = ((Math.floor(random() * 90) + 5) / 100).toFixed(3);
         const stat = (Math.round((random() * 3.5 + 0.1) * 100) / 100).toFixed(2);
-        const text = `${marker}: cohort=${topic === "A" ? "TCGA-LIHC" : "TCGA-BRCA"} n=371 gene=${gene} freq=${freq} stat=${stat}`;
+        const text = factText({ style, topic, marker, gene, freq, stat });
         facts.push({ marker, text, messageIndex: messages.length });
         userText = `${text} Record this exact value as a checkpoint.`;
       } else {
@@ -98,7 +146,7 @@ export function buildTranscript(options: {
 
   messages.push({
     role: "user",
-    content: [{ type: "text", text: TOPIC_SWITCH_QUERY }],
+    content: [{ type: "text", text: TOPIC_SWITCH_QUERIES[style] }],
   });
 
   return { messages, factsA, factsB };
@@ -142,6 +190,7 @@ async function main() {
   );
 
   type Row = {
+    factStyle: FactStyle;
     numPairsPerTopic: number;
     variant: "upstream" | "hippo";
     aVerbatimMean: number;
@@ -151,14 +200,18 @@ async function main() {
     postTokensMean: number;
   };
   const rows: Row[] = [];
+  const styles: FactStyle[] = ["shared", "decorrelated"];
 
   console.log("### Facts surviving into the post-compaction prompt (mean of 10 seeds, out of 10/topic)\n");
-  console.log("| N/topic | variant | topic A verbatim (old) | topic B verbatim (new) | A summary-only | B summary-only | post tokens |");
-  console.log("|---|---|---|---|---|---|---|");
+  console.log("`shared` is the original wording; `decorrelated` gives each topic its own vocabulary,");
+  console.log("so similarity cannot ride on the sentence shape. The gap between the two is the artifact.\n");
+  console.log("| N/topic | fact wording | variant | topic A verbatim (old) | topic B verbatim (new) | A summary-only | B summary-only | post tokens |");
+  console.log("|---|---|---|---:|---:|---:|---:|---:|");
 
+  for (const factStyle of styles) {
   for (const numPairsPerTopic of PAIRS_PER_TOPIC) {
     const cases = Array.from({ length: SEEDS }, (_, offset) =>
-      buildTranscript({ seed: SEED_BASE + offset, pairsPerTopic: numPairsPerTopic, factsPerTopic: FACTS_PER_TOPIC }),
+      buildTranscript({ seed: SEED_BASE + offset, pairsPerTopic: numPairsPerTopic, factsPerTopic: FACTS_PER_TOPIC, factStyle }),
     );
     for (const withHippo of [false, true]) {
       let aVerbatim = 0;
@@ -185,6 +238,7 @@ async function main() {
         tokens += run.postTokens;
       }
       const row: Row = {
+        factStyle,
         numPairsPerTopic,
         variant: withHippo ? "hippo" : "upstream",
         aVerbatimMean: Math.round((aVerbatim / SEEDS) * 100) / 100,
@@ -195,19 +249,20 @@ async function main() {
       };
       rows.push(row);
       console.log(
-        `| ${numPairsPerTopic} | ${row.variant} | ${row.aVerbatimMean} | ${row.bVerbatimMean} | ${row.aInSummaryOnly} | ${row.bInSummaryOnly} | ${row.postTokensMean} |`,
+        `| ${numPairsPerTopic} | ${factStyle} | ${row.variant} | ${row.aVerbatimMean} | ${row.bVerbatimMean} | ${row.aInSummaryOnly} | ${row.bInSummaryOnly} | ${row.postTokensMean} |`,
       );
     }
+  }
   }
 
   console.log(
     "\nReading: the pending request is about topic B, so every query-conditioned\n" +
-      "term favours B. Do NOT read the topic A column as the entity graph or as\n" +
-      "recency at work: at the default weights wRank is 0, so the graph scores\n" +
-      "nothing, and `benchmark:topic-diagnosis` measures recency-only retaining\n" +
-      "0/10 of topic A. What retains A here is lexical similarity, because the A\n" +
-      "and B facts share one wording template — see that same diagnosis for the\n" +
-      "measured sim values, and treat this column as partly a harness artifact.\n" +
+      "term favours B. Compare the two fact-wording blocks before quoting the\n" +
+      "topic A column: at the default weights wRank is 0, so the entity graph\n" +
+      "scores nothing, and `benchmark:topic-diagnosis` shows recency-only also\n" +
+      "keeps 0/10. What retains A under `shared` is lexical similarity riding on\n" +
+      "one wording template; `decorrelated` removes that bridge and is the\n" +
+      "honest estimate of topic-independent retention.\n" +
       "`summary-only` counts facts that exist in the prompt ONLY as paraphrase.\n" +
       "\nCaveat: this harness uses a fixed-text stub summarizer, so the summary\n" +
       "never carries a fact by construction — 'summary-only' is 0 for both arms\n" +

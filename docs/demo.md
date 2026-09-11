@@ -57,3 +57,14 @@ hippo    postTokens: 5283   facts=18/20
 ## 端侧 / 断网说明
 
 打分（BM25 / 实体图）全部本地，`demo` 不需要外网；端侧 100 元额度足够本地 BGE embedding（设 `PILOTDECK_BGE_MODEL=Xenova/bge-small-zh-v1.5`）。只有真 LLM 评测（`benchmark:real-llm` / `benchmark:real-llm-topic-switch`）需要联网与 API，现场只引用其落库结论、不现场跑。
+
+## 录屏（可选：对评委的备份）
+
+录屏是提交清单里的可选加分项，**不是必交**；现场真机目检徽章比录屏更重要。若要做，录两段、每段 15–20 秒即可：
+
+1. **CLI A/B 表**：录 `pnpm benchmark:demo` 的终端，重点停在"upstream 0/20 → hippo 18/20"那两行。
+2. **Web UI 分隔线徽章**：录浏览器窗口，跑长对话触发压缩，等压缩分隔线上的绿色徽章（`逐字保留 N 条（X tok）`，悬停出策略/预算）出现，放大到那条分隔线，然后用原问题复问一次。
+
+**在这台无显示器、无录屏软件、也没有浏览器内核的开发机上录不了**（`with_deps` 装 Chromium 约 170 MB 且需要系统库，投入产出不划算）。在有显示器的队伍机器 / 比赛机器上：用 OBS 区选捕获剪辑即可，无 OBS 也可用系统自带的录屏。**剪辑里不要出现工具/模型指纹**（如页脚 `Generated with …`），画面只留 UI 本身。
+
+无显示器机器若也要出"真·浏览器里徽章"的静态图，可用 Playwright headless（本仓 `ui/` 已带 Playwright 依赖）：`npx playwright install chromium` 之后，起 UI 用其截图徽章渲染。这只能证明真实 CSS/暗色模式下的徽章长这样（正是 jsdom 测不到的那一面），不能替代现场跑通一次真实对话——**真机目检仍然必做**。

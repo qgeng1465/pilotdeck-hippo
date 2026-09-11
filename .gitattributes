@@ -24,6 +24,24 @@ ui/public/pilotdeck-logo-lockup-transparent.png !filter !diff !merge -text
 ui/public/pilotdeck-p-mark-transparent.png !filter !diff !merge -text
 ui/public/pilotdeck-p-mark-transparent-v2.png !filter !diff !merge -text
 
+# --- PilotDeck-Hippo: assets that must render without git-lfs installed ---
+# This fork was assembled without git-lfs, so every LFS-tracked asset arrived as
+# a 130-byte pointer file: the README banner and the UI favicon/app icons were
+# broken images in the repo view and in the web UI. The files below are small
+# (265 KB total) and are either referenced by documentation or shipped as
+# runtime assets, so they are stored as ordinary blobs and exempted from the
+# catch-all image rules above. Their content is upstream's, byte-identical to
+# the object each pointer named (sha256 checked at import).
+#
+# The remaining upstream demo media (gifs/mp4/mov, ~397 MB) deliberately stays
+# on LFS, exactly as upstream has it.
+assets/banner.png !filter !diff !merge -text
+src/context/memory/edgeclaw-memory-core/ui-source/assets/brand/logo.png !filter !diff !merge -text
+ui/public/favicon.png !filter !diff !merge -text
+ui/public/logo-128.png !filter !diff !merge -text
+ui/public/logo-256.png !filter !diff !merge -text
+ui/public/icons/** !filter !diff !merge -text
+
 # Shell scripts MUST stay LF — CRLF breaks the Docker entrypoint (`bash\r` not found)
 *.sh text eol=lf
 docker-entrypoint.sh text eol=lf

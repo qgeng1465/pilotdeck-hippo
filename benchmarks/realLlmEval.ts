@@ -1,23 +1,27 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { homedir } from "node:os";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { performance } from "node:perf_hooks";
+import { pathToFileURL } from "node:url";
 import { buildPostCompactMessages, CompactionEngine } from "../src/context/compaction/CompactionEngine.js";
 import { TokenBudgetManager } from "../src/context/budget/TokenBudgetManager.js";
 import { messageVisibleText } from "../src/context/compaction/retention/MessageText.js";
 import { buildEbbinghausPageRankPolicy } from "../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
 import type { RetentionScorePolicy } from "../src/context/compaction/retention/RetentionTypes.js";
-import type {
-  CanonicalMessage,
-  CanonicalModelEvent,
-  CanonicalModelRequest,
-} from "../src/model/index.js";
 import {
   generateTranscript,
   generateZhTranscript,
   type SyntheticFact,
   type SyntheticTranscript,
 } from "./syntheticTranscript.js";
+import {
+  chat,
+  configureEndpoint,
+  createRealModel,
+  gradeAnswer,
+  loadEndpoint,
+  median,
+  MODEL,
+  type ChatUsage,
+} from "./realLlmClient.js";
 
 // Real-LLM closed loop: run upstream and hippo compaction with a REAL
 // summarizer model (DeepSeek V4 Flash via the OpenAI-compatible endpoint),
@@ -27,145 +31,14 @@ import {
 //
 // Cost guard: 2 langs x 2 seeds x 2 sizes x 2 variants x (1 summary call)
 // plus 8 judge calls per variant-case, all on the flash tier.
+//
+// This covers a transcript that stays on one topic; `realLlmTopicSwitch.ts`
+// covers the mid-conversation topic switch, which this one does not.
 
-const DEFAULT_API_URL = "https://api.deepseek.com/v1/chat/completions";
-const MODEL = process.env.PILOTDECK_EVAL_MODEL ?? "deepseek-v4-flash";
-let API_URL = DEFAULT_API_URL;
 const SEED_BASE = 20260911;
 const SEEDS = 2;
 const NUM_PAIRS = [80, 160] as const;
 const QUESTIONS_PER_CASE = 8;
-
-// Endpoint resolution, in priority order:
-// 1. PILOTDECK_EVAL_URL / PILOTDECK_EVAL_KEY env overrides;
-// 2. the competition-issued gateway file `poliet_deck.txt` in the repo root
-//    (【接口地址】+【API密钥】 lines) so evals spend the hackathon quota;
-// 3. the personal DeepSeek key at ~/deepseek_key.txt on the official API.
-function loadEndpoint(): { url: string; apiKey: string; source: string } {
-  const envUrl = process.env.PILOTDECK_EVAL_URL;
-  const envKey = process.env.PILOTDECK_EVAL_KEY ?? process.env.DEEPSEEK_API_KEY;
-  const competitionFile = resolve(process.cwd(), "poliet_deck.txt");
-  if (existsSync(competitionFile)) {
-    const text = readFileSync(competitionFile, "utf8");
-    const url = envUrl ?? text.match(/【接口地址】：\s*(\S+)/)?.[1];
-    const apiKey = envKey ?? text.match(/【API密钥】：\s*(\S+)/)?.[1];
-    if (url && apiKey) {
-      return {
-        url: `${url.replace(/\/+$/, "")}/chat/completions`,
-        apiKey,
-        source: "poliet_deck.txt (competition quota)",
-      };
-    }
-  }
-  if (envUrl && envKey) {
-    return {
-      url: `${envUrl.replace(/\/+$/, "")}/chat/completions`,
-      apiKey: envKey,
-      source: "env override",
-    };
-  }
-  return {
-    url: DEFAULT_API_URL,
-    apiKey: readFileSync(join(homedir(), "deepseek_key.txt"), "utf8").trim(),
-    source: "~/deepseek_key.txt (personal)",
-  };
-}
-
-type ChatUsage = { promptTokens: number; completionTokens: number };
-
-async function chat(
-  apiKey: string,
-  messages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
-  options: { maxTokens?: number; temperature?: number } = {},
-): Promise<{ text: string; usage: ChatUsage; wallMs: number; finishReason: string }> {
-  const start = performance.now();
-  let lastError: unknown;
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    try {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 120_000);
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: MODEL,
-          messages,
-          temperature: options.temperature ?? 0,
-          max_tokens: options.maxTokens ?? 800,
-          stream: false,
-        }),
-        signal: controller.signal,
-      });
-      clearTimeout(timer);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${(await response.text()).slice(0, 200)}`);
-      }
-      const payload = (await response.json()) as {
-        choices: Array<{ message: { content: string }; finish_reason?: string }>;
-        usage?: { prompt_tokens: number; completion_tokens: number };
-      };
-      return {
-        text: payload.choices[0]?.message?.content ?? "",
-        usage: {
-          promptTokens: payload.usage?.prompt_tokens ?? 0,
-          completionTokens: payload.usage?.completion_tokens ?? 0,
-        },
-        wallMs: performance.now() - start,
-        finishReason: payload.choices[0]?.finish_reason ?? "unknown",
-      };
-    } catch (error) {
-      lastError = error;
-      await new Promise((resolveSleep) => setTimeout(resolveSleep, 2_000 * (attempt + 1)));
-    }
-  }
-  throw lastError;
-}
-
-function canonicalToOpenaiMessages(request: CanonicalModelRequest) {
-  const messages: Array<{ role: "system" | "user" | "assistant"; content: string }> = [];
-  if (request.systemPrompt?.trim()) {
-    messages.push({ role: "system", content: request.systemPrompt });
-  }
-  for (const message of request.messages) {
-    const text = messageVisibleText(message);
-    if (!text.trim()) continue;
-    const role = message.role === "assistant" ? "assistant" : "user";
-    const last = messages[messages.length - 1];
-    if (last && last.role === role) {
-      last.content = `${last.content}\n${text}`;
-    } else {
-      messages.push({ role, content: text });
-    }
-  }
-  return messages;
-}
-
-function createRealModel(apiKey: string) {
-  const usage: ChatUsage = { promptTokens: 0, completionTokens: 0 };
-  const wallMs: number[] = [];
-  const finishReasons: string[] = [];
-  return {
-    usage,
-    wallMs,
-    finishReasons,
-    model: {
-      async *stream(request: CanonicalModelRequest): AsyncIterable<CanonicalModelEvent> {
-        const result = await chat(apiKey, canonicalToOpenaiMessages(request), {
-          maxTokens: request.maxOutputTokens ?? 4000,
-        });
-        usage.promptTokens += result.usage.promptTokens;
-        usage.completionTokens += result.usage.completionTokens;
-        wallMs.push(result.wallMs);
-        finishReasons.push(result.finishReason);
-        yield { type: "text_delta", text: result.text };
-        yield { type: "message_end", finishReason: "stop" };
-      },
-    },
-  };
-}
 
 type Variant = "upstream" | "hippo";
 
@@ -231,14 +104,6 @@ function questionFor(fact: SyntheticFact, lang: "en" | "zh"): string {
     : `请仅根据对话上下文报告检查点 ${fact.marker}：它涉及哪个基因？为其记录的突变频率(freq)与统计量(stat)的精确值是多少？请严格按如下格式回答，不要输出其他内容：gene=<基因> freq=<数值> stat=<数值>`;
 }
 
-function gradeAnswer(answer: string, parsed: { gene: string; freq: string; stat: string }): boolean {
-  const match = answer.match(/gene=([A-Za-z0-9._-]+)\s+freq=([\d.]+)\s+stat=([\d.]+)/);
-  if (!match) return false;
-  return match[1]!.toUpperCase() === parsed.gene.toUpperCase()
-    && Math.abs(Number.parseFloat(match[2]!) - Number.parseFloat(parsed.freq)) < 1e-6
-    && Math.abs(Number.parseFloat(match[3]!) - Number.parseFloat(parsed.stat)) < 1e-6;
-}
-
 function pickQuestionFacts(transcript: SyntheticTranscript): SyntheticFact[] {
   const facts = transcript.facts;
   const count = Math.min(QUESTIONS_PER_CASE, facts.length);
@@ -249,15 +114,9 @@ function pickQuestionFacts(transcript: SyntheticTranscript): SyntheticFact[] {
   return [...new Set(picked)];
 }
 
-function median(values: number[]): number {
-  const sorted = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 0 ? (sorted[mid - 1]! + sorted[mid]!) / 2 : sorted[mid]!;
-}
-
 async function main() {
   const endpoint = loadEndpoint();
-  API_URL = endpoint.url;
+  configureEndpoint(endpoint.url);
   const apiKey = endpoint.apiKey;
   console.log(`real-LLM eval: model=${MODEL}, endpoint=${endpoint.url} [${endpoint.source}], langs=en+zh, seeds=${SEEDS}, N=${NUM_PAIRS.join("/")}, questions/case=${QUESTIONS_PER_CASE}`);
   type Row = {
@@ -374,4 +233,9 @@ async function main() {
   console.log("\nresults written:", outputPath);
 }
 
-void main();
+// Entry-point guard, same reason as `topicSwitch.ts`: this module exports
+// helpers (via `realLlmClient.js`) that other benchmarks import, and an
+// unguarded `main()` would spend real API quota on import.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  void main();
+}

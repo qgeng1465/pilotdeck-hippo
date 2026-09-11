@@ -267,8 +267,9 @@ async function main() {
       "\nCaveat: this harness uses a fixed-text stub summarizer, so the summary\n" +
       "never carries a fact by construction — 'summary-only' is 0 for both arms\n" +
       "and the verbatim column is the whole story here. End-to-end\n" +
-      "answerability with a real summarizer is measured by\n" +
-      "`benchmark:real-llm`, not by this table.",
+      "answerability under a real summarizer is a different measurement, made\n" +
+      "by `benchmark:real-llm-topic-switch` (which also has a 'from summary'\n" +
+      "column this table structurally cannot produce), not by this one.",
   );
 
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");

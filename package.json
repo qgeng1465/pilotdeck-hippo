@@ -35,7 +35,8 @@
     "benchmark:topic-switch": "tsx benchmarks/topicSwitch.ts",
     "benchmark:topic-diagnosis": "tsx benchmarks/topicDiagnosis.ts",
     "benchmark:tune": "tsx benchmarks/tune.ts",
-    "benchmark:real-llm": "tsx benchmarks/realLlmEval.ts"
+    "benchmark:real-llm": "tsx benchmarks/realLlmEval.ts",
+    "benchmark:real-llm-topic-switch": "tsx benchmarks/realLlmTopicSwitch.ts"
   },
   "devDependencies": {
     "@types/node": "^25.0.0",

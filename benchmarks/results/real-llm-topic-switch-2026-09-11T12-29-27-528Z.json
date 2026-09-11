@@ -1,0 +1,147 @@
+{
+  "protocol": "benchmarks/realLlmTopicSwitch.ts",
+  "model": "deepseek-v4-flash",
+  "endpoint": "poliet_deck.txt (competition quota)",
+  "timestamp": "2026-09-11T12-29-27-528Z",
+  "seedBase": 20260921,
+  "seeds": 2,
+  "repeats": 2,
+  "pairsPerTopic": 160,
+  "factsPerTopic": 10,
+  "questionsPerTopic": 4,
+  "summaryOutputTokens": 8000,
+  "summary": [
+    {
+      "factStyle": "shared",
+      "variant": "upstream",
+      "repeats": 2,
+      "seeds": 2,
+      "topicA": {
+        "asked": 16,
+        "correct": 11,
+        "markerInBody": 0,
+        "markerInSummaryOnly": 8,
+        "perRepeatCorrect": [
+          4,
+          7
+        ]
+      },
+      "topicB": {
+        "asked": 16,
+        "correct": 16,
+        "markerInBody": 12,
+        "markerInSummaryOnly": 4,
+        "perRepeatCorrect": [
+          8,
+          8
+        ]
+      },
+      "postTokensMedian": 4302,
+      "summaryWallMsMedian": 15659,
+      "summaryTruncated": 0,
+      "cases": 4,
+      "summarizerPromptTokens": 47232,
+      "summarizerCompletionTokens": 9752,
+      "judgePromptTokens": 125208
+    },
+    {
+      "factStyle": "shared",
+      "variant": "hippo",
+      "repeats": 2,
+      "seeds": 2,
+      "topicA": {
+        "asked": 16,
+        "correct": 16,
+        "markerInBody": 12,
+        "markerInSummaryOnly": 4,
+        "perRepeatCorrect": [
+          8,
+          8
+        ]
+      },
+      "topicB": {
+        "asked": 16,
+        "correct": 16,
+        "markerInBody": 16,
+        "markerInSummaryOnly": 0,
+        "perRepeatCorrect": [
+          8,
+          8
+        ]
+      },
+      "postTokensMedian": 4860,
+      "summaryWallMsMedian": 20373,
+      "summaryTruncated": 0,
+      "cases": 4,
+      "summarizerPromptTokens": 47232,
+      "summarizerCompletionTokens": 12502,
+      "judgePromptTokens": 144769
+    },
+    {
+      "factStyle": "decorrelated",
+      "variant": "upstream",
+      "repeats": 2,
+      "seeds": 2,
+      "topicA": {
+        "asked": 16,
+        "correct": 16,
+        "markerInBody": 0,
+        "markerInSummaryOnly": 16,
+        "perRepeatCorrect": [
+          8,
+          8
+        ]
+      },
+      "topicB": {
+        "asked": 16,
+        "correct": 16,
+        "markerInBody": 12,
+        "markerInSummaryOnly": 4,
+        "perRepeatCorrect": [
+          8,
+          8
+        ]
+      },
+      "postTokensMedian": 4347,
+      "summaryWallMsMedian": 14059,
+      "summaryTruncated": 0,
+      "cases": 4,
+      "summarizerPromptTokens": 46482,
+      "summarizerCompletionTokens": 8631,
+      "judgePromptTokens": 128584
+    },
+    {
+      "factStyle": "decorrelated",
+      "variant": "hippo",
+      "repeats": 2,
+      "seeds": 2,
+      "topicA": {
+        "asked": 16,
+        "correct": 12,
+        "markerInBody": 0,
+        "markerInSummaryOnly": 12,
+        "perRepeatCorrect": [
+          4,
+          8
+        ]
+      },
+      "topicB": {
+        "asked": 16,
+        "correct": 16,
+        "markerInBody": 16,
+        "markerInSummaryOnly": 0,
+        "perRepeatCorrect": [
+          8,
+          8
+        ]
+      },
+      "postTokensMedian": 4641,
+      "summaryWallMsMedian": 19926,
+      "summaryTruncated": 0,
+      "cases": 4,
+      "summarizerPromptTokens": 46482,
+      "summarizerCompletionTokens": 12403,
+      "judgePromptTokens": 138232
+    }
+  ]
+}

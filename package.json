@@ -30,6 +30,7 @@
     "benchmark:no-regression": "tsx benchmarks/assertNoRegression.ts",
     "benchmark:demo": "tsx benchmarks/run-demo.ts",
     "benchmark:smoke": "tsx benchmarks/smoke.ts",
+    "benchmark:tokenizer": "tsx benchmarks/tokenizerScaling.ts",
     "benchmark:ablation": "tsx benchmarks/ablation.ts",
     "benchmark:holdout": "tsx benchmarks/holdout.ts",
     "benchmark:topic-switch": "tsx benchmarks/topicSwitch.ts",

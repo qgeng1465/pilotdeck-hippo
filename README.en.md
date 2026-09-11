@@ -2,13 +2,19 @@
   <img src="assets/banner.png" alt="PilotDeck-Hippo" width="680"/>
 </p>
 
+<p align="center">
+  <a href="https://github.com/qgeng1465/pilotdeck-hippo/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/qgeng1465/pilotdeck-hippo/ci.yml?branch=main&label=CI" alt="CI"></a>
+  <a href="https://github.com/qgeng1465/pilotdeck-hippo/actions/workflows/docker-build.yml"><img src="https://img.shields.io/github/actions/workflow/status/qgeng1465/pilotdeck-hippo/docker-build.yml?branch=main&label=docker%20build" alt="Docker Build"></a>
+  <a href="https://github.com/qgeng1465/pilotdeck-hippo/blob/main/LICENSE"><img src="https://img.shields.io/github/license/qgeng1465/pilotdeck-hippo" alt="License"></a>
+</p>
+
 # PilotDeck-Hippo: Selective Memory for Long-Context Compaction
 
 > **PilotDeck 创造计划 · Direction 3 (Harness / Memory / Architecture Optimization)**
 
 > **Navigation:** [中文](README.md) · English
 
-> **Pre-submission checklist** is in [§6](#6-fresh-code-and-source-notes-confirm-before-submission). Direction 3's deliverable is a public GitHub repo, an interactive demo and a poster.
+> **Submission status**: repo is public, CI/Docker green (badges above); Direction 3's core deliverables — public GitHub repo, interactive demo, poster — are all ready. Baseline/branch/final SHAs are in [§6](#6-fresh-code-and-source-notes-confirm-before-submission).
 
 Navigation: [Core Idea](#core-idea) · [What It Does (real data)](#what-it-solves-with-real-data) · [Benchmarks & Results](#4-benchmark-approaches-and-results) · [Quick Start](#3-quick-start-from-source) · [Known Limits](#5-compatibility-tests-and-known-limits) · [Upstream Bug Fixes](#51-three-upstream-bugs-fixed-along-the-way) · [Submission Checklist](#7-direction-3-submission-checklist) · [License](#license)
 
@@ -397,6 +403,8 @@ Two notes:
 1. **How finely numbers reconcile**: each JSON is a resettable on-disk output; `holdout`'s `max=18` exactly covers the demo's 18/20 (that is one sample within the same seed range), not a contradiction.
 2. **Why two aggregations**: holdout is "never use tuned seeds + mean" to answer "robustness"; tune is "median over seen seeds" to answer "shape". Both use the same metric (how many of 20 facts reproduce verbatim) but differ in seed set and aggregation — all stated, all auditable.
 
+**Spot-check record (re-run on a fresh batch of seeds)**: beyond the table above, the comparison was re-run on **never-used seeds** — holdout on 20261001–20261010, extraction precision on 20261011–13 (disjoint from tune/ablation/holdout). All four fact-retention cells match the headline **in direction, within 0.2**, and **every cell is 10 wins / 0 ties / 0 losses (p=0.002)**; raw JSON, the cell-by-cell reconciliation table, and the "re-run it yourself on any seed" commands are in [`docs/independent-spotcheck.en.md`](docs/independent-spotcheck.en.md). That record is explicitly labelled a **reproducibility spot-check run by the authors, not a third-party review**; all it can falsify is "the numbers were cherry-picked by seed".
+
 ## 5. Compatibility, Tests, and Known Limits
 
 - Two-layer switch semantics: **engine layer** `scorePolicy` defaults to the upstream path, validated byte-identical by `benchmark:no-regression` and the golden fixture (`benchmarks/baseline-85be774.json`); **app layer** this fork enables it by default (`agent.compaction.retention: hippo`), `off` turns it back to upstream entirely.
@@ -496,7 +504,7 @@ That is the true identity of the flaky failure in the full test run — `replace
 - [x] Upstream base link and change scope retained: base `https://github.com/OpenBMB/PilotDeck`, base commit prefix `85be774` (golden fixture locks its behavior).
 - [ ] No mature demo, commercial project, or core code/design/debug/copy completed by non-registered people is carried in.
 - [ ] Public open-source projects, models, APIs and assets are credited with source and license here or in `NOTICE`.
-- [ ] Repo history is verifiable via `git log --stat`, GitHub commit timestamps, and on-site screenshots; all benchmark JSON are sanitized, no API keys.
+- [x] Repo history is verifiable via `git log --stat`, GitHub commit timestamps, and on-site screenshots; all benchmark JSON are sanitized, no API keys.
 
 Base info:
 
@@ -505,10 +513,11 @@ Public repo:   https://github.com/qgeng1465/pilotdeck-hippo
 Upstream repo: https://github.com/OpenBMB/PilotDeck
 Base full SHA: 85be774751e496501370d7cf95ed45388f407c93
 Submission branch: main
-Final code SHA: b2927c0f974397e6a5d6c3d8b0b24b78869aa494
+Final code SHA (last behavior-changing commit): b2927c0f974397e6a5d6c3d8b0b24b78869aa494
+Deliverable SHA (main branch HEAD, re-checked 2026-09-12): 79e56b47fdebe340a9e66fd08c5fc7fd2d7f4e9a
 ```
 
-> At submission, the repo must be switched from **private to public**, otherwise a judge opening it gets a 404 (that doesn't mean the link is wrong). The `Final code SHA` above is the last commit that changed behavior; later commits add documentation and tests only (no engine/UI behavior change); **the deliverable is the `main` branch HEAD** — before submitting, re-check it with `git ls-remote https://github.com/qgeng1465/pilotdeck-hippo.git main` and fill that HEAD into the submission form.
+> The repo is now **public** (as of 2026-09-12); a judge opening it lands on the latest `main`. Commits after the `Final code SHA` add documentation and tests only (no engine/UI behavior change); **the deliverable is the `main` branch HEAD** — before submitting, re-check it with `git ls-remote https://github.com/qgeng1465/pilotdeck-hippo.git main` and fill that HEAD into the submission form.
 
 Repo hygiene: `.gitignore` excludes `poliet_deck.txt` (event gateway credential), `*_key.txt`, `.env*`, `node_modules/`, `dist/`; `benchmarks/results/*.json` are confirmed to contain no API keys and are committed for review.
 

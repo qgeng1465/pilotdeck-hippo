@@ -2,13 +2,19 @@
   <img src="assets/banner.png" alt="PilotDeck-Hippo" width="680"/>
 </p>
 
+<p align="center">
+  <a href="https://github.com/qgeng1465/pilotdeck-hippo/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/qgeng1465/pilotdeck-hippo/ci.yml?branch=main&label=CI" alt="CI"></a>
+  <a href="https://github.com/qgeng1465/pilotdeck-hippo/actions/workflows/docker-build.yml"><img src="https://img.shields.io/github/actions/workflow/status/qgeng1465/pilotdeck-hippo/docker-build.yml?branch=main&label=docker%20build" alt="Docker Build"></a>
+  <a href="https://github.com/qgeng1465/pilotdeck-hippo/blob/main/LICENSE"><img src="https://img.shields.io/github/license/qgeng1465/pilotdeck-hippo" alt="License"></a>
+</p>
+
 # PilotDeck-Hippo：面向长上下文压缩的选择性记忆
 
 > **PilotDeck 创造计划 · 方向三（Harness / Memory / 架构优化）**
 
 > **语言：** [中文](README.md) · [English](README.en.md)
 
-> **提交前待办**：仓库链接、参赛分支、基线完整 SHA、代码最终提交 SHA 已回填（见 [§6](#6-fresh-code-与来源说明队长提交前确认)）；**唯一还差的动作是把仓库由 private 改为 public**。方向三的核心交付是公开 GitHub 仓库、可交互 Demo 和海报；无需把方向一/二的材料误当作必交项。
+> **提交状态**：仓库已 public，CI/Docker 全绿（徽章见上）；方向三的核心交付=公开 GitHub 仓库、可交互 Demo、海报，三者均就绪。基线/分支/最终 SHA 见 [§6](#6-fresh-code-与来源说明队长提交前确认)；勿把方向一/二的材料误当作必交项。
 
 导航：[核心思路](#核心思路) · [核心作用（真实数据）](#核心作用它到底解决什么) · [评测协议与结果](#4-评测协议与结果) · [快速运行](#3-快速运行源码) · [已知限制](#5-兼容性测试与已知限制) · [上游缺陷修复](#51-顺带修掉的三个上游缺陷) · [提交清单](#7-方向三提交清单) · [赛事 token 指南（附录 B）](#附录b赛事版指南比赛-token-配置与首次使用)
 
@@ -397,6 +403,8 @@ corepack pnpm benchmark:real-llm-topic-switch   # §4.7 话题切换闭环（含
 1. **数字能对账到什么粒度**：每份 JSON 都是一次可复核的落盘输出；`holdout` 的 `max=18` 正好覆盖 demo 的 18/20（那是同一 seed 区间内的一次样本），不是矛盾。
 2. **为什么有两种聚合**：留出集是"选过参数的 seed 一律不用 + 均值"回答"稳健性"；tune 是"在见过的 seed 上取中位数"回答"形状"。二者指标相同（20 条事实里逐字复现几条），但 seed 集合和聚合不同，都写明了所以都可审查。
 
+**抽检记录（换一批全新 seed 复核）**：除上表外，另做了一次**在从未使用过的新 seed 上的复跑**——holdout 用 20261001–20261010、提取精度用 20261011–13（与 tune/ablation/留出集全部不相交）。四格事实保留与旗舰**同向、差值 ≤0.2**，且**每格 10 胜 0 平 0 负（p=0.002）**；原始 JSON、逐格对账表与"你自己换 seed 复核"的命令见 [`docs/independent-spotcheck.md`](docs/independent-spotcheck.md)。该记录明确标注为**作者自跑的可复现性抽检，非第三方评审**，能证伪的只是"数字是挑 seed 挑出来的"。
+
 ## 5. 兼容性、测试与已知限制
 
 - 两层开关口径：**引擎层** `scorePolicy` 缺省 = 上游路径，由 `benchmark:no-regression` 与 golden fixture（`benchmarks/baseline-85be774.json`）验证输出逐字节一致；**App 层** 本 fork 默认启用（`agent.compaction.retention: hippo`），`off` 可整体关回上游。
@@ -496,7 +504,7 @@ order: Math.max(preparedAt, backupMtime, journalMtime)   // 修复前
 - [x] 已保留上游基线的仓库链接与改动范围：基线 `https://github.com/OpenBMB/PilotDeck`，基线 commit 前缀 `85be774`（golden fixture 锁定其行为）。
 - [ ] 未携带成熟 Demo、商业项目或未报名人员完成的核心代码/设计/调试/文案。
 - [ ] 公开开源项目、模型、API 和素材均在本节或 `NOTICE` 中标注来源及许可证。
-- [ ] 仓库历史能通过 `git log --stat`、GitHub commit 时间和现场截图复核；所有 benchmark JSON 均脱敏，不含 API Key。
+- [x] 仓库历史能通过 `git log --stat`、GitHub commit 时间和现场截图复核；所有 benchmark JSON 均脱敏，不含 API Key。
 
 基线信息：
 
@@ -505,10 +513,11 @@ order: Math.max(preparedAt, backupMtime, journalMtime)   // 修复前
 上游仓库：https://github.com/OpenBMB/PilotDeck
 基线完整 SHA：85be774751e496501370d7cf95ed45388f407c93
 参赛分支：main
-代码最终提交 SHA：b2927c0f974397e6a5d6c3d8b0b24b78869aa494
+代码最终提交 SHA（行为变更的最后一个提交）：b2927c0f974397e6a5d6c3d8b0b24b78869aa494
+交付基准 SHA（main 分支 HEAD，2026-09-12 复核）：79e56b47fdebe340a9e66fd08c5fc7fd2d7f4e9a
 ```
 
-> 提交时必须把仓库从 **private 改为 public**，否则评委点开是 404（这不代表链接写错）。上表 `代码最终提交 SHA` 是**行为变更的最后一个提交**，其后的提交只增加文档与测试（无引擎/UI 行为变更）；**交付物以 `main` 分支 HEAD 为准**，提交前请用 `git ls-remote https://github.com/qgeng1465/pilotdeck-hippo.git main` 复核一次，并把该 HEAD 填进提交表单。
+> 仓库已 **public**（as of 2026-09-12），评委点开即为最新 `main`。上表 `代码最终提交 SHA` 之后的提交只增加文档与测试（无引擎/UI 行为变更）；**交付物以 `main` 分支 HEAD 为准**，提交前用 `git ls-remote https://github.com/qgeng1465/pilotdeck-hippo.git main` 再复核一次，并把该 HEAD 填进提交表单。
 
 仓库卫生：`.gitignore` 已排除 `poliet_deck.txt`（比赛网关凭据）、`*_key.txt`、`.env*`、`node_modules/`、`dist/`；`benchmarks/results/*.json` 已确认不含任何 API Key，随仓库提交以便复核。
 

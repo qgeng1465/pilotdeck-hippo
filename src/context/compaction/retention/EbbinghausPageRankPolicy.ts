@@ -36,15 +36,30 @@ function cosineSimilarity(left: number[], right: number[]): number {
  *
  * Because the tuning seeds are by definition *seen*, `benchmarks/holdout.ts`
  * re-tests this choice on seeds 20260921..20260930, which nothing selected on.
- * There it holds up: 0.85/0.15/0 is >= the previous 0.7/0.15/0.15 in all four
- * (language x size) cells — 9.4/17.9/6.0/10.0 vs 9.3/17.7/6.0/9.5 — and across
- * 40 per-seed pairings the PageRank term contributed 0 wins, 33 ties, 3 losses.
+ * There 0.85/0.15/0 is >= the previous 0.7/0.15/0.15 in all four
+ * (language x size) cells — 9.4/17.9/6.0/10.0 vs 9.3/17.7/6.0/9.5.
+ *
+ * Read those two rows honestly: across the 40 per-seed pairings the difference
+ * is 7 wins / 33 ties / 0 losses, and no cell is significant (p = 1 / 0.5 / 1 /
+ * 0.125). So re-weighting is NOT a measured improvement and must not be
+ * advertised as one. What the holdout does establish is the mechanism: against
+ * upstream, all four cells are 10 wins / 0 ties / 0 losses at p = 0.002. The
+ * reasons to prefer this triple are that it is the grid argmax and that it is
+ * simpler — two nonzero terms instead of three.
  *
  * The PageRank term is therefore no longer weighted by default, but it is kept
  * in the policy: it is the only query-independent signal available, and the
  * no-query probe in tune.ts shows it is the least-bad term when there is no
  * pending request to score against — a regime where every variant sits near
  * the floor (<=3/20). `idfCorrection` still applies whenever the term is used.
+ *
+ * That regime used to be reachable by accident and no longer is:
+ * `CompactionEngine` derived the query hint from the tail alone, so a compaction
+ * triggered by a long tool output (no user message in the tail) scored every
+ * candidate against an empty query — measured at 0.00-0.20 of 20 facts kept.
+ * It now falls back to the most recent real user request in the conversation.
+ * Regression test: `tests/context/hippo-retention.spec.ts`, "retention is still
+ * query-conditioned when the tail holds no user request".
  *
  * Anyone re-tuning: change the numbers only with a `benchmark:tune` run *and*
  * a `benchmark:holdout` run, in that order.

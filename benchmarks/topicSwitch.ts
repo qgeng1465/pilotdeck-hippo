@@ -1,5 +1,6 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { buildPostCompactMessages, CompactionEngine } from "../src/context/compaction/CompactionEngine.js";
 import { TokenBudgetManager } from "../src/context/budget/TokenBudgetManager.js";
 import { messageVisibleText } from "../src/context/compaction/retention/MessageText.js";
@@ -48,9 +49,13 @@ function mulberry32(seed: number): () => number {
   };
 }
 
-type TopicFact = { marker: string; text: string };
+export type TopicFact = { marker: string; text: string; messageIndex: number };
 
-function buildTranscript(options: {
+/** The pending request at the end of the transcript: it is about topic B. */
+export const TOPIC_SWITCH_QUERY =
+  "Now answer the TCGA-BRCA gene frequency questions from the exact values recorded above.";
+
+export function buildTranscript(options: {
   seed: number;
   pairsPerTopic: number;
   factsPerTopic: number;
@@ -73,7 +78,7 @@ function buildTranscript(options: {
         const freq = ((Math.floor(random() * 90) + 5) / 100).toFixed(3);
         const stat = (Math.round((random() * 3.5 + 0.1) * 100) / 100).toFixed(2);
         const text = `${marker}: cohort=${topic === "A" ? "TCGA-LIHC" : "TCGA-BRCA"} n=371 gene=${gene} freq=${freq} stat=${stat}`;
-        facts.push({ marker, text });
+        facts.push({ marker, text, messageIndex: messages.length });
         userText = `${text} Record this exact value as a checkpoint.`;
       } else {
         userText = `${NOISE[Math.floor(random() * NOISE.length)]} step=${index + 1} metric=${Math.floor(random() * 9000 + 1000)}`;
@@ -93,7 +98,7 @@ function buildTranscript(options: {
 
   messages.push({
     role: "user",
-    content: [{ type: "text", text: "Now answer the TCGA-BRCA gene frequency questions from the exact values recorded above." }],
+    content: [{ type: "text", text: TOPIC_SWITCH_QUERY }],
   });
 
   return { messages, factsA, factsB };
@@ -197,8 +202,12 @@ async function main() {
 
   console.log(
     "\nReading: the pending request is about topic B, so every query-conditioned\n" +
-      "term favours B. Topic A can only be kept by query-independent signals\n" +
-      "(recency, entity-graph centrality) — this table shows how far that gets.\n" +
+      "term favours B. Do NOT read the topic A column as the entity graph or as\n" +
+      "recency at work: at the default weights wRank is 0, so the graph scores\n" +
+      "nothing, and `benchmark:topic-diagnosis` measures recency-only retaining\n" +
+      "0/10 of topic A. What retains A here is lexical similarity, because the A\n" +
+      "and B facts share one wording template — see that same diagnosis for the\n" +
+      "measured sim values, and treat this column as partly a harness artifact.\n" +
       "`summary-only` counts facts that exist in the prompt ONLY as paraphrase.\n" +
       "\nCaveat: this harness uses a fixed-text stub summarizer, so the summary\n" +
       "never carries a fact by construction — 'summary-only' is 0 for both arms\n" +
@@ -223,4 +232,9 @@ async function main() {
   console.log("\nresults written:", outputPath);
 }
 
-void main();
+// `benchmarks/topicDiagnosis.ts` imports the transcript builder from this file,
+// so main() must not fire on import — otherwise a diagnosis run would also
+// re-execute this whole benchmark and write a second results file.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  void main();
+}

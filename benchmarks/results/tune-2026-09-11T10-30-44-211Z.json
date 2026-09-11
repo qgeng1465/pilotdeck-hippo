@@ -1,0 +1,162 @@
+{
+  "protocol": "benchmarks/tune.ts",
+  "timestamp": "2026-09-11T10-30-44-211Z",
+  "seedBase": 20260911,
+  "seeds": 3,
+  "numPairs": 80,
+  "gridSize": 18,
+  "ranking": [
+    {
+      "config": "S0.85/T0.15/R0",
+      "enFacts": 45,
+      "zhFacts": 27,
+      "total": 72,
+      "msPerCase": 359
+    },
+    {
+      "config": "S0.85/T0.15/R0.15",
+      "enFacts": 45,
+      "zhFacts": 25,
+      "total": 70,
+      "msPerCase": 364
+    },
+    {
+      "config": "S0.85/T0.15/R0.3",
+      "enFacts": 44,
+      "zhFacts": 25,
+      "total": 69,
+      "msPerCase": 350
+    },
+    {
+      "config": "S0.7/T0.15/R0",
+      "enFacts": 45,
+      "zhFacts": 23,
+      "total": 68,
+      "msPerCase": 351
+    },
+    {
+      "config": "S0.7/T0.15/R0.15",
+      "enFacts": 45,
+      "zhFacts": 23,
+      "total": 68,
+      "msPerCase": 354
+    },
+    {
+      "config": "S0.55/T0/R0.15",
+      "enFacts": 41,
+      "zhFacts": 26,
+      "total": 67,
+      "msPerCase": 456
+    },
+    {
+      "config": "S0.55/T0/R0.3",
+      "enFacts": 41,
+      "zhFacts": 26,
+      "total": 67,
+      "msPerCase": 349
+    },
+    {
+      "config": "S0.7/T0/R0.15",
+      "enFacts": 41,
+      "zhFacts": 26,
+      "total": 67,
+      "msPerCase": 350
+    },
+    {
+      "config": "S0.7/T0/R0.3",
+      "enFacts": 41,
+      "zhFacts": 26,
+      "total": 67,
+      "msPerCase": 355
+    },
+    {
+      "config": "S0.85/T0/R0.15",
+      "enFacts": 41,
+      "zhFacts": 26,
+      "total": 67,
+      "msPerCase": 373
+    },
+    {
+      "config": "S0.85/T0/R0.3",
+      "enFacts": 41,
+      "zhFacts": 26,
+      "total": 67,
+      "msPerCase": 370
+    },
+    {
+      "config": "S0.55/T0.15/R0",
+      "enFacts": 45,
+      "zhFacts": 20,
+      "total": 65,
+      "msPerCase": 354
+    },
+    {
+      "config": "S0.55/T0/R0",
+      "enFacts": 39,
+      "zhFacts": 24,
+      "total": 63,
+      "msPerCase": 513
+    },
+    {
+      "config": "S0.55/T0.15/R0.15",
+      "enFacts": 43,
+      "zhFacts": 20,
+      "total": 63,
+      "msPerCase": 371
+    },
+    {
+      "config": "S0.7/T0/R0",
+      "enFacts": 39,
+      "zhFacts": 24,
+      "total": 63,
+      "msPerCase": 354
+    },
+    {
+      "config": "S0.7/T0.15/R0.3",
+      "enFacts": 41,
+      "zhFacts": 22,
+      "total": 63,
+      "msPerCase": 353
+    },
+    {
+      "config": "S0.85/T0/R0",
+      "enFacts": 39,
+      "zhFacts": 24,
+      "total": 63,
+      "msPerCase": 351
+    },
+    {
+      "config": "S0.55/T0.15/R0.3",
+      "enFacts": 37,
+      "zhFacts": 19,
+      "total": 56,
+      "msPerCase": 358
+    }
+  ],
+  "noQueryProbe": [
+    {
+      "config": "S0.4/T0.35/R0.25+idf (old default)",
+      "en": 0,
+      "zh": 0,
+      "possible": 60
+    },
+    {
+      "config": "S0.7/T0.15/R0.15+idf",
+      "en": 0,
+      "zh": 0,
+      "possible": 60
+    },
+    {
+      "config": "S1/T0/R0 (sim only)",
+      "en": 6,
+      "zh": 6,
+      "possible": 60
+    },
+    {
+      "config": "S0/T0/R1+idf (rank only)",
+      "en": 0,
+      "zh": 6,
+      "possible": 60
+    }
+  ]
+}

@@ -138,8 +138,29 @@ export type CompactionResult = {
   checkpointMerged?: boolean;
   /** Usage from the summary request, including provider cache accounting. */
   summaryUsage?: CanonicalUsage;
+  /**
+   * Hippo only, and only when the score policy actually kept something:
+   * messages pulled out of the summarize bucket and preserved verbatim
+   * because their retention score was high. These are *additional* to the
+   * normal kept tail and protected turns, so the count is what the score
+   * policy is responsible for — not the size of `messagesToKeep`.
+   */
+  retention?: RetentionOutcome;
   diagnostics: ContextDiagnostic[];
   error?: string;
+};
+
+export type RetentionOutcome = {
+  /** Policy that produced this outcome (e.g. `ebbinghaus-pagerank`). */
+  policyId: string;
+  /** Messages the policy kept that survived into `messagesToKeep`. */
+  retainedMessages: number;
+  /** Token cost of exactly those messages. */
+  retainedTokens: number;
+  /** Token budget the policy was allowed to spend on them. */
+  budgetTokens: number;
+  /** Weights in effect, when the policy reports them. */
+  weights?: { wSim: number; wTime: number; wRank: number };
 };
 
 export type CompactionInput = {
@@ -317,6 +338,26 @@ export class CompactionEngine {
       });
     }
 
+    // Report only the retained messages that actually made it into the
+    // post-compaction prompt. Identity comparison against the final
+    // `messagesToKeep` is deliberate: it cannot overstate what the policy
+    // contributed. The one case it can understate is the oversized-tool-output
+    // projection above, which rebuilds message objects — that path is rare and
+    // erring low is the safe direction for a number shown to users.
+    const retainedCandidates = new Set(compactPlan.retainedMessages);
+    const survivedRetained = retainedCandidates.size > 0
+      ? messagesToKeep.filter((message) => retainedCandidates.has(message))
+      : [];
+    const retention: RetentionOutcome | undefined = survivedRetained.length > 0
+      ? {
+          policyId: scorePolicy?.id ?? "unknown",
+          retainedMessages: survivedRetained.length,
+          retainedTokens: this.estimateMessages(survivedRetained),
+          budgetTokens: compactPlan.retentionBudgetTokens,
+          ...(scorePolicy?.weights ? { weights: scorePolicy.weights } : {}),
+        }
+      : undefined;
+
     const result: CompactionResult = {
       compactionId,
       trigger: input.trigger,
@@ -325,6 +366,7 @@ export class CompactionEngine {
       summaryMessage,
       boundaryMarker,
       messagesToKeep,
+      ...(retention ? { retention } : {}),
       stablePrefix,
       cacheReset,
       targetPostTokens,
@@ -366,6 +408,7 @@ export class CompactionEngine {
       cacheReset: result.cacheReset === true,
       cacheReadTokens: summaryUsage?.cacheReadTokens,
       cacheWriteTokens: summaryUsage?.cacheWriteTokens,
+      ...(retention ? { retention } : {}),
     });
 
     return result;
@@ -520,6 +563,35 @@ function splitCheckpointPrefix(messages: CanonicalMessage[]): {
   };
 }
 
+/**
+ * The most recent real user request in `messages`, scanned from the end. Used
+ * as the Hippo retention policy's query hint.
+ *
+ * Scanning backwards matters: a conversation can hold many user requests, and
+ * the retention policy is picking messages to keep *for the request that is
+ * about to be answered* — the last one, not the first.
+ */
+function lastRealUserRequest(messages: readonly CanonicalMessage[]): CanonicalMessage | undefined {
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const message = messages[index]!;
+    if (isRealUserRequestMessage(message)) return message;
+  }
+  return undefined;
+}
+
+/**
+ * Same as {@link lastRealUserRequest}, but walks turns backwards so it never
+ * materializes the (possibly very large) prefix as a flat array just to
+ * discard all but one message.
+ */
+function lastRealUserRequestInTurns(turns: readonly { messages: CanonicalMessage[] }[]): CanonicalMessage | undefined {
+  for (let index = turns.length - 1; index >= 0; index -= 1) {
+    const found = lastRealUserRequest(turns[index]!.messages);
+    if (found) return found;
+  }
+  return undefined;
+}
+
 function isCompactBoundaryMessage(message: CanonicalMessage): boolean {
   return message.role === "user"
     && message.content.some((block) => block.type === "text" && block.text.startsWith("<compact-boundary"));
@@ -538,7 +610,14 @@ async function planFullCompactionMessages(
   estimateTurnTokens: (turnMessages: CanonicalMessage[]) => number,
   scorePolicy?: RetentionScorePolicy,
   retentionBudgetRatio?: number,
-): Promise<{ messagesToSummarize: CanonicalMessage[]; messagesToKeep: CanonicalMessage[] }> {
+): Promise<{
+  messagesToSummarize: CanonicalMessage[];
+  messagesToKeep: CanonicalMessage[];
+  /** Hippo: messages the score policy pulled out of the summary bucket. */
+  retainedMessages: CanonicalMessage[];
+  /** Hippo: the budget the policy was given, echoed for reporting. */
+  retentionBudgetTokens: number;
+}> {
   const turns = splitMessagesIntoCompactionGroups(messages);
   const tailStartTurn = moveTailBoundaryBeforeProtectedRequest(
     turns,
@@ -567,11 +646,21 @@ async function planFullCompactionMessages(
   // Hippo additive hook: pull high-score messages out of the summary bucket
   // and keep them verbatim, before tool-pair integrity is applied below.
   let retainedMessages: CanonicalMessage[] = [];
+  let retentionBudgetTokens = 0;
   if (scorePolicy && messagesToSummarize.length > 0) {
     try {
-      const queryMessage = [...tail].reverse().find(isRealUserRequestMessage);
+      // Compaction is not always triggered by a fresh user request — a long
+      // tool output overflowing the budget triggers it too. In that case the
+      // tail holds no user message and this used to fall through to an empty
+      // query hint, which zeroes the similarity term: measured on held-out
+      // seeds (`benchmark:holdout`, no-query probe), the shipped weights retain
+      // 0.00-0.20 of 20 facts in that regime, against 1-2 for sim-only. Fall
+      // back to the most recent user request in the conversation, which is
+      // still the request the kept messages have to serve.
+      const queryMessage =
+        lastRealUserRequest(tail) ?? lastRealUserRequestInTurns(prefixTurns);
       const queryHint = queryMessage ? messageVisibleText(queryMessage).slice(0, 8000) : "";
-      const retentionBudgetTokens = Math.max(
+      retentionBudgetTokens = Math.max(
         256,
         Math.floor(tailTokenBudget * (retentionBudgetRatio ?? RETENTION_BUDGET_RATIO)),
       );
@@ -606,7 +695,7 @@ async function planFullCompactionMessages(
   const pairedToolCallIds = collectToolCallIds(withoutDanglingCalls);
   const messagesToKeep = stripUnpairedToolResults(withoutDanglingCalls, pairedToolCallIds);
 
-  return { messagesToSummarize, messagesToKeep };
+  return { messagesToSummarize, messagesToKeep, retainedMessages, retentionBudgetTokens };
 }
 
 function splitMessagesIntoCompactionGroups(messages: CanonicalMessage[]): Array<{ index: number; messages: CanonicalMessage[] }> {

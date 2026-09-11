@@ -1,0 +1,45 @@
+{
+  "protocol": "benchmarks/topicSwitch.ts",
+  "timestamp": "2026-09-11T11-19-16-507Z",
+  "seedBase": 20260921,
+  "seeds": 10,
+  "factsPerTopic": 10,
+  "rows": [
+    {
+      "numPairsPerTopic": 80,
+      "variant": "upstream",
+      "aVerbatimMean": 0,
+      "bVerbatimMean": 6,
+      "aInSummaryOnly": 0,
+      "bInSummaryOnly": 0,
+      "postTokensMean": 1844
+    },
+    {
+      "numPairsPerTopic": 80,
+      "variant": "hippo",
+      "aVerbatimMean": 2,
+      "bVerbatimMean": 10,
+      "aInSummaryOnly": 0,
+      "bInSummaryOnly": 0,
+      "postTokensMean": 2095
+    },
+    {
+      "numPairsPerTopic": 160,
+      "variant": "upstream",
+      "aVerbatimMean": 0,
+      "bVerbatimMean": 6,
+      "aInSummaryOnly": 0,
+      "bInSummaryOnly": 0,
+      "postTokensMean": 3451
+    },
+    {
+      "numPairsPerTopic": 160,
+      "variant": "hippo",
+      "aVerbatimMean": 5.9,
+      "bVerbatimMean": 10,
+      "aInSummaryOnly": 0,
+      "bInSummaryOnly": 0,
+      "postTokensMean": 3889
+    }
+  ]
+}

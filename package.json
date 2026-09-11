@@ -31,6 +31,8 @@
     "benchmark:demo": "tsx benchmarks/run-demo.ts",
     "benchmark:smoke": "tsx benchmarks/smoke.ts",
     "benchmark:ablation": "tsx benchmarks/ablation.ts",
+    "benchmark:holdout": "tsx benchmarks/holdout.ts",
+    "benchmark:topic-switch": "tsx benchmarks/topicSwitch.ts",
     "benchmark:tune": "tsx benchmarks/tune.ts",
     "benchmark:real-llm": "tsx benchmarks/realLlmEval.ts"
   },

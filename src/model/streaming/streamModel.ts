@@ -823,7 +823,8 @@ async function safeReadJson(response: Response): Promise<unknown> {
 
 const DEFAULT_STREAM_IDLE_TIMEOUT_MS = LITELLM_COMPLETION_HTTP_FALLBACK_MS;
 
-class StreamIdleTimeoutError extends Error {
+/** Exported for the idle-timeout regression test; not part of the public API. */
+export class StreamIdleTimeoutError extends Error {
   constructor(idleMs: number) {
     super(`Stream idle timeout: no data received for ${idleMs}ms`);
     this.name = "StreamIdleTimeoutError";
@@ -923,7 +924,8 @@ function* parseServerSentEventChunk(chunk: string): Iterable<ServerSentEvent> {
   }
 }
 
-function readWithIdleTimeout(
+/** Exported for the idle-timeout regression test; not part of the public API. */
+export function readWithIdleTimeout(
   reader: ReadableStreamDefaultReader<Uint8Array>,
   idleMs: number,
   signal?: AbortSignal,
@@ -931,7 +933,8 @@ function readWithIdleTimeout(
   return withIdleTimeout(() => reader.read(), idleMs, signal);
 }
 
-function withIdleTimeout<T>(
+/** Exported for the idle-timeout regression test; not part of the public API. */
+export function withIdleTimeout<T>(
   operation: () => Promise<T>,
   idleMs: number,
   signal?: AbortSignal,
@@ -947,9 +950,11 @@ function withIdleTimeout<T>(
         reject(error);
       }
     }, idleMs);
-    if (typeof timer === "object" && "unref" in timer) {
-      (timer as NodeJS.Timeout).unref();
-    }
+    // Deliberately NOT unref'd. This timer is the safety net that turns a
+    // stalled stream into a `StreamIdleTimeoutError`; unref'd, it lost the race
+    // against process exit whenever the stalled source held no libuv handle,
+    // and the caller's `await` hung instead of failing. It is cleared on every
+    // settle path below, so it never keeps a finished process alive.
     const onAbort = () => {
       if (!settled) {
         settled = true;

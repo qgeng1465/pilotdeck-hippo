@@ -20,23 +20,56 @@ function cosineSimilarity(left: number[], right: number[]): number {
 }
 
 /**
- * Default component weights, re-anchored by the benchmarks/tune.ts sweep
- * (2026-09-11, EN+ZH x 3 seeds, N=80): similarity against the pending user
- * request is the dominant fact-recovery signal; recency and IDF-corrected
- * PageRank stay as small complementary terms. The old 0.4/0.35/0.25 mix
- * let time and rank dilute the similarity term and collapsed when no
- * query hint existed.
+ * Default component weights.
+ *
+ * These are the argmax of `benchmarks/tune.ts` (18-config grid over
+ * seeds 20260911..20260913, EN+ZH, N=80), which is what they should be:
+ *
+ *   S0.85/T0.15/R0 .. 72/120   <- this
+ *   S0.85/T0.15/R0.15 70/120
+ *   S0.7/T0.15/R0.15 .. 68/120 (the value shipped before this change)
+ *
+ * Note where the ranking actually comes from: EN is saturated (45/60 for most
+ * of the top configs, so EN does not separate them), and the ordering is
+ * driven by ZH (27 vs 23). Treat a 4-point ZH gap on 3 seeds as a tie-breaker,
+ * not a result.
+ *
+ * Because the tuning seeds are by definition *seen*, `benchmarks/holdout.ts`
+ * re-tests this choice on seeds 20260921..20260930, which nothing selected on.
+ * There it holds up: 0.85/0.15/0 is >= the previous 0.7/0.15/0.15 in all four
+ * (language x size) cells — 9.4/17.9/6.0/10.0 vs 9.3/17.7/6.0/9.5 — and across
+ * 40 per-seed pairings the PageRank term contributed 0 wins, 33 ties, 3 losses.
+ *
+ * The PageRank term is therefore no longer weighted by default, but it is kept
+ * in the policy: it is the only query-independent signal available, and the
+ * no-query probe in tune.ts shows it is the least-bad term when there is no
+ * pending request to score against — a regime where every variant sits near
+ * the floor (<=3/20). `idfCorrection` still applies whenever the term is used.
+ *
+ * Anyone re-tuning: change the numbers only with a `benchmark:tune` run *and*
+ * a `benchmark:holdout` run, in that order.
  */
 export const EBBINGHAUS_DEFAULT_WEIGHTS = {
-  wSim: 0.7,
+  wSim: 0.85,
   wTime: 0.15,
-  wRank: 0.15,
+  wRank: 0,
 } as const;
 
 export class EbbinghausPageRankPolicy implements RetentionScorePolicy {
   readonly id = "ebbinghaus-pagerank";
 
   constructor(private readonly options: EbbinghausPolicyOptions = {}) {}
+
+  /** Effective (normalized) weights actually used when scoring. */
+  get weights(): { wSim: number; wTime: number; wRank: number } {
+    const raw = {
+      wSim: this.options.wSim ?? EBBINGHAUS_DEFAULT_WEIGHTS.wSim,
+      wTime: this.options.wTime ?? EBBINGHAUS_DEFAULT_WEIGHTS.wTime,
+      wRank: this.options.wRank ?? EBBINGHAUS_DEFAULT_WEIGHTS.wRank,
+    };
+    const total = Math.max(1, raw.wSim + raw.wTime + raw.wRank);
+    return { wSim: raw.wSim / total, wTime: raw.wTime / total, wRank: raw.wRank / total };
+  }
 
   async scoreMessages(input: {
     candidates: CanonicalMessage[];

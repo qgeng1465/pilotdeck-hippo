@@ -1,3 +1,5 @@
+import { mkdirSync, writeFileSync } from "node:fs";
+import { join, resolve } from "node:path";
 import { performance } from "node:perf_hooks";
 import { buildEbbinghausPageRankPolicy } from "../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
 import { TokenBudgetManager } from "../src/context/budget/TokenBudgetManager.js";
@@ -116,8 +118,10 @@ async function main() {
     { key: "S1/T0/R0 (sim only)", wSim: 1, wTime: 0, wRank: 0 },
     { key: "S0/T0/R1+idf (rank only)", wSim: 0, wTime: 0, wRank: 1 },
   ];
+  const noQueryResults: Array<{ config: string; en: number; zh: number; possible: number }> = [];
   for (const config of noQueryConfigs) {
     const line: string[] = [];
+    const record = { config: config.key, en: 0, zh: 0, possible: SEEDS * 20 };
     for (const lang of ["en", "zh"] as const) {
       let total = 0;
       for (const transcript of transcripts.get(lang)!) {
@@ -136,10 +140,39 @@ async function main() {
         });
         total += countFacts(transcript, retained.map(messageVisibleText));
       }
+      if (lang === "en") record.en = total;
+      else record.zh = total;
       line.push(`${lang}=${total}/${transcripts.get(lang)!.length * 20}`);
     }
+    noQueryResults.push(record);
     console.log(`  ${config.key}: ${line.join("  ")}`);
   }
+
+  // Persist the ranking so the weight choice is auditable later: the seed
+  // range used here is the *seen* range, and benchmarks/holdout.ts re-tests
+  // the chosen default on seeds this sweep never touched.
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const output = {
+    protocol: "benchmarks/tune.ts",
+    timestamp,
+    seedBase: SEED_BASE,
+    seeds: SEEDS,
+    numPairs: NUM_PAIRS,
+    gridSize: GRID.length,
+    ranking: ranked.map(([key, value]) => ({
+      config: key,
+      enFacts: value.en,
+      zhFacts: value.zh,
+      total: value.en + value.zh,
+      msPerCase: value.ms,
+    })),
+    noQueryProbe: noQueryResults,
+  };
+  const resultsDir = resolve(join(process.cwd(), "benchmarks", "results"));
+  mkdirSync(resultsDir, { recursive: true });
+  const outputPath = resolve(resultsDir, `tune-${timestamp}.json`);
+  writeFileSync(outputPath, `${JSON.stringify(output, null, 2)}\n`, "utf8");
+  console.log("\nresults written:", outputPath);
 }
 
 void main();

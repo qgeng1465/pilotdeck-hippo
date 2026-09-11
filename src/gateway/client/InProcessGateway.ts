@@ -2079,6 +2079,7 @@ function mapAgentEventForTurn(event: AgentEvent, runId: string): GatewayEvent[] 
           preTokens: event.preTokens,
           postTokens: event.postTokens,
           messagesSummarized: event.messagesSummarized,
+          ...(event.retention ? { retention: event.retention } : {}),
         },
       }];
     case "context_budget":

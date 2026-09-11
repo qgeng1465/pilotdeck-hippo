@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, readdir, rm, stat, utimes, writeFile } from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 
@@ -671,6 +672,81 @@ test("startup recovery decides from the newest replacement transaction only", as
     assert.deepEqual(recovery.failures, []);
     prepared = await readTranscript(storage.transcriptPath);
     const accepted = prepared.entries
+      .filter((entry) => entry.type === "accepted_input")
+      .map((entry) => entry.turnId);
+    assert.deepEqual(accepted, ["turn-2", "turn-3"]);
+    assert.equal(accepted.includes("turn-4"), false);
+  } finally {
+    await rm(projectRoot, { recursive: true, force: true });
+    await rm(pilotHome, { recursive: true, force: true });
+  }
+});
+
+test("recovery orders transactions by their journal timestamp, not by artifact mtime", async () => {
+  const projectRoot = await mkdtemp(join(tmpdir(), "pilotdeck-replace-order-project-"));
+  const pilotHome = await mkdtemp(join(tmpdir(), "pilotdeck-replace-order-home-"));
+  try {
+    const sessionKey = "web:s_replace_order";
+    const storage = createAgentProjectSessionStorage({ projectRoot, pilotHome, sessionId: sessionKey });
+    await storage.transcript.recordAcceptedInput(sessionKey, "turn-1", [{
+      role: "user",
+      content: [{ type: "text", text: "first request" }],
+    }]);
+
+    // Transaction 1 (prepared 10:00): committed, but its artifacts are left
+    // behind as if post-commit cleanup had failed.
+    await replaceLastWebSessionTurn(
+      { sessionKey, projectKey: projectRoot, expectedTurnId: "turn-1", replacementTurnId: "turn-2" },
+      { projectRoot, pilotHome, now: () => new Date("2026-08-25T10:00:00.000Z") },
+    );
+    const prepared = await readTranscript(storage.transcriptPath);
+    storage.transcript.restoreState(
+      prepared.entries.reduce((highest, entry) => Math.max(highest, entry.sequence), 0),
+      prepared.entries.at(-1)?.entryId ?? null,
+    );
+    await storage.transcript.recordAcceptedInput(sessionKey, "turn-2", [{
+      role: "user",
+      content: [{ type: "text", text: "committed corrected request" }],
+    }]);
+    await storage.transcript.recordAcceptedInput(sessionKey, "turn-3", [{
+      role: "user",
+      content: [{ type: "text", text: "newest original request" }],
+    }]);
+
+    // Transaction 2 (prepared 10:01): still pending, so it is the one recovery
+    // must act on.
+    await replaceLastWebSessionTurn(
+      { sessionKey, projectKey: projectRoot, expectedTurnId: "turn-3", replacementTurnId: "turn-4" },
+      { projectRoot, pilotHome, now: () => new Date("2026-08-25T10:01:00.000Z") },
+    );
+
+    // Push transaction 1's artifacts into the future so ordering by wall-clock
+    // mtime would call it the newest — the opposite of what its own `preparedAt`
+    // says. `utimes` is used rather than a rewrite because this filesystem
+    // stamps mtimes at 1 ms granularity, so back-to-back writes tie instead of
+    // ordering, and a tie is resolved by readdir order.
+    const journals = (await readdir(storage.chatDir)).filter((name) => name.endsWith(".replace.json"));
+    assert.equal(journals.length, 2, "both transactions should have left a journal behind");
+    const older = journals.find((name) => {
+      const raw = readFileSync(join(storage.chatDir, name), "utf8");
+      return (JSON.parse(raw) as { preparedAt?: string }).preparedAt === "2026-08-25T10:00:00.000Z";
+    });
+    assert.ok(older, "transaction 1's journal should carry its own preparedAt");
+    const future = new Date(Date.now() + 60_000);
+    await utimes(join(storage.chatDir, older), future, future);
+    const olderBackup = older.replace(/\.replace\.json$/, ".replace.bak");
+    await utimes(join(storage.chatDir, olderBackup), future, future);
+
+    const recovery = recoverPendingLastTurnReplacements(pilotHome);
+
+    // Transaction 2 is the newest by preparedAt, and turn-4 was never accepted,
+    // so it must be rolled back. Ordering by mtime would instead pick
+    // transaction 1, whose turn-2 *was* accepted, and report a commit.
+    assert.equal(recovery.rolledBack, 1);
+    assert.equal(recovery.committed, 0);
+    assert.deepEqual(recovery.failures, []);
+    const after = await readTranscript(storage.transcriptPath);
+    const accepted = after.entries
       .filter((entry) => entry.type === "accepted_input")
       .map((entry) => entry.turnId);
     assert.deepEqual(accepted, ["turn-2", "turn-3"]);

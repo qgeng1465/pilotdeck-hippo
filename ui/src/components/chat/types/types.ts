@@ -80,6 +80,20 @@ export interface SubagentChildTool {
   timestamp: Date;
 }
 
+/**
+ * Hippo retention summary carried on a compaction boundary. Produced by
+ * `CompactionResult.retention` in the engine and forwarded verbatim; every
+ * field is optional because an upstream engine (or a policy that kept
+ * nothing) sends none of them.
+ */
+export interface CompactRetentionInfo {
+  policyId?: string;
+  retainedMessages?: number;
+  retainedTokens?: number;
+  budgetTokens?: number;
+  weights?: { wSim: number; wTime: number; wRank: number };
+}
+
 export interface ChatMessage {
   id?: string;
   entryId?: string;
@@ -122,6 +136,12 @@ export interface ChatMessage {
   compactLevel?: number;
   compactStage?: string;
   compactStageLabel?: string;
+  /**
+   * Hippo (this fork): what the retention score policy kept verbatim across
+   * the compaction boundary. Absent on upstream compaction — the badge is
+   * only rendered when this is present and non-zero.
+   */
+  compactRetention?: CompactRetentionInfo;
   title?: string;
   detail?: string;
   phase?: string;

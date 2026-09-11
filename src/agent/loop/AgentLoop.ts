@@ -2349,6 +2349,9 @@ export class AgentLoop {
           tier: compact.tier,
           summarySucceeded: compactionSummarySucceeded(compact.result),
           ...(compact.result.cacheReset ? { cacheReset: true } : {}),
+          // Hippo: what the retention policy contributed verbatim, persisted
+          // so the history view can render it after a reload, not just live.
+          ...(compact.result.retention ? { retention: compact.result.retention } : {}),
           ...(compact.error
             ? {
                 finalBudgetTokens: compact.snapshot.maxContextTokens,

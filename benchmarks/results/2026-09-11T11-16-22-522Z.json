@@ -1,0 +1,709 @@
+{
+  "protocol": "README.md#本仓库的增量改造hippo-海马记忆",
+  "timestamp": "2026-09-11T11-16-22-522Z",
+  "seedBase": 20260911,
+  "scorePolicy": "ebbinghaus-pagerank",
+  "embedding": "bm25-fallback (transformers optional)",
+  "deterministic": true,
+  "allCasesDeterministic": true,
+  "groups": [
+    {
+      "name": "N=40",
+      "n": 10,
+      "preTokensMedian": 3906,
+      "upstreamPostTokensMedian": 1153,
+      "hippoPostTokensMedian": 1381,
+      "postReductionMedianPercent": -19.7,
+      "upstreamFactsRetainedMedian": 0,
+      "hippoFactsRetainedMedian": 8,
+      "factsRetentionGainMedian": 0.4,
+      "deterministicHippo": true
+    },
+    {
+      "name": "N=80",
+      "n": 10,
+      "preTokensMedian": 8291,
+      "upstreamPostTokensMedian": 2368,
+      "hippoPostTokensMedian": 2634,
+      "postReductionMedianPercent": -11.2,
+      "upstreamFactsRetainedMedian": 0,
+      "hippoFactsRetainedMedian": 9,
+      "factsRetentionGainMedian": 0.45,
+      "deterministicHippo": true
+    },
+    {
+      "name": "N=160",
+      "n": 10,
+      "preTokensMedian": 17034,
+      "upstreamPostTokensMedian": 4739,
+      "hippoPostTokensMedian": 5339,
+      "postReductionMedianPercent": -12.7,
+      "upstreamFactsRetainedMedian": 0,
+      "hippoFactsRetainedMedian": 18,
+      "factsRetentionGainMedian": 0.9,
+      "deterministicHippo": true
+    }
+  ],
+  "cases": [
+    {
+      "numPairs": 40,
+      "seed": 20260911,
+      "preTokens": 3909,
+      "upstream": {
+        "postTokens": 1147,
+        "messagesSummarized": 62,
+        "messagesToKeep": 19,
+        "factsRetained": 0,
+        "fingerprint": "dc4eee428b998c3801dfba5f12853a2cfc4c15ab9654c571cec8f33bde13eb38"
+      },
+      "hippo": {
+        "postTokens": 1374,
+        "messagesSummarized": 56,
+        "messagesToKeep": 25,
+        "factsRetained": 8,
+        "fingerprint": "9003e6e795cea31c67564a942b1cb969e5881acc60b62a9d29fb28d64bff1ae7",
+        "deterministic": true
+      },
+      "ratioPost": 1.1979075850043592,
+      "factsRatio": 0.4
+    },
+    {
+      "numPairs": 40,
+      "seed": 20260912,
+      "preTokens": 3902,
+      "upstream": {
+        "postTokens": 1140,
+        "messagesSummarized": 62,
+        "messagesToKeep": 19,
+        "factsRetained": 0,
+        "fingerprint": "879a4850625c6b4598087543c18121ee860561a0b75dd50c45aed23e660536fc"
+      },
+      "hippo": {
+        "postTokens": 1365,
+        "messagesSummarized": 56,
+        "messagesToKeep": 25,
+        "factsRetained": 8,
+        "fingerprint": "e9563bcfce00c2a415c671965cc82ae7471d8d28368f5115fa50bc943a4a5eff",
+        "deterministic": true
+      },
+      "ratioPost": 1.1973684210526316,
+      "factsRatio": 0.4
+    },
+    {
+      "numPairs": 40,
+      "seed": 20260913,
+      "preTokens": 3918,
+      "upstream": {
+        "postTokens": 1159,
+        "messagesSummarized": 62,
+        "messagesToKeep": 19,
+        "factsRetained": 0,
+        "fingerprint": "323cd1adcae000710ffab2d70d00664cb9ba37d15af917d95bddf480050f5523"
+      },
+      "hippo": {
+        "postTokens": 1386,
+        "messagesSummarized": 56,
+        "messagesToKeep": 25,
+        "factsRetained": 8,
+        "fingerprint": "6c209240c0c5af524e4ff87818031be02b551b0b3aaf3b90f6e72918d891bb2e",
+        "deterministic": true
+      },
+      "ratioPost": 1.1958584987057808,
+      "factsRatio": 0.4
+    },
+    {
+      "numPairs": 40,
+      "seed": 20260914,
+      "preTokens": 3877,
+      "upstream": {
+        "postTokens": 1147,
+        "messagesSummarized": 62,
+        "messagesToKeep": 19,
+        "factsRetained": 0,
+        "fingerprint": "a36b7cd0eabacd42e69125e00192aa3f400374087a8e425b2ae049585a038d58"
+      },
+      "hippo": {
+        "postTokens": 1371,
+        "messagesSummarized": 56,
+        "messagesToKeep": 25,
+        "factsRetained": 8,
+        "fingerprint": "240ad493cd74a955d6a364ddc8e71452d7c16e2a9b35a52ee347b361ae662a8c",
+        "deterministic": true
+      },
+      "ratioPost": 1.195292066259808,
+      "factsRatio": 0.4
+    },
+    {
+      "numPairs": 40,
+      "seed": 20260915,
+      "preTokens": 3902,
+      "upstream": {
+        "postTokens": 1151,
+        "messagesSummarized": 62,
+        "messagesToKeep": 19,
+        "factsRetained": 0,
+        "fingerprint": "545af2d6fd6d1f648e4f43105fd089a8c940d09c93c82a2f6088fb1bb7df4301"
+      },
+      "hippo": {
+        "postTokens": 1379,
+        "messagesSummarized": 56,
+        "messagesToKeep": 25,
+        "factsRetained": 8,
+        "fingerprint": "e517816c26c38bee8cc9ce94c48297c6ba42747f666bd288524823d55ed58749",
+        "deterministic": true
+      },
+      "ratioPost": 1.1980886185925281,
+      "factsRatio": 0.4
+    },
+    {
+      "numPairs": 40,
+      "seed": 20260916,
+      "preTokens": 3922,
+      "upstream": {
+        "postTokens": 1250,
+        "messagesSummarized": 60,
+        "messagesToKeep": 21,
+        "factsRetained": 0,
+        "fingerprint": "3e5dea32447e2e0faa30a44b8069e262a646d8c7bd4fb874bf258b2f14053a62"
+      },
+      "hippo": {
+        "postTokens": 1472,
+        "messagesSummarized": 54,
+        "messagesToKeep": 27,
+        "factsRetained": 8,
+        "fingerprint": "897160afe4f01f06ada70efdd54d04c4da50460d2748d6b99026b80291a6d4ff",
+        "deterministic": true
+      },
+      "ratioPost": 1.1776,
+      "factsRatio": 0.4
+    },
+    {
+      "numPairs": 40,
+      "seed": 20260917,
+      "preTokens": 3878,
+      "upstream": {
+        "postTokens": 1155,
+        "messagesSummarized": 62,
+        "messagesToKeep": 19,
+        "factsRetained": 0,
+        "fingerprint": "d0b91755cb38a3bfa55f8c476150f661f7b5a1593caf2b2ff5f4db454ba28e25"
+      },
+      "hippo": {
+        "postTokens": 1384,
+        "messagesSummarized": 56,
+        "messagesToKeep": 25,
+        "factsRetained": 8,
+        "fingerprint": "927b17711bfb58756a7af7883384cbeee07677a7d6778974d4a67f1e6b759133",
+        "deterministic": true
+      },
+      "ratioPost": 1.1982683982683984,
+      "factsRatio": 0.4
+    },
+    {
+      "numPairs": 40,
+      "seed": 20260918,
+      "preTokens": 3872,
+      "upstream": {
+        "postTokens": 1144,
+        "messagesSummarized": 62,
+        "messagesToKeep": 19,
+        "factsRetained": 0,
+        "fingerprint": "489fc012d491d07eea7a051b6dc64d40873cbd6c131393fbee2b92246e1233fe"
+      },
+      "hippo": {
+        "postTokens": 1371,
+        "messagesSummarized": 56,
+        "messagesToKeep": 25,
+        "factsRetained": 8,
+        "fingerprint": "1b69f98e9f4580f20c4c3df1475a56c079619f4acd75fd37e0eebd4b97661225",
+        "deterministic": true
+      },
+      "ratioPost": 1.1984265734265733,
+      "factsRatio": 0.4
+    },
+    {
+      "numPairs": 40,
+      "seed": 20260919,
+      "preTokens": 3928,
+      "upstream": {
+        "postTokens": 1160,
+        "messagesSummarized": 62,
+        "messagesToKeep": 19,
+        "factsRetained": 0,
+        "fingerprint": "d9a004bed4005c975c463d2b53f449cd8abcad2a817fd8fec6bea1ae4017c484"
+      },
+      "hippo": {
+        "postTokens": 1383,
+        "messagesSummarized": 56,
+        "messagesToKeep": 25,
+        "factsRetained": 8,
+        "fingerprint": "a2d625750262cd8e8b354f72ca5a63a4c7e00349d8fdbcd0e698f190a021da8a",
+        "deterministic": true
+      },
+      "ratioPost": 1.1922413793103448,
+      "factsRatio": 0.4
+    },
+    {
+      "numPairs": 40,
+      "seed": 20260920,
+      "preTokens": 3944,
+      "upstream": {
+        "postTokens": 1162,
+        "messagesSummarized": 62,
+        "messagesToKeep": 19,
+        "factsRetained": 0,
+        "fingerprint": "8c484c2fba36003875ab3cfba0d816cd10ef738a878fb17d1cf64fe56271d6c5"
+      },
+      "hippo": {
+        "postTokens": 1388,
+        "messagesSummarized": 56,
+        "messagesToKeep": 25,
+        "factsRetained": 8,
+        "fingerprint": "0734f140ea9161196c90886f44c1f43a397efc3f470efab6ebcdee1f376a9db5",
+        "deterministic": true
+      },
+      "ratioPost": 1.1944922547332186,
+      "factsRatio": 0.4
+    },
+    {
+      "numPairs": 80,
+      "seed": 20260911,
+      "preTokens": 8318,
+      "upstream": {
+        "postTokens": 2366,
+        "messagesSummarized": 120,
+        "messagesToKeep": 41,
+        "factsRetained": 0,
+        "fingerprint": "1a675a4643601cc3fe3efcc0940c816ab0e58ca864f72807a5116c1fc1d38095"
+      },
+      "hippo": {
+        "postTokens": 2632,
+        "messagesSummarized": 113,
+        "messagesToKeep": 48,
+        "factsRetained": 9,
+        "fingerprint": "0e5f62ff42abe2fbf3b172f16dc2d400bdc63cd20717934277fec799ee0a8aa2",
+        "deterministic": true
+      },
+      "ratioPost": 1.1124260355029585,
+      "factsRatio": 0.45
+    },
+    {
+      "numPairs": 80,
+      "seed": 20260912,
+      "preTokens": 8296,
+      "upstream": {
+        "postTokens": 2375,
+        "messagesSummarized": 120,
+        "messagesToKeep": 41,
+        "factsRetained": 0,
+        "fingerprint": "6e670d2dd31a1669f47c247bd637784497c33fa5e332739265b11516274643e5"
+      },
+      "hippo": {
+        "postTokens": 2638,
+        "messagesSummarized": 113,
+        "messagesToKeep": 48,
+        "factsRetained": 9,
+        "fingerprint": "ca6ca1f130067c16534728d7e2f60a4f38adcecc01b2040138e83ad8990114b7",
+        "deterministic": true
+      },
+      "ratioPost": 1.1107368421052632,
+      "factsRatio": 0.45
+    },
+    {
+      "numPairs": 80,
+      "seed": 20260913,
+      "preTokens": 8249,
+      "upstream": {
+        "postTokens": 2369,
+        "messagesSummarized": 120,
+        "messagesToKeep": 41,
+        "factsRetained": 0,
+        "fingerprint": "c120ecb86857331f8b7f13a0d7fd6f7c421bf2c30a3ccb7648dfa78822a1c700"
+      },
+      "hippo": {
+        "postTokens": 2665,
+        "messagesSummarized": 112,
+        "messagesToKeep": 49,
+        "factsRetained": 10,
+        "fingerprint": "9a25f190c9450d77ed34e885b6da9326e51e5d9b32a6502ec280329e1b6fb291",
+        "deterministic": true
+      },
+      "ratioPost": 1.124947235120304,
+      "factsRatio": 0.5
+    },
+    {
+      "numPairs": 80,
+      "seed": 20260914,
+      "preTokens": 8308,
+      "upstream": {
+        "postTokens": 2369,
+        "messagesSummarized": 120,
+        "messagesToKeep": 41,
+        "factsRetained": 0,
+        "fingerprint": "01fd16e8c53de4b3e0af09af0c9d08805b8bce53ca482b0bc7a7095b91336253"
+      },
+      "hippo": {
+        "postTokens": 2635,
+        "messagesSummarized": 113,
+        "messagesToKeep": 48,
+        "factsRetained": 9,
+        "fingerprint": "8a0e2cf90458839e8ad3740b7f151110494ae88dbb236b8b631505af5d16de1a",
+        "deterministic": true
+      },
+      "ratioPost": 1.112283663993246,
+      "factsRatio": 0.45
+    },
+    {
+      "numPairs": 80,
+      "seed": 20260915,
+      "preTokens": 8286,
+      "upstream": {
+        "postTokens": 2381,
+        "messagesSummarized": 120,
+        "messagesToKeep": 41,
+        "factsRetained": 0,
+        "fingerprint": "f866e3b71f0fde66761d2a60c34d8a4042cf47356257be35804d3df2f216a2ff"
+      },
+      "hippo": {
+        "postTokens": 2649,
+        "messagesSummarized": 113,
+        "messagesToKeep": 48,
+        "factsRetained": 9,
+        "fingerprint": "56aecdbc12de49800a223ad1e27e62017988be94f260ed26885c183e1e52c83d",
+        "deterministic": true
+      },
+      "ratioPost": 1.1125577488450231,
+      "factsRatio": 0.45
+    },
+    {
+      "numPairs": 80,
+      "seed": 20260916,
+      "preTokens": 8227,
+      "upstream": {
+        "postTokens": 2350,
+        "messagesSummarized": 120,
+        "messagesToKeep": 41,
+        "factsRetained": 0,
+        "fingerprint": "c4f8119b9a2037d6c786b9b75cf7760dcd55bc285bb78cfedeb19616e046a427"
+      },
+      "hippo": {
+        "postTokens": 2613,
+        "messagesSummarized": 113,
+        "messagesToKeep": 48,
+        "factsRetained": 9,
+        "fingerprint": "f2d6dd4dca12bca9760ebfce3b404a43021cf8f0dac8c7c5f86dfa621ed28769",
+        "deterministic": true
+      },
+      "ratioPost": 1.1119148936170213,
+      "factsRatio": 0.45
+    },
+    {
+      "numPairs": 80,
+      "seed": 20260917,
+      "preTokens": 8226,
+      "upstream": {
+        "postTokens": 2335,
+        "messagesSummarized": 120,
+        "messagesToKeep": 41,
+        "factsRetained": 0,
+        "fingerprint": "80f59dacb087c6e2d2ac2b72c6c4fb6562daa42df2a2326138c4cea87f4f2cd3"
+      },
+      "hippo": {
+        "postTokens": 2598,
+        "messagesSummarized": 113,
+        "messagesToKeep": 48,
+        "factsRetained": 9,
+        "fingerprint": "256770db6ca723384fad481ecdca3712fca43ecafa5c48f01120a8586428e5cc",
+        "deterministic": true
+      },
+      "ratioPost": 1.1126338329764454,
+      "factsRatio": 0.45
+    },
+    {
+      "numPairs": 80,
+      "seed": 20260918,
+      "preTokens": 8301,
+      "upstream": {
+        "postTokens": 2373,
+        "messagesSummarized": 120,
+        "messagesToKeep": 41,
+        "factsRetained": 0,
+        "fingerprint": "60f6b1018a698fc30a4ef1ccd58be33dde2319cb1330b91ab400bf91b0383689"
+      },
+      "hippo": {
+        "postTokens": 2636,
+        "messagesSummarized": 113,
+        "messagesToKeep": 48,
+        "factsRetained": 9,
+        "fingerprint": "7639f7804d48a5dc6e3ba2a524af5c730d57c725b2964eedc7664b90e789fab2",
+        "deterministic": true
+      },
+      "ratioPost": 1.1108301727770755,
+      "factsRatio": 0.45
+    },
+    {
+      "numPairs": 80,
+      "seed": 20260919,
+      "preTokens": 8331,
+      "upstream": {
+        "postTokens": 2337,
+        "messagesSummarized": 120,
+        "messagesToKeep": 41,
+        "factsRetained": 0,
+        "fingerprint": "1f4768e7664f02ba0e05460d87f39edcb057803c84743396c86aa6e1293748b3"
+      },
+      "hippo": {
+        "postTokens": 2603,
+        "messagesSummarized": 113,
+        "messagesToKeep": 48,
+        "factsRetained": 9,
+        "fingerprint": "b86cddb366373782637e98a65863e32bd90a1a79086e627f56466c15666fd7c2",
+        "deterministic": true
+      },
+      "ratioPost": 1.113821138211382,
+      "factsRatio": 0.45
+    },
+    {
+      "numPairs": 80,
+      "seed": 20260920,
+      "preTokens": 8219,
+      "upstream": {
+        "postTokens": 2340,
+        "messagesSummarized": 120,
+        "messagesToKeep": 41,
+        "factsRetained": 0,
+        "fingerprint": "58f45bc5717e2d73364a50ac6a1da806b5ee964a87f31720f48fe7cea79d04e3"
+      },
+      "hippo": {
+        "postTokens": 2602,
+        "messagesSummarized": 113,
+        "messagesToKeep": 48,
+        "factsRetained": 9,
+        "fingerprint": "5f85e67e74cbe8281ebd5fc7bd475ccc0c46b159e916fa4764e9e5761371119f",
+        "deterministic": true
+      },
+      "ratioPost": 1.111965811965812,
+      "factsRatio": 0.45
+    },
+    {
+      "numPairs": 160,
+      "seed": 20260911,
+      "preTokens": 17010,
+      "upstream": {
+        "postTokens": 4683,
+        "messagesSummarized": 238,
+        "messagesToKeep": 83,
+        "factsRetained": 0,
+        "fingerprint": "c5e74ba9dd41da2db44047192a7b1ec70c8ba2eff68c1b5f060155fac81a699a"
+      },
+      "hippo": {
+        "postTokens": 5283,
+        "messagesSummarized": 222,
+        "messagesToKeep": 99,
+        "factsRetained": 18,
+        "fingerprint": "9ad3c543aeb9864355f15b884628f6ddbdc0f5839e78a77f02fdd383853c8636",
+        "deterministic": true
+      },
+      "ratioPost": 1.128122998078155,
+      "factsRatio": 0.9
+    },
+    {
+      "numPairs": 160,
+      "seed": 20260912,
+      "preTokens": 16970,
+      "upstream": {
+        "postTokens": 4736,
+        "messagesSummarized": 236,
+        "messagesToKeep": 85,
+        "factsRetained": 0,
+        "fingerprint": "8015181c3a5b50c329da804de82b87a8f2a63b1ac7ff343a55a0653e9e3787f1"
+      },
+      "hippo": {
+        "postTokens": 5337,
+        "messagesSummarized": 220,
+        "messagesToKeep": 101,
+        "factsRetained": 18,
+        "fingerprint": "ca3496598cfa06c565efe28a9fbd10a2d6fcb719383ead0b83de63dedca814e0",
+        "deterministic": true
+      },
+      "ratioPost": 1.126900337837838,
+      "factsRatio": 0.9
+    },
+    {
+      "numPairs": 160,
+      "seed": 20260913,
+      "preTokens": 17151,
+      "upstream": {
+        "postTokens": 4739,
+        "messagesSummarized": 236,
+        "messagesToKeep": 85,
+        "factsRetained": 0,
+        "fingerprint": "ba268efa065524b60f86e1906304531b10c38915b5e31d1915b68d845d3da97f"
+      },
+      "hippo": {
+        "postTokens": 5339,
+        "messagesSummarized": 220,
+        "messagesToKeep": 101,
+        "factsRetained": 18,
+        "fingerprint": "22a799ee0217fab967acc4f907eecb3c91da0a0660e756236299ae29f0bb4f65",
+        "deterministic": true
+      },
+      "ratioPost": 1.1266089892382358,
+      "factsRatio": 0.9
+    },
+    {
+      "numPairs": 160,
+      "seed": 20260914,
+      "preTokens": 17081,
+      "upstream": {
+        "postTokens": 4770,
+        "messagesSummarized": 236,
+        "messagesToKeep": 85,
+        "factsRetained": 0,
+        "fingerprint": "c252840600bf6c360401404cfb917fcd9366893bfed425a0998f2aeef277458e"
+      },
+      "hippo": {
+        "postTokens": 5382,
+        "messagesSummarized": 220,
+        "messagesToKeep": 101,
+        "factsRetained": 18,
+        "fingerprint": "78d5bcdc872e66a9b5e1c8162d60ad6eeeacd1f8d9bd25c9bc353c34994921f0",
+        "deterministic": true
+      },
+      "ratioPost": 1.1283018867924528,
+      "factsRatio": 0.9
+    },
+    {
+      "numPairs": 160,
+      "seed": 20260915,
+      "preTokens": 17049,
+      "upstream": {
+        "postTokens": 4715,
+        "messagesSummarized": 236,
+        "messagesToKeep": 85,
+        "factsRetained": 0,
+        "fingerprint": "f628c57babcb775572f83c6a2f863753017752295b208741b0810878f9f91083"
+      },
+      "hippo": {
+        "postTokens": 5315,
+        "messagesSummarized": 220,
+        "messagesToKeep": 101,
+        "factsRetained": 18,
+        "fingerprint": "85474a8cb9202e9f2941f04e73a6874090c4ba30b07a87ffcee126c1939cd53e",
+        "deterministic": true
+      },
+      "ratioPost": 1.127253446447508,
+      "factsRatio": 0.9
+    },
+    {
+      "numPairs": 160,
+      "seed": 20260916,
+      "preTokens": 16984,
+      "upstream": {
+        "postTokens": 4739,
+        "messagesSummarized": 236,
+        "messagesToKeep": 85,
+        "factsRetained": 0,
+        "fingerprint": "32bc5f551cedf7c9b877329ae2af1849e10e1fb75556ef160a4dd0988eac4870"
+      },
+      "hippo": {
+        "postTokens": 5333,
+        "messagesSummarized": 220,
+        "messagesToKeep": 101,
+        "factsRetained": 18,
+        "fingerprint": "b7dba0f55bdd50d8ffe5cf9c52e0a2f0bb912ee0037b29b0b7680c950a603c79",
+        "deterministic": true
+      },
+      "ratioPost": 1.1253428993458536,
+      "factsRatio": 0.9
+    },
+    {
+      "numPairs": 160,
+      "seed": 20260917,
+      "preTokens": 17043,
+      "upstream": {
+        "postTokens": 4761,
+        "messagesSummarized": 236,
+        "messagesToKeep": 85,
+        "factsRetained": 0,
+        "fingerprint": "330acf2c56ca0e393f96cb4ac83d068e82556ebe4090c6d245050ac62ac6048a"
+      },
+      "hippo": {
+        "postTokens": 5368,
+        "messagesSummarized": 220,
+        "messagesToKeep": 101,
+        "factsRetained": 18,
+        "fingerprint": "d463493416bd87ee4903ac6575be5b754c9d86a85e885f7df0e0c11a458b9e58",
+        "deterministic": true
+      },
+      "ratioPost": 1.1274942239025414,
+      "factsRatio": 0.9
+    },
+    {
+      "numPairs": 160,
+      "seed": 20260918,
+      "preTokens": 17065,
+      "upstream": {
+        "postTokens": 4795,
+        "messagesSummarized": 236,
+        "messagesToKeep": 85,
+        "factsRetained": 0,
+        "fingerprint": "b055f59cf94a87e3562061a58ffb98318e41c6538aa369b7ad2133f4dec36788"
+      },
+      "hippo": {
+        "postTokens": 5394,
+        "messagesSummarized": 220,
+        "messagesToKeep": 101,
+        "factsRetained": 18,
+        "fingerprint": "3a052e4a452a51aa66d419a26197e8c7b01a316b0b85b15f28111b43e261ee3a",
+        "deterministic": true
+      },
+      "ratioPost": 1.1249217935349323,
+      "factsRatio": 0.9
+    },
+    {
+      "numPairs": 160,
+      "seed": 20260919,
+      "preTokens": 17006,
+      "upstream": {
+        "postTokens": 4732,
+        "messagesSummarized": 236,
+        "messagesToKeep": 85,
+        "factsRetained": 0,
+        "fingerprint": "8c9c7422c1137e4828edddccfe23fb868430507ad89302a37740d88d193ff42d"
+      },
+      "hippo": {
+        "postTokens": 5338,
+        "messagesSummarized": 220,
+        "messagesToKeep": 101,
+        "factsRetained": 18,
+        "fingerprint": "da6c0dcd697c6799fbdd82af0ed682257d24791b6bb5de1b9d10a7473f612e4a",
+        "deterministic": true
+      },
+      "ratioPost": 1.1280642434488588,
+      "factsRatio": 0.9
+    },
+    {
+      "numPairs": 160,
+      "seed": 20260920,
+      "preTokens": 17025,
+      "upstream": {
+        "postTokens": 4745,
+        "messagesSummarized": 236,
+        "messagesToKeep": 85,
+        "factsRetained": 0,
+        "fingerprint": "672d92bf095b95138e81277a023ad2948c2de8ed343d536ffdedec360ac41cb8"
+      },
+      "hippo": {
+        "postTokens": 5345,
+        "messagesSummarized": 220,
+        "messagesToKeep": 101,
+        "factsRetained": 18,
+        "fingerprint": "b39e99048a73f4433f5126a81044c3ba331427e624a0dd8f7af012df99e9492d",
+        "deterministic": true
+      },
+      "ratioPost": 1.1264488935721813,
+      "factsRatio": 0.9
+    }
+  ]
+}

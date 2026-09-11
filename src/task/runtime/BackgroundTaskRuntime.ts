@@ -140,9 +140,14 @@ export class BackgroundTaskRuntime {
 
     const startedAt = Date.now();
     const timeoutMs = Math.max(0, Math.floor(options.timeoutMs ?? 0));
+    let timeoutTimer: ReturnType<typeof setTimeout> | undefined;
+    // The timer must NOT be unref'd: a bounded `wait` is exactly the thing that
+    // should hold the process open until it settles. Unref'd, a waiter with no
+    // other work pending let the event loop drain first, so the promise never
+    // resolved and the caller never got its `timeout` outcome.
     const timeoutPromise = timeoutMs > 0
       ? new Promise<"timeout">((resolve) => {
-          setTimeout(() => resolve("timeout"), timeoutMs).unref?.();
+          timeoutTimer = setTimeout(() => resolve("timeout"), timeoutMs);
         })
       : undefined;
     let abortHandler: (() => void) | undefined;
@@ -161,6 +166,9 @@ export class BackgroundTaskRuntime {
     if (timeoutPromise) waits.push(timeoutPromise);
     if (abortPromise) waits.push(abortPromise);
     const result = await Promise.race(waits);
+    // The race is settled; the timer must not outlive it (previously it was
+    // never cleared at all, so every bounded wait left one dangling).
+    if (timeoutTimer) clearTimeout(timeoutTimer);
     if (abortHandler) {
       options.abortSignal?.removeEventListener("abort", abortHandler);
     }

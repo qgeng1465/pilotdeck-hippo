@@ -75,6 +75,8 @@
     "level": "{{level}} 级",
     "tokens": "压缩前 {{tokens}} tokens",
     "tokensAfter": "{{before}} → {{after}} tokens",
+    "retention": "Hippo 逐字保留 {{count}} 条（{{tokens}} tok）",
+    "retentionTitle": "选择性保留（{{policy}}）把这些消息逐字留存，而不是折叠进摘要。本次压缩的保留预算：{{budget}} tokens。",
     "stages": {
       "context_collapse": "上下文折叠",
       "session_memory": "会话记忆压缩",

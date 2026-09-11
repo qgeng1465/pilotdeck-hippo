@@ -75,6 +75,8 @@
     "level": "Level {{level}}",
     "tokens": "{{tokens}} tokens before compact",
     "tokensAfter": "{{before}} → {{after}} tokens",
+    "retention": "Hippo kept {{count}} msgs verbatim ({{tokens}} tok)",
+    "retentionTitle": "Selective retention ({{policy}}) preserved these messages word-for-word instead of folding them into the summary. Budget for this pass: {{budget}} tokens.",
     "stages": {
       "context_collapse": "Context collapse",
       "session_memory": "Session memory compaction",

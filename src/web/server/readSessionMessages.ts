@@ -800,6 +800,12 @@ function compactBoundaryMetadata(entry: AgentTranscriptEntry & { type: "control_
     if (typeof cm.summaryGenerated === "boolean") meta.summaryGenerated = cm.summaryGenerated;
     if (typeof cm.checkpointMerged === "boolean") meta.checkpointMerged = cm.checkpointMerged;
     if (typeof cm.finalRatio === "number") meta.finalRatio = cm.finalRatio;
+    // Hippo: what the score policy kept verbatim, so a reloaded session shows
+    // the same retention badge as the live event stream.
+    const extra = cm.extra as Record<string, unknown> | undefined;
+    if (extra && typeof extra.retention === "object" && extra.retention !== null) {
+      meta.retention = extra.retention;
+    }
     meta.level = cm.level;
     meta.stage = cm.stage;
     meta.stageLabel = cm.stageLabel;

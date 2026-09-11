@@ -368,6 +368,20 @@ const MessageComponent = memo(({ message, prevMessage, createDiff, onFileOpen, o
                 : t('compact.tokens', { tokens: message.preTokens.toLocaleString() })}
             </span>
           )}
+          {message.compactRetention && (
+            <span
+              className="rounded-full border border-emerald-300/70 bg-white/60 px-2 py-0.5 text-[11px] font-medium tabular-nums text-emerald-800 dark:border-emerald-700/60 dark:bg-emerald-950/40 dark:text-emerald-200"
+              title={t('compact.retentionTitle', {
+                policy: message.compactRetention.policyId || 'ebbinghaus-pagerank',
+                budget: (message.compactRetention.budgetTokens ?? 0).toLocaleString(),
+              })}
+            >
+              {t('compact.retention', {
+                count: message.compactRetention.retainedMessages ?? 0,
+                tokens: (message.compactRetention.retainedTokens ?? 0).toLocaleString(),
+              })}
+            </span>
+          )}
           <span className="text-[11px] tabular-nums text-muted-foreground">{formattedTime}</span>
           <span className="h-px flex-1 bg-emerald-200/70 dark:bg-emerald-900/50" />
         </div>

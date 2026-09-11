@@ -3,6 +3,7 @@ import test from "node:test";
 
 import { buildEbbinghausPageRankPolicy } from "../../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
 import { EntityGraph } from "../../src/context/compaction/retention/EntityGraph.js";
+import type { RetentionScorePolicy } from "../../src/context/compaction/retention/RetentionTypes.js";
 import { TokenBudgetManager } from "../../src/context/budget/TokenBudgetManager.js";
 import { generateTranscript, generateZhTranscript } from "../../benchmarks/syntheticTranscript.js";
 import { runEngine } from "../../benchmarks/engineRunner.js";
@@ -97,4 +98,53 @@ test("Chinese transcript: hippo verbatim retention recovers facts the upstream s
   const hippo = await runEngine(transcript.messages, "hippo");
   const countFacts = (text: string) => transcript.facts.filter((fact) => text.includes(fact.marker)).length;
   assert.ok(countFacts(hippo.fingerprint) > countFacts(upstream.fingerprint));
+});
+
+test("retention is still query-conditioned when the tail holds no user request", async () => {
+  // Compaction is not only triggered by a fresh user message: a long tool
+  // output that overflows the budget triggers it too. Then the tail window
+  // covers only that output, and the request being answered sits further back
+  // in the conversation. Deriving the query hint from the tail alone left it
+  // empty in exactly that case, which zeroes the similarity term — on
+  // held-out seeds the shipped weights retain 0.00-0.20 of 20 facts with an
+  // empty hint, against 1-2 for sim-only (`benchmark:holdout`, no-query probe).
+  const transcript = generateTranscript({ numPairs: 40, seed: 20260911 });
+  const question = transcript.messages.at(-1)!;
+  const questionText = question.content.find((block) => block.type === "text")!.text;
+  const messages = [...transcript.messages];
+  // Push the question out of the tail with synthetic tool output, stamped
+  // `synthetic` so it is not itself mistaken for a user request.
+  for (let index = 0; index < 24; index += 1) {
+    messages.push({
+      role: "user",
+      content: [{ type: "text", text: `tool_result chunk ${index} ${"x".repeat(400)}` }],
+      metadata: { synthetic: true },
+    });
+    messages.push({ role: "assistant", content: [{ type: "text", text: `chunk ${index} ingested` }] });
+  }
+
+  const hinted: Array<string | undefined> = [];
+  const inner = buildEbbinghausPageRankPolicy();
+  const spy: RetentionScorePolicy = {
+    id: "test-spy",
+    scoreMessages: (input) => {
+      hinted.push(input.queryHint);
+      return inner.scoreMessages(input);
+    },
+    pickRetained: (input) => {
+      hinted.push(input.queryHint);
+      return inner.pickRetained(input);
+    },
+  };
+
+  const result = await runEngine(messages, "hippo", spy);
+  assert.ok(hinted.length > 0, "the retention policy must actually be consulted");
+  assert.ok(
+    hinted.some((hint) => hint === questionText),
+    `the policy must fall back to the last real user request; got ${JSON.stringify(hinted.map((hint) => hint?.slice(0, 40)))}`,
+  );
+  assert.ok(
+    (result.result.retention?.retainedMessages ?? 0) > 0,
+    "an empty query hint leaves the policy with nothing to rank by",
+  );
 });

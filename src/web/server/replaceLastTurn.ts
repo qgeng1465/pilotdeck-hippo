@@ -259,11 +259,19 @@ function replacementArtifactState(artifact: ReplacementArtifact): ReplacementArt
   return {
     artifact,
     journal,
-    order: Math.max(
-      Number.isFinite(preparedAt) ? preparedAt : 0,
-      backupMtime ?? 0,
-      journalMtime ?? 0,
-    ),
+    // `preparedAt` is the transaction's own logical timestamp, and it is what
+    // "newest replacement transaction" means; the file mtimes are only a
+    // fallback for a journal that is missing or unparseable.
+    //
+    // Taking Math.max over all three defeated that: the mtimes are wall-clock
+    // "now", so they dominated every preparedAt and the ordering quietly
+    // degraded to "whichever artifact happens to have been written last". Two
+    // transactions written in the same millisecond then tie or invert depending
+    // on scheduler timing, which surfaced as a load-sensitive flake in startup
+    // recovery.
+    order: Number.isFinite(preparedAt)
+      ? preparedAt
+      : Math.max(backupMtime ?? 0, journalMtime ?? 0),
     hasBackup: backupMtime !== undefined,
   };
 }

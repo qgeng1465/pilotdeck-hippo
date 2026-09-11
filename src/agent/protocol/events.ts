@@ -52,6 +52,18 @@ export type AgentEvent =
       cacheReset?: boolean;
       cacheReadTokens?: number;
       cacheWriteTokens?: number;
+      /**
+       * Present only when a retention score policy actually kept messages
+       * verbatim (this fork, `agent.compaction.retention: hippo`). Absent on
+       * the upstream path, so consumers must treat it as optional.
+       */
+      retention?: {
+        policyId: string;
+        retainedMessages: number;
+        retainedTokens: number;
+        budgetTokens: number;
+        weights?: { wSim: number; wTime: number; wRank: number };
+      };
     }
   | { type: "context_budget"; sessionId: string; turnId: string; snapshot: TokenBudgetSnapshot }
   | { type: "warning"; sessionId: string; turnId: string; code: string; message: string; metadata?: Record<string, unknown> }

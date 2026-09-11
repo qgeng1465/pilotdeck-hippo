@@ -4,7 +4,7 @@
  */
 
 import type { NormalizedMessage } from '../../../stores/useSessionStore';
-import type { ChatMessage, SubagentChildTool } from '../types/types';
+import type { ChatMessage, CompactRetentionInfo, SubagentChildTool } from '../types/types';
 import { decodeHtmlEntities, unescapeWithMathProtection, formatUsageLimitText } from '../utils/chatFormatting';
 import { mergeUserAttachments, parseUserAttachmentNote } from '../utils/attachmentNotes';
 
@@ -18,6 +18,35 @@ const msgConversionCache = new WeakMap<NormalizedMessage, ChatMessage | null>();
 type ConvertSingleMessageOptions = {
   preserveEmptyAssistantShell?: boolean;
 };
+
+/**
+ * Pull the Hippo retention summary off a compaction boundary's metadata.
+ * `compactMetadata` is deliberately `unknown` on NormalizedMessage, so every
+ * step is checked; anything unexpected yields undefined and the boundary
+ * simply renders without the retention badge.
+ */
+function readCompactRetention(metadata: unknown): CompactRetentionInfo | undefined {
+  if (!metadata || typeof metadata !== 'object') return undefined;
+  const retention = (metadata as { retention?: unknown }).retention;
+  if (!retention || typeof retention !== 'object') return undefined;
+  const raw = retention as Record<string, unknown>;
+  const count = typeof raw.retainedMessages === 'number' ? raw.retainedMessages : 0;
+  // A boundary with nothing retained is not worth a badge.
+  if (count <= 0) return undefined;
+  return {
+    policyId: typeof raw.policyId === 'string' ? raw.policyId : undefined,
+    retainedMessages: count,
+    retainedTokens: typeof raw.retainedTokens === 'number' ? raw.retainedTokens : undefined,
+    budgetTokens: typeof raw.budgetTokens === 'number' ? raw.budgetTokens : undefined,
+    weights: isRetentionWeights(raw.weights) ? raw.weights : undefined,
+  };
+}
+
+function isRetentionWeights(value: unknown): value is { wSim: number; wTime: number; wRank: number } {
+  if (!value || typeof value !== 'object') return false;
+  const raw = value as Record<string, unknown>;
+  return typeof raw.wSim === 'number' && typeof raw.wTime === 'number' && typeof raw.wRank === 'number';
+}
 
 function normalizeAssistantText(content: string): string {
   let text = decodeHtmlEntities(content);
@@ -294,6 +323,7 @@ function convertSingleMessage(
         compactLevel: msg.compactLevel,
         compactStage: msg.compactStage,
         compactStageLabel: msg.compactStageLabel,
+        compactRetention: readCompactRetention(msg.compactMetadata),
       };
 
     case 'agent_activity':

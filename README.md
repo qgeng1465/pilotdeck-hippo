@@ -421,7 +421,7 @@ order: Math.max(preparedAt, backupMtime, journalMtime)   // 修复前
 代码最终提交 SHA：b2927c0f974397e6a5d6c3d8b0b24b78869aa494
 ```
 
-> 提交时必须把仓库从 **private 改为 public**，否则评委点开是 404（这不代表链接写错）。上表 `代码最终提交 SHA` 之后只剩文档/README 更新提交，**以 `main` 分支 HEAD 为交付物**；截至本行最后更新，`main` HEAD 即该 SHA 或其后的文档提交，提交前请用 `git ls-remote https://github.com/qgeng1465/pilotdeck-hippo.git main` 复核一次。
+> 提交时必须把仓库从 **private 改为 public**，否则评委点开是 404（这不代表链接写错）。上表 `代码最终提交 SHA` 是**行为变更的最后一个提交**，其后的提交只增加文档与测试（无引擎/UI 行为变更）；**交付物以 `main` 分支 HEAD 为准**，提交前请用 `git ls-remote https://github.com/qgeng1465/pilotdeck-hippo.git main` 复核一次，并把该 HEAD 填进提交表单。
 
 仓库卫生：`.gitignore` 已排除 `poliet_deck.txt`（比赛网关凭据）、`*_key.txt`、`.env*`、`node_modules/`、`dist/`；`benchmarks/results/*.json` 已确认不含任何 API Key，随仓库提交以便复核。
 

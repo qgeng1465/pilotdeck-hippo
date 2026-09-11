@@ -32,10 +32,14 @@ import {
 //     block to begin with, answers topic A questions just as well. "The fork is
 //     what remembers the old topic" is therefore false under a capable
 //     summarizer, and this file is the evidence for saying so.
-//   * Measured over repeats, the same-configuration spread is at least as
-//     large as any between-arm difference, so no directional claim is made.
-//     `PILOTDECK_EVAL_REPEATS` exists specifically to make that visible: a
-//     single pass of this benchmark looks like a clean win and is not one.
+//   * Measured over repeats, the same-configuration spread decides what may be
+//     read as a direction. `PILOTDECK_EVAL_REPEATS` exists to make that spread
+//     visible: a single pass of this benchmark looks like a clean win and is
+//     not one. At the shipped default (a loose summary budget) the spread is
+//     larger than any between-arm difference, so nothing is claimed. At a
+//     binding budget (`PILOTDECK_EVAL_SUMMARY_TOKENS=1500`) the current-task
+//     gap is three times the spread and repeats in both wordings — that is the
+//     one condition §4.7 states a direction for.
 //
 // Splitting "the marker is in the prompt" into body vs summary-only is what
 // makes the mechanism readable, because the post-compaction text includes the
@@ -342,16 +346,18 @@ async function main() {
       "   is nonzero under `shared` and zero under `decorrelated` for the fork,\n" +
       "   and zero for upstream either way. The real-summarizer path reproduces\n" +
       "   the stub harness's finding instead of contradicting it.\n" +
-      "4. Topic B is the pending request: every arm answers it, because the kept\n" +
-      "   tail and the summary both cover the recent end. This row is a sanity\n" +
-      "   check, not a result — and it is the reason a topic-B figure from this\n" +
-      "   benchmark cannot be used as an advantage.\n" +
+      "4. Topic B is the pending request: the kept tail and the summary both\n" +
+      "   cover the recent end. At the shipped budget every arm answers it and\n" +
+      "   the row is a sanity check, not a result. Lower the summary budget until\n" +
+      "   it binds and this is where the fork separates from upstream — see\n" +
+      "   PILOTDECK_EVAL_SUMMARY_TOKENS and README §4.7.\n" +
       "5. Compare the repeats column before comparing the arms. Same settings,\n" +
       "   same seeds: if the per-repeat counts move by more than the between-arm\n" +
       "   gap, the gap is not measurable at this sample size, and no directional\n" +
-      "   claim should be taken from this table. At the shipped sample size that\n" +
-      "   is exactly what happens. §4.3 reaches the same conclusion for the\n" +
-      "   single-topic transcripts.",
+      "   claim should be taken from this table. At the shipped budget that is\n" +
+      "   exactly what happens (and §4.3 reaches the same conclusion for the\n" +
+      "   single-topic transcripts); at a binding budget the gap is larger than\n" +
+      "   the spread, which is the one case §4.7 reads as a direction.",
   );
 
   const summary = [...rows.values()].map((row) => ({

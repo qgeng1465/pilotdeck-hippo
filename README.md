@@ -6,7 +6,7 @@
 
 > **PilotDeck 创造计划 · 方向三（Harness / Memory / 架构优化）**
 
-> **提交前必填**：在本文件补充公开仓库链接、参赛分支、最终 commit 的完整 SHA 与现场 Demo 入口（见 [§6](#6-fresh-code-与来源说明队长提交前确认)）。方向三的核心交付是公开 GitHub 仓库、可交互 Demo 和海报；无需把方向一/二的材料误当作必交项。
+> **提交前待办**：仓库链接、参赛分支、基线完整 SHA、代码最终提交 SHA 已回填（见 [§6](#6-fresh-code-与来源说明队长提交前确认)）；**唯一还差的动作是把仓库由 private 改为 public**。方向三的核心交付是公开 GitHub 仓库、可交互 Demo 和海报；无需把方向一/二的材料误当作必交项。
 
 导航：[核心思路](#核心思路) · [核心作用（真实数据）](#核心作用它到底解决什么) · [评测协议与结果](#4-评测协议与结果) · [快速运行](#3-快速运行源码) · [已知限制](#5-兼容性测试与已知限制) · [上游缺陷修复](#51-顺带修掉的上游缺陷超时定时器被-unref) · [提交清单](#7-方向三提交清单) · [赛事 token 指南（附录 B）](#附录b赛事版指南比赛-token-配置与首次使用)
 
@@ -410,14 +410,17 @@ order: Math.max(preparedAt, backupMtime, journalMtime)   // 修复前
 - [ ] 公开开源项目、模型、API 和素材均在本节或 `NOTICE` 中标注来源及许可证。
 - [ ] 仓库历史能通过 `git log --stat`、GitHub commit 时间和现场截图复核；所有 benchmark JSON 均脱敏，不含 API Key。
 
-基线信息（本仓库已 git 化，主分支 `main`；完整 SHA 由队长在提交时补全）：
+基线信息：
 
 ```text
+公开仓库：https://github.com/qgeng1465/pilotdeck-hippo
 上游仓库：https://github.com/OpenBMB/PilotDeck
-基线完整 SHA：85be774…（<full-40-char-sha> 待补，不要只写短前缀）
+基线完整 SHA：85be774751e496501370d7cf95ed45388f407c93
 参赛分支：main
-最终提交 SHA：<full-40-char-sha>（提交后回填）
+代码最终提交 SHA：b2927c0f974397e6a5d6c3d8b0b24b78869aa494
 ```
+
+> 提交时必须把仓库从 **private 改为 public**，否则评委点开是 404（这不代表链接写错）。上表 `代码最终提交 SHA` 之后只剩文档/README 更新提交，**以 `main` 分支 HEAD 为交付物**；截至本行最后更新，`main` HEAD 即该 SHA 或其后的文档提交，提交前请用 `git ls-remote https://github.com/qgeng1465/pilotdeck-hippo.git main` 复核一次。
 
 仓库卫生：`.gitignore` 已排除 `poliet_deck.txt`（比赛网关凭据）、`*_key.txt`、`.env*`、`node_modules/`、`dist/`；`benchmarks/results/*.json` 已确认不含任何 API Key，随仓库提交以便复核。
 

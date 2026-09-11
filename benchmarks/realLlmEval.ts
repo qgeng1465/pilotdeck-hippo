@@ -40,6 +40,12 @@ const SEEDS = 2;
 const NUM_PAIRS = [80, 160] as const;
 const QUESTIONS_PER_CASE = 8;
 
+// Summary-output cap handed to the CompactionEngine per call, in completion
+// tokens. This is recorded into every result JSON so a later reader can tell
+// whether a "short summary" was the model's choice or the cap biting — the
+// first two rounds are unreadable on exactly that point.
+const MAX_SUMMARY_TOKENS = 4000;
+
 type Variant = "upstream" | "hippo";
 
 async function runVariant(
@@ -52,6 +58,7 @@ async function runVariant(
   summaryMs: number;
   usage: ChatUsage;
   summaryTruncated: number;
+  finishReasons: string[];
 }> {
   const real = createRealModel(apiKey);
   const policy: RetentionScorePolicy | undefined = variant === "hippo"
@@ -64,7 +71,7 @@ async function runVariant(
     // Reasoning-tier models spend completion tokens on hidden reasoning
     // before writing the summary; a small budget truncates the summary
     // itself and would fake a "lossy summarizer" result. Give it headroom.
-    maxOutputTokens: 4000,
+    maxOutputTokens: MAX_SUMMARY_TOKENS,
     scorePolicy: policy,
   });
   const result = await engine.run({
@@ -81,6 +88,7 @@ async function runVariant(
     summaryMs: real.wallMs.length > 0 ? real.wallMs.reduce((a, b) => a + b, 0) / real.wallMs.length : 0,
     usage: real.usage,
     summaryTruncated: real.finishReasons.filter((reason) => reason !== "stop").length,
+    finishReasons: [...real.finishReasons],
   };
 }
 
@@ -131,6 +139,10 @@ async function main() {
     promptTokens: number;
     completionTokens: number;
     judgePromptTokens: number;
+    summaryCalls: number;
+    summaryTruncated: number;
+    finishReasons: string[];
+    completionTokensPerCall: number[];
   };
   const rows = new Map<string, Row>();
   const rowFor = (lang: "en" | "zh", numPairs: number, variant: Variant): Row => {
@@ -142,6 +154,7 @@ async function main() {
         factsRetained: [], qaCorrect: 0, qaTotal: 0,
         postTokens: [], summaryMs: [],
         promptTokens: 0, completionTokens: 0, judgePromptTokens: 0,
+        summaryCalls: 0, summaryTruncated: 0, finishReasons: [], completionTokensPerCall: [],
       };
       rows.set(key, row);
     }
@@ -169,6 +182,13 @@ async function main() {
           row.summaryMs.push(outcome.summaryMs);
           row.promptTokens += outcome.usage.promptTokens;
           row.completionTokens += outcome.usage.completionTokens;
+          // One engine run == one summarizer call, so this cell's completion
+          // count is that single call's, and the cap is testable per call
+          // rather than only as a cell total.
+          row.completionTokensPerCall.push(outcome.usage.completionTokens);
+          row.summaryCalls += outcome.finishReasons.length;
+          row.summaryTruncated += outcome.summaryTruncated;
+          row.finishReasons.push(...outcome.finishReasons);
           for (const { fact, parsed } of facts) {
             const judge = await chat(apiKey, [
               {
@@ -206,6 +226,12 @@ async function main() {
     summaryWallMsMedian: Math.round(median(row.summaryMs)),
     summarizerPromptTokens: row.promptTokens,
     summarizerCompletionTokens: row.completionTokens,
+    summarizerCalls: row.summaryCalls,
+    // Per-call completion counts make the cap checkable: a run whose cells all
+    // sit at exactly the cap is a truncated run, and now says so in the file.
+    summarizerCompletionTokensPerCall: row.completionTokensPerCall,
+    summarizerTruncated: row.summaryTruncated,
+    summarizerFinishReasons: row.finishReasons,
     judgePromptTokens: row.judgePromptTokens,
   }));
 
@@ -214,6 +240,7 @@ async function main() {
     protocol: "benchmarks/realLlmEval.ts",
     model: MODEL,
     endpoint: endpoint.source,
+    maxSummaryTokens: MAX_SUMMARY_TOKENS,
     timestamp,
     summary,
   };
@@ -230,7 +257,16 @@ async function main() {
     ...summary.map((row) =>
       `| ${row.lang} | ${row.numPairs} | ${row.variant} | ${row.factsRetainedMedian} / 20 | ${row.qaAccuracy}% (${row.qaCorrect}/${row.qaTotal}) | ${row.postTokensMedian} | ${row.summaryWallMsMedian} |`),
   ].join("\n"));
-  console.log("\nresults written:", outputPath);
+  const capped = summary.filter((row) =>
+    row.summarizerCompletionTokensPerCall.some((tokens) => tokens >= MAX_SUMMARY_TOKENS));
+  console.log(
+    `\nsummary cap ${MAX_SUMMARY_TOKENS} tok/call; `
+    + `${capped.length}/${summary.length} cells had at least one call reach the cap`
+    + (capped.length > 0
+      ? ` (${capped.map((row) => `${row.lang}/N=${row.numPairs}/${row.variant}`).join(", ")})`
+      : ""),
+  );
+  console.log("results written:", outputPath);
 }
 
 // Entry-point guard, same reason as `topicSwitch.ts`: this module exports

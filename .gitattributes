@@ -42,6 +42,10 @@ ui/public/logo-128.png !filter !diff !merge -text
 ui/public/logo-256.png !filter !diff !merge -text
 ui/public/icons/** !filter !diff !merge -text
 
+# Poster figures are rendered by benchmarks/makeFigures.py and cited by name in
+# the README and the booth doc, so they have to render in the repo view too.
+docs/figures/** !filter !diff !merge -text
+
 # Shell scripts MUST stay LF — CRLF breaks the Docker entrypoint (`bash\r` not found)
 *.sh text eol=lf
 docker-entrypoint.sh text eol=lf

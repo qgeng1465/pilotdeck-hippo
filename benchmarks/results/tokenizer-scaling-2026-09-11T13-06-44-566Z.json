@@ -1,0 +1,43 @@
+{
+  "protocol": "benchmarks/tokenizerScaling.ts",
+  "input": "\"x\" repeated N times (a single pre-token — the worst case for the merge)",
+  "repeats": 1,
+  "rows": [
+    {
+      "length": 500,
+      "referenceMs": 60.47,
+      "fastMs": 3.53,
+      "speedup": 17.1
+    },
+    {
+      "length": 1000,
+      "referenceMs": 133.3,
+      "fastMs": 4.77,
+      "speedup": 28
+    },
+    {
+      "length": 2000,
+      "referenceMs": 533.38,
+      "fastMs": 2.55,
+      "speedup": 209.4
+    },
+    {
+      "length": 4000,
+      "referenceMs": 2177.07,
+      "fastMs": 9.48,
+      "speedup": 229.6
+    },
+    {
+      "length": 8000,
+      "referenceMs": 8998.86,
+      "fastMs": 9.06,
+      "speedup": 993.1
+    }
+  ],
+  "referenceGrowthPerDoubling": [
+    2.2,
+    4,
+    4.08,
+    4.13
+  ]
+}

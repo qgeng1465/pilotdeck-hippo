@@ -178,8 +178,8 @@ def figure_holdout() -> None:
 # 3. Real-LLM closed loop, both rounds, side by side.
 # --------------------------------------------------------------------------
 ROUNDS = [
-    ("A", "real-llm-2026-09-11T04-44-55-274Z.json", "轮次 A · 官方 API（摘要 max_tokens=2200，偏紧）"),
-    ("B", "real-llm-2026-09-11T09-21-18-795Z.json", "轮次 B · 比赛网关（摘要 max_tokens=4000）"),
+    ("A", "real-llm-2026-09-11T04-44-55-274Z.json", "轮次 A · 官方 API（摘要短：1,200 tok/次，8/8 格恒定）"),
+    ("B", "real-llm-2026-09-11T09-21-18-795Z.json", "轮次 B · 比赛网关（摘要上限 4,000 tok/次，≥8/16 次触顶）"),
 ]
 
 

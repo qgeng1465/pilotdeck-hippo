@@ -157,6 +157,8 @@ export type RetentionOutcome = {
   retainedMessages: number;
   /** Token cost of exactly those messages. */
   retainedTokens: number;
+  /** Visible text of exactly those messages, for precision/recall benchmarks. */
+  retainedMessageTexts?: string[];
   /** Token budget the policy was allowed to spend on them. */
   budgetTokens: number;
   /** Weights in effect, when the policy reports them. */
@@ -354,6 +356,11 @@ export class CompactionEngine {
           retainedMessages: survivedRetained.length,
           retainedTokens: this.estimateMessages(survivedRetained),
           budgetTokens: compactPlan.retentionBudgetTokens,
+          // Text of exactly the messages the policy kept that survived. Enables
+          // a benchmark to measure precision/recall at message granularity
+          // against a known relevance set, instead of guessing from the
+          // post-compaction fingerprint. The count above is `this.length`.
+          retainedMessageTexts: survivedRetained.map((message) => messageVisibleText(message)),
           ...(scorePolicy?.weights ? { weights: scorePolicy.weights } : {}),
         }
       : undefined;

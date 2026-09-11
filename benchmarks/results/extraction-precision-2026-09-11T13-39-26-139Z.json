@@ -1,0 +1,86 @@
+{
+  "protocol": "benchmarks/extractionPrecision.ts",
+  "timestamp": "2026-09-11T13-39-26-139Z",
+  "seedBase": 20260921,
+  "seeds": 3,
+  "rows": [
+    {
+      "lang": "en",
+      "size": 40,
+      "seeds": 3,
+      "recallMedian": 0.3,
+      "precisionMedian": 1,
+      "chanceBaselineMedian": 0.357,
+      "liftOverChance": 2.8,
+      "retainedMessagesMedian": 6,
+      "factsRetainedMedian": 6,
+      "budgetUsedRatioMedian": 0.879,
+      "factsTotal": 20
+    },
+    {
+      "lang": "en",
+      "size": 80,
+      "seeds": 3,
+      "recallMedian": 0.35,
+      "precisionMedian": 1,
+      "chanceBaselineMedian": 0.177,
+      "liftOverChance": 5.7,
+      "retainedMessagesMedian": 7,
+      "factsRetainedMedian": 7,
+      "budgetUsedRatioMedian": 0.889,
+      "factsTotal": 20
+    },
+    {
+      "lang": "en",
+      "size": 160,
+      "seeds": 3,
+      "recallMedian": 0.8,
+      "precisionMedian": 1,
+      "chanceBaselineMedian": 0.09,
+      "liftOverChance": 11.1,
+      "retainedMessagesMedian": 16,
+      "factsRetainedMedian": 16,
+      "budgetUsedRatioMedian": 0.984,
+      "factsTotal": 20
+    },
+    {
+      "lang": "zh",
+      "size": 40,
+      "seeds": 3,
+      "recallMedian": 0.2,
+      "precisionMedian": 1,
+      "chanceBaselineMedian": 0.37,
+      "liftOverChance": 2.7,
+      "retainedMessagesMedian": 4,
+      "factsRetainedMedian": 4,
+      "budgetUsedRatioMedian": 0.957,
+      "factsTotal": 20
+    },
+    {
+      "lang": "zh",
+      "size": 80,
+      "seeds": 3,
+      "recallMedian": 0.2,
+      "precisionMedian": 1,
+      "chanceBaselineMedian": 0.179,
+      "liftOverChance": 5.6,
+      "retainedMessagesMedian": 4,
+      "factsRetainedMedian": 4,
+      "budgetUsedRatioMedian": 0.921,
+      "factsTotal": 20
+    },
+    {
+      "lang": "zh",
+      "size": 160,
+      "seeds": 3,
+      "recallMedian": 0.4,
+      "precisionMedian": 0.889,
+      "chanceBaselineMedian": 0.089,
+      "liftOverChance": 10,
+      "retainedMessagesMedian": 9,
+      "factsRetainedMedian": 8,
+      "budgetUsedRatioMedian": 0.991,
+      "factsTotal": 20
+    }
+  ]
+}

@@ -57,7 +57,7 @@
     "@vscode/ripgrep": "^1.18.0",
     "csv-parse": "^7.0.0",
     "edgeclaw-memory-core": "file:src/context/memory/edgeclaw-memory-core",
-    "ink": "^7.0.2",
+    "ink": "^7.1.1",
     "ink-text-input": "^6.0.0",
     "js-tiktoken": "^1.0.21",
     "jsonrepair": "^3.14.0",

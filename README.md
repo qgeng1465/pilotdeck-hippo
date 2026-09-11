@@ -321,7 +321,8 @@ corepack pnpm benchmark:real-llm
 - 每个会话有独立的 CompactionEngine（按 `sessionId` 构造），评分策略无可变跨调用状态、EntityGraph 每次压缩重建——**中途切换会话/项目不会串上下文**。压缩被中断（切走、网络失败、摘要失败）时 transcript 逐字节不变，下次触发重新压缩，这也是上游既有保证。
 - 策略评分失败会自动退回纯摘要路径（try/catch 兜底），不让一次打分异常拖垮整个回合。
 - 端侧 embedding 按模型路径缓存（同进程只加载一次，多会话共享），单次加载超过 15 秒按失败处理并回退 BM25，避免冷启动/下载卡住压缩。
-- **已知限制（上游既有，未修）**：`ui/` 的 `tsc --noEmit` 是红的，125 个文件报错——不是本 fork 引入的，在上游 `ui/src/components/chat/hooks/useChatMessages.ts` 等文件里逐字复现（`msg.reasoningContent` / `msg.userHint` / `Record<string, unknown>` 强转，均在我改动行之外）。根因是依赖图里同时存在 **两份 `@types/react`（18.3.29 与 19.2.15）**，UI 自己解析到 18，其余文件经根 store 解析到 19，于是 19 的 `ReactNode`（含 `bigint`）与 18 的不相容。**UI 本身能构建、能跑**（vite build 通过、514 项测试全绿、Web UI 正常渲染保留徽章），所以这是 typecheck 卫生问题而非运行时故障。修法（统一 `@types/react` 版本）需要动依赖解析并重装，风险大于收益，故如实记录而不在提交前动它。
+- **已知限制（上游既有，未修）**：`ui/` 的 `tsc --noEmit` 是红的，125 个文件报错——不是本 fork 引入的，在上游 `ui/src/components/chat/hooks/useChatMessages.ts` 等文件里逐字复现（`msg.reasoningContent` / `msg.userHint` / `Record<string, unknown>` 强转，均在本 fork 改动行之外）。根因是依赖图里同时存在 **两份 `@types/react`（18.3.29 与 19.2.15）**，UI 自己解析到 18，其余文件经根 store 解析到 19，于是 19 的 `ReactNode`（含 `bigint`）与 18 的不相容。`vite build` 实测通过（37.6 s，退出码 0），所以这是 typecheck 卫生问题而非构建/运行时故障。修法（统一 `@types/react` 版本）要动依赖解析并重装，风险大于收益，故如实记录而不在提交前动它。
+- **保留徽章的测试边界（如实说明）**：网关侧「retention 随 agent_status 下发、上游路径完全不带该键」由根套件 `tests/context/retention-reporting.spec.ts` 覆盖；`compactMetadata → 徽章数据` 的映射（含畸形输入不抛异常）由 UI 侧 `ui/src/components/chat/hooks/useChatMessages.retention.test.ts` 14 例覆盖（`npx vitest run`）。**但徽章在浏览器里的实际渲染没有自动化测试，本次也没有人工目视验证过**——现场 Demo 前请自己跑一遍 §7 的 Web UI 路径确认徽章真的出现，不要只信本文的描述。
 - 测试数量声明需可复核：当前工作树 2026-09-11 实测全仓 **514 项 = 512 通过 / 0 失败 / 0 cancelled / 2 skipped**（40.0 s，退出码 0）。此前为 481 通过 + 2 cancelled —— 那 2 项 cancelled 不是"满载并发的计时抖动"（早前版本如此解释过，此处撤回），而是 §5.1 缺陷三 的真实缺陷，修掉后取消项归零。
 
 ### 5.1 顺带修掉的三个上游缺陷

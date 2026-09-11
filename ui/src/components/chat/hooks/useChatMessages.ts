@@ -24,8 +24,11 @@ type ConvertSingleMessageOptions = {
  * `compactMetadata` is deliberately `unknown` on NormalizedMessage, so every
  * step is checked; anything unexpected yields undefined and the boundary
  * simply renders without the retention badge.
+ *
+ * Exported for its own test: this runs inside the message list, so a malformed
+ * metadata shape must return undefined rather than throw and blank the chat.
  */
-function readCompactRetention(metadata: unknown): CompactRetentionInfo | undefined {
+export function readCompactRetention(metadata: unknown): CompactRetentionInfo | undefined {
   if (!metadata || typeof metadata !== 'object') return undefined;
   const retention = (metadata as { retention?: unknown }).retention;
   if (!retention || typeof retention !== 'object') return undefined;

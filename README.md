@@ -420,10 +420,9 @@ corepack pnpm benchmark:real-llm-topic-switch   # §4.7 话题切换闭环（含
 | §4.1a 「召回 16/20」 | `benchmark:extraction` | **3 个留出 seed 的中位数** | 20260921–23（SEEDS=3） | `extraction-precision-2026-09-11T13-39-26-139Z.json` | 只测精/召回，不是主基准 |
 | `pnpm benchmark:demo` 现场 `18/20` | 单次运行 | **单 run** | 20260911（**调参 seed**，非留出） | 终端输出 | 演示单行，非对外主数字 |
 
-三点说明：
+两点说明：
 1. **数字能对账到什么粒度**：每份 JSON 都是一次可复核的落盘输出；`holdout` 的 `max=18` 正好覆盖 demo 的 18/20（那是同一 seed 区间内的一次样本），不是矛盾。
 2. **为什么有两种聚合**：留出集是"选过参数的 seed 一律不用 + 均值"回答"稳健性"；tune 是"在见过的 seed 上取中位数"回答"形状"。二者指标相同（20 条事实里逐字复现几条），但 seed 集合和聚合不同，都写明了所以都可审查。
-3. **展位文档里的 `17.9/20` 与 README 同一来源**（`holdout-11:19` 的 shipped default en/160），口径一致。
 
 ## 5. 兼容性、测试与已知限制
 
@@ -546,7 +545,7 @@ order: Math.max(preparedAt, backupMtime, journalMtime)   // 修复前
 
 1. 公开 GitHub 代码仓链接（含本 README、测试和 benchmark 结果）。
 2. 可交互 Demo 入口：现场 `pnpm benchmark:demo` 与 Web UI（:3001），准备 3–5 分钟复现路径。
-3. A3 竖版海报：297×420 mm、300 DPI、3508×4961 px、CMYK、四边 3 mm 出血；正文 ≥10 pt，标题 ≥18 pt，重要文字距边 ≥5 mm——排版由团队完成，文案/版式/数据图索引见 [docs/展位讲解与海报素材.md](docs/展位讲解与海报素材.md)。
+3. A3 竖版海报（297×420 mm、300 DPI、CMYK、四边 3 mm 出血）——已提交。
 4. README 中的改进点、架构/模块、运行方式、性能前后对比、已知限制和技术设计图（即本文件）。
 5. 可选加分材料：演示视频、CI/测试输出、`benchmarks/results/` 原始 JSON、独立评审或人工抽检记录。
 6. 方向三使用主办方当天公布的额外提交链接；不要误传方向一/二的小程序链路。

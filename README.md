@@ -544,7 +544,7 @@ order: Math.max(preparedAt, backupMtime, journalMtime)   // 修复前
 在 2026-09-12 12:00 前由队长提交：
 
 1. 公开 GitHub 代码仓链接（含本 README、测试和 benchmark 结果）。
-2. 可交互 Demo 入口：现场 `pnpm benchmark:demo` 与 Web UI（:3001），准备 3–5 分钟复现路径。
+2. 可交互 Demo 入口：现场 `pnpm benchmark:demo` 与 Web UI（:3001）；3–5 分钟复现路径见 [docs/demo.md](docs/demo.md)。
 3. A3 竖版海报（297×420 mm、300 DPI、CMYK、四边 3 mm 出血）——已提交。
 4. README 中的改进点、架构/模块、运行方式、性能前后对比、已知限制和技术设计图（即本文件）。
 5. 可选加分材料：演示视频、CI/测试输出、`benchmarks/results/` 原始 JSON、独立评审或人工抽检记录。

@@ -544,7 +544,7 @@ Repo hygiene: `.gitignore` excludes `poliet_deck.txt` (event gateway credential)
 Submitted by the team lead before 2026-09-12 12:00:
 
 1. Public GitHub repo link (with this README, tests, and benchmark results).
-2. Interactive demo entry: on site `pnpm benchmark:demo` and the Web UI (:3001), prepare a 3–5 min reproduction path.
+2. Interactive demo entry: on site `pnpm benchmark:demo` and the Web UI (:3001); the 3–5 min reproduction path is in [docs/demo.md](docs/demo.md).
 3. A3 vertical poster (297×420 mm, 300 DPI, CMYK, 3 mm bleed on all sides) — submitted.
 4. README items: improvement points, architecture/modules, run instructions, before/after performance, known limits, and technical design figures (this file).
 5. Optional bonus material: demo video, CI/test output, raw JSON under `benchmarks/results/`, independent review, or human spot-check records.

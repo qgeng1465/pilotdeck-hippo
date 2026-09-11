@@ -420,10 +420,9 @@ The several `X/20` in the text arise from **different conventions**, not contrad
 | §4.1a "recall 16/20" | `benchmark:extraction` | **median over 3 held-out seeds** | 20260921–23 (SEEDS=3) | `extraction-precision-2026-09-11T13-39-26-139Z.json` | measures only precision/recall, not the main benchmark |
 | `pnpm benchmark:demo` live `18/20` | single run | **single run** | 20260911 (**tuning seed**, not holdout) | terminal output | demo single line, not the headline number |
 
-Three notes:
+Two notes:
 1. **How finely numbers reconcile**: each JSON is a resettable on-disk output; `holdout`'s `max=18` exactly covers the demo's 18/20 (that is one sample within the same seed range), not a contradiction.
 2. **Why two aggregations**: holdout is "never use tuned seeds + mean" to answer "robustness"; tune is "median over seen seeds" to answer "shape". Both use the same metric (how many of 20 facts reproduce verbatim) but differ in seed set and aggregation — all stated, all auditable.
-3. **The `17.9/20` in the booth doc shares its source** with this README (`holdout-11:19` shipped default en/160), consistent.
 
 ## 5. Compatibility, Tests, and Known Limits
 
@@ -545,8 +544,8 @@ Repo hygiene: `.gitignore` excludes `poliet_deck.txt` (event gateway credential)
 Submitted by the team lead before 2026-09-12 12:00:
 
 1. Public GitHub repo link (with this README, tests, and benchmark results).
-2. Interactive demo entry: on site `pnpm benchmark:demo` and the Web UI (:3001), prepare a 3–5 min reproduction path.
-3. A3 vertical poster: 297×420 mm, 300 DPI, 3508×4961 px, CMYK, 3 mm bleed on all sides; body ≥10 pt, title ≥18 pt, important text ≥5 mm from edges — typesetting is done by the team; copy/layout/data-figure index in [docs/展位讲解与海报素材.md](docs/展位讲解与海报素材.md).
+2. Interactive demo entry: on site `pnpm benchmark:demo` and the Web UI (:3001); the 3–5 min reproduction path is in [docs/demo.md](docs/demo.md).
+3. A3 vertical poster (297×420 mm, 300 DPI, CMYK, 3 mm bleed on all sides) — submitted.
 4. README items: improvement points, architecture/modules, run instructions, before/after performance, known limits, and technical design figures (this file).
 5. Optional bonus material: demo video, CI/test output, raw JSON under `benchmarks/results/`, independent review, or human spot-check records.
 6. Direction 3 uses the extra submission link the organizers publish that day; don't accidentally route the Direction 1/2 mini-program chain here.

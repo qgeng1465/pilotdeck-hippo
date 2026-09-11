@@ -1,0 +1,282 @@
+import type {
+  AlwaysOnApplyInput,
+  AlwaysOnApplyResult,
+  AlwaysOnRerunPlanInput,
+  AlwaysOnRerunPlanResult,
+  Gateway,
+  GatewayElicitationResponseInput,
+  GatewayEvent,
+  GatewayPermissionDecisionInput,
+  GatewayServerInfo,
+  GatewaySubmitTurnInput,
+  GatewayCancelSteerInput,
+  GatewayCancelSteerResult,
+  GatewaySteerTurnInput,
+  GatewaySteerTurnResult,
+  ProjectFilesListInput,
+  ProjectFilesListResult,
+  CommandsListInput,
+  CommandsListResult,
+  ModelCatalogListInput,
+  ModelCatalogListResult,
+  SessionModelInput,
+  SessionModelSetInput,
+  SessionModelResult,
+  ListSessionsInput,
+  ListSessionsResult,
+  NewSessionInput,
+  PrepareWeixinLoginResult,
+  ReloadConfigResult,
+  ReloadExtensionsInput,
+  ReloadExtensionsResult,
+  WebDescribeProjectInput,
+  WebListProjectsResult,
+  WebProjectSummary,
+  WebReadSessionMessagesInput,
+  WebReadSessionMessagesResult,
+  WebReadSubagentMessagesInput,
+  WebReadSubagentMessagesResult,
+  WebForkSessionInput,
+  WebForkSessionResult,
+  WebReplaceLastTurnInput,
+  WebReplaceLastTurnResult,
+  WebFinalizeLastTurnReplacementInput,
+  WebFinalizeLastTurnReplacementResult,
+} from "../protocol/types.js";
+import type {
+  SkillAddressInput,
+  SkillCreateInput,
+  SkillCreateResult,
+  SkillDeleteInput,
+  SkillDeleteResult,
+  SkillImportInput,
+  SkillImportResult,
+  SkillReadResult,
+  SkillScanInput,
+  SkillScanResult,
+  SkillValidateInput,
+  SkillValidationResult,
+  SkillWriteInput,
+  SkillWriteResult,
+  SkillsListInput,
+  SkillsListResult,
+} from "../../extension/skills/types.js";
+import type {
+  CronCreateInput,
+  CronCreateResult,
+  CronDeleteInput,
+  CronDeleteResult,
+  CronListInput,
+  CronListResult,
+  CronRunNowInput,
+  CronRunNowResult,
+  CronStopInput,
+  CronStopResult,
+  CronUpdateInput,
+  CronUpdateResult,
+} from "../../cron/protocol/types.js";
+import { GatewayWsClient, type GatewayWsNotificationHandler } from "./GatewayWsClient.js";
+import { parseReloadConfigResult } from "../protocol/reloadConfigResult.js";
+
+export class RemoteGateway implements Gateway {
+  constructor(private readonly client: GatewayWsClient) {}
+
+  onNotification(handler: GatewayWsNotificationHandler): void {
+    this.client.onNotification(handler);
+  }
+
+  submitTurn(input: GatewaySubmitTurnInput): AsyncIterable<GatewayEvent> {
+    return this.client.stream("submit_turn", input);
+  }
+
+  async steerTurn(input: GatewaySteerTurnInput): Promise<GatewaySteerTurnResult> {
+    return (await this.client.request("steer_turn", input)) as GatewaySteerTurnResult;
+  }
+
+  async cancelSteer(input: GatewayCancelSteerInput): Promise<GatewayCancelSteerResult> {
+    return (await this.client.request("cancel_steer", input)) as GatewayCancelSteerResult;
+  }
+
+  async abortTurn(input: { sessionKey: string; runId?: string; reason?: string }): Promise<void> {
+    await this.client.request("abort_turn", input);
+  }
+
+  async listSessions(input: ListSessionsInput): Promise<ListSessionsResult> {
+    return (await this.client.request("list_sessions", input)) as ListSessionsResult;
+  }
+
+  async resumeSession(input: { sessionKey: string }): Promise<{ sessionKey: string }> {
+    return (await this.client.request("resume_session", input)) as { sessionKey: string };
+  }
+
+  async newSession(input: NewSessionInput): Promise<{ sessionKey: string }> {
+    return (await this.client.request("new_session", input)) as { sessionKey: string };
+  }
+
+  async closeSession(input: { sessionKey: string; reason?: string }): Promise<void> {
+    await this.client.request("close_session", input);
+  }
+
+  async recordAgentStatusMessage(input: import("../protocol/types.js").GatewayRecordAgentStatusMessageInput): Promise<{ recorded: boolean }> {
+    return (await this.client.request("record_agent_status_message", input)) as { recorded: boolean };
+  }
+
+  async describeServer(): Promise<GatewayServerInfo> {
+    return (await this.client.request("describe_server", {})) as GatewayServerInfo;
+  }
+
+  async projectFilesList(input: ProjectFilesListInput): Promise<ProjectFilesListResult> {
+    return (await this.client.request("project_files_list", input)) as ProjectFilesListResult;
+  }
+
+  async commandsList(input: CommandsListInput): Promise<CommandsListResult> {
+    return (await this.client.request("commands_list", input)) as CommandsListResult;
+  }
+
+  async modelCatalogList(input: ModelCatalogListInput): Promise<ModelCatalogListResult> {
+    return (await this.client.request("model_catalog_list", input)) as ModelCatalogListResult;
+  }
+
+  async sessionModelGet(input: SessionModelInput): Promise<SessionModelResult> {
+    return (await this.client.request("session_model_get", input)) as SessionModelResult;
+  }
+
+  async sessionModelSet(input: SessionModelSetInput): Promise<SessionModelResult> {
+    return (await this.client.request("session_model_set", input)) as SessionModelResult;
+  }
+
+  async sessionModelClear(input: SessionModelInput): Promise<void> {
+    await this.client.request("session_model_clear", input);
+  }
+
+  async getActiveTurnSnapshot(input: import("../protocol/types.js").GatewayActiveTurnSnapshotInput): Promise<import("../protocol/types.js").GatewayActiveTurnSnapshot> {
+    return (await this.client.request("active_turn_snapshot", input)) as import("../protocol/types.js").GatewayActiveTurnSnapshot;
+  }
+
+  async cronCreate(input: CronCreateInput): Promise<CronCreateResult> {
+    return (await this.client.request("cron_create", input)) as CronCreateResult;
+  }
+
+  async cronList(input: CronListInput): Promise<CronListResult> {
+    return (await this.client.request("cron_list", input)) as CronListResult;
+  }
+
+  async cronUpdate(input: CronUpdateInput): Promise<CronUpdateResult> {
+    return (await this.client.request("cron_update", input)) as CronUpdateResult;
+  }
+
+  async cronDelete(input: CronDeleteInput): Promise<CronDeleteResult> {
+    return (await this.client.request("cron_delete", input)) as CronDeleteResult;
+  }
+
+  async cronStop(input: CronStopInput): Promise<CronStopResult> {
+    return (await this.client.request("cron_stop", input)) as CronStopResult;
+  }
+
+  async cronRunNow(input: CronRunNowInput): Promise<CronRunNowResult> {
+    return (await this.client.request("cron_run_now", input)) as CronRunNowResult;
+  }
+
+  async respondElicitation(input: GatewayElicitationResponseInput): Promise<{ delivered: boolean }> {
+    return (await this.client.request("elicitation_respond", input)) as { delivered: boolean };
+  }
+
+  async permissionDecide(input: GatewayPermissionDecisionInput): Promise<{ delivered: boolean }> {
+    return (await this.client.request("permission_decide", input)) as { delivered: boolean };
+  }
+
+  async grantSessionPermission(input: import("../protocol/types.js").GatewaySessionPermissionGrantInput): Promise<{ granted: boolean; entry?: string }> {
+    return (await this.client.request("grant_session_permission", input)) as { granted: boolean; entry?: string };
+  }
+
+  async readSessionMessages(input: WebReadSessionMessagesInput): Promise<WebReadSessionMessagesResult> {
+    return (await this.client.request("read_session_messages", input)) as WebReadSessionMessagesResult;
+  }
+
+  async readSubagentMessages(input: WebReadSubagentMessagesInput): Promise<WebReadSubagentMessagesResult> {
+    return (await this.client.request("read_subagent_messages", input)) as WebReadSubagentMessagesResult;
+  }
+
+  async forkSession(input: WebForkSessionInput): Promise<WebForkSessionResult> {
+    return (await this.client.request("fork_session", input)) as WebForkSessionResult;
+  }
+
+  async replaceLastTurn(input: WebReplaceLastTurnInput): Promise<WebReplaceLastTurnResult> {
+    return (await this.client.request("replace_last_turn", input)) as WebReplaceLastTurnResult;
+  }
+
+  async finalizeLastTurnReplacement(
+    input: WebFinalizeLastTurnReplacementInput,
+  ): Promise<WebFinalizeLastTurnReplacementResult> {
+    return (await this.client.request(
+      "finalize_last_turn_replacement",
+      input,
+    )) as WebFinalizeLastTurnReplacementResult;
+  }
+
+  async listProjects(): Promise<WebListProjectsResult> {
+    return (await this.client.request("list_projects", {})) as WebListProjectsResult;
+  }
+
+  async describeProject(input: WebDescribeProjectInput): Promise<WebProjectSummary> {
+    return (await this.client.request("describe_project", input)) as WebProjectSummary;
+  }
+
+  async reloadConfig(): Promise<ReloadConfigResult> {
+    return parseReloadConfigResult(await this.client.request("reload_config", {}));
+  }
+
+  async prepareWeixinLogin(): Promise<PrepareWeixinLoginResult> {
+    return (await this.client.request("prepare_weixin_login", {})) as PrepareWeixinLoginResult;
+  }
+
+  async reloadExtensions(input: ReloadExtensionsInput = {}): Promise<ReloadExtensionsResult> {
+    return (await this.client.request("reload_extensions", input)) as ReloadExtensionsResult;
+  }
+
+  async skillsList(input: SkillsListInput): Promise<SkillsListResult> {
+    return (await this.client.request("skill_list", input)) as SkillsListResult;
+  }
+
+  async skillRead(input: SkillAddressInput): Promise<SkillReadResult> {
+    return (await this.client.request("skill_read", input)) as SkillReadResult;
+  }
+
+  async skillWrite(input: SkillWriteInput): Promise<SkillWriteResult> {
+    return (await this.client.request("skill_write", input)) as SkillWriteResult;
+  }
+
+  async skillCreate(input: SkillCreateInput): Promise<SkillCreateResult> {
+    return (await this.client.request("skill_create", input)) as SkillCreateResult;
+  }
+
+  async skillDelete(input: SkillDeleteInput): Promise<SkillDeleteResult> {
+    return (await this.client.request("skill_delete", input)) as SkillDeleteResult;
+  }
+
+  async skillImport(input: SkillImportInput): Promise<SkillImportResult> {
+    return (await this.client.request("skill_import", input)) as SkillImportResult;
+  }
+
+  async skillValidate(input: SkillValidateInput): Promise<SkillValidationResult> {
+    return (await this.client.request("skill_validate", input)) as SkillValidationResult;
+  }
+
+  async skillScan(input: SkillScanInput): Promise<SkillScanResult> {
+    return (await this.client.request("skill_scan", input)) as SkillScanResult;
+  }
+
+  async alwaysOnApply(input: AlwaysOnApplyInput): Promise<AlwaysOnApplyResult> {
+    return (await this.client.request("always_on_apply", input)) as AlwaysOnApplyResult;
+  }
+
+  async alwaysOnRerunPlan(input: AlwaysOnRerunPlanInput): Promise<AlwaysOnRerunPlanResult> {
+    return (await this.client.request("always_on_rerun_plan", input)) as AlwaysOnRerunPlanResult;
+  }
+}
+
+export async function createRemoteGateway(options: ConstructorParameters<typeof GatewayWsClient>[0]): Promise<RemoteGateway> {
+  const client = new GatewayWsClient(options);
+  await client.connect();
+  return new RemoteGateway(client);
+}

@@ -1,0 +1,1335 @@
+{
+  "title": "Settings",
+  "tabs": {
+    "account": "Account",
+    "permissions": "Permissions",
+    "mcpServers": "MCP Servers",
+    "appearance": "Appearance"
+  },
+  "account": {
+    "title": "Account",
+    "language": "Language",
+    "languageLabel": "Display Language",
+    "languageDescription": "Choose your preferred language for the interface",
+    "username": "Username",
+    "email": "Email",
+    "profile": "Profile",
+    "changePassword": "Change Password"
+  },
+  "mcp": {
+    "title": "MCP Servers",
+    "addServer": "Add Server",
+    "editServer": "Edit Server",
+    "deleteServer": "Delete Server",
+    "serverName": "Server Name",
+    "serverType": "Server Type",
+    "config": "Configuration",
+    "testConnection": "Test Connection",
+    "status": "Status",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "scope": {
+      "label": "Scope",
+      "user": "User",
+      "project": "Project"
+    }
+  },
+  "appearance": {
+    "title": "Appearance",
+    "theme": "Theme",
+    "codeEditor": "Code Editor",
+    "editorTheme": "Editor Theme",
+    "wordWrap": "Word Wrap",
+    "showMinimap": "Show Minimap",
+    "lineNumbers": "Line Numbers",
+    "fontSize": "Font Size"
+  },
+  "actions": {
+    "saveChanges": "Save Changes",
+    "resetToDefaults": "Reset to Defaults",
+    "cancelChanges": "Cancel Changes"
+  },
+  "settingsPage": {
+    "actions": {
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "backToApp": "Back to app",
+    "backToSettings": "Back to settings",
+    "menu": {
+      "general": "General",
+      "modelPool": "Model Pool",
+      "agent": "Agents",
+      "agentModel": "Model",
+      "agentRoute": "Route",
+      "agentMemory": "Memory",
+      "agentResident": "Always-On",
+      "agentSearch": "Search",
+      "agentSchedule": "Scheduled Tasks",
+      "integrations": "Integrations",
+      "extensions": "Extensions",
+      "mcpServers": "MCP Servers",
+      "officePreview": "Office Preview",
+      "privacy": "Security & Privacy",
+      "advanced": "Advanced",
+      "about": "About"
+    },
+    "titles": {
+      "general": "General",
+      "modelPool": "Model Pool",
+      "agent": "Agents",
+      "agentModel": "Agents / Model",
+      "agentRoute": "Agents / Route",
+      "agentMemory": "Agents / Memory",
+      "agentResident": "Agents / Always-On",
+      "agentSearch": "Agents / Search",
+      "agentSchedule": "Agents / Scheduled Tasks",
+      "integrations": "Integrations",
+      "extensions": "Extensions",
+      "mcpServers": "Extensions / MCP Servers",
+      "officePreview": "Extensions / Office Preview",
+      "privacy": "Security & Privacy",
+      "advanced": "Advanced",
+      "about": "About"
+    },
+    "contentComingSoon": {
+      "title": "Right panel content is not connected yet",
+      "description": "Each menu section will be wired up incrementally"
+    },
+    "about": {
+      "versionStatus": "Version Status:",
+      "latestReleaseTime": "Latest Release Time:",
+      "buildTime": "Build Time:",
+      "downloadAndInstall": "Download & Install",
+      "downloadingAndInstalling": "Downloading...",
+      "installUpdate": "Install Update",
+      "launchingInstaller": "Launching installer...",
+      "restartingAndInstalling": "Restarting...",
+      "status": {
+        "checking": "Checking",
+        "updateAvailable": "Update Available",
+        "installerLaunched": "Installer Launched",
+        "upToDate": "Up to Date",
+        "unavailable": "Unavailable"
+      }
+    },
+    "invalidYaml": {
+      "advanced": "The config file is not valid YAML, so the Advanced settings form is unavailable.",
+      "agentModel": "The config file is not valid YAML, so the Agents / Model form is unavailable.",
+      "agentRoute": "The config file is not valid YAML, so the Agents / Route form is unavailable.",
+      "agentMemory": "The config file is not valid YAML, so the Agents / Memory form is unavailable.",
+      "agentResident": "The config file is not valid YAML, so the Agents / Always-On form is unavailable.",
+      "agentSearch": "The config file is not valid YAML, so the Agents / Search form is unavailable.",
+      "agentSchedule": "The config file is not valid YAML, so the Agents / Scheduled Tasks form is unavailable.",
+      "integrations": "The config file is not valid YAML, so the Integrations form is unavailable.",
+      "officePreview": "The config file is not valid YAML, so the Office Preview form is unavailable.",
+      "modelPool": "The config file is not valid YAML, so the Model Pool form is unavailable."
+    }
+  },
+  "quickSettings": {
+    "title": "Quick Settings",
+    "sections": {
+      "appearance": "Appearance",
+      "toolDisplay": "Tool Display",
+      "viewOptions": "View Options",
+      "inputSettings": "Input Settings"
+    },
+    "darkMode": "Dark Mode",
+    "autoExpandTools": "Auto-expand tools",
+    "showRawParameters": "Show raw parameters",
+    "showThinking": "Show thinking",
+    "inlineThinking": "Inline thinking (typewriter animation)",
+    "autoScrollToBottom": "Auto-scroll to bottom",
+    "sendByCtrlEnter": "Send by Ctrl+Enter",
+    "sendByCtrlEnterDescription": "When enabled, pressing Ctrl+Enter will send the message instead of just Enter. This is useful for IME users to avoid accidental sends.",
+    "dragHandle": {
+      "dragging": "Dragging handle",
+      "closePanel": "Close settings panel",
+      "openPanel": "Open settings panel",
+      "draggingStatus": "Dragging...",
+      "toggleAndMove": "Click to toggle, drag to move"
+    }
+  },
+  "terminalShortcuts": {
+    "title": "Terminal Shortcuts",
+    "sectionKeys": "Keys",
+    "sectionNavigation": "Navigation",
+    "escape": "Escape",
+    "tab": "Tab",
+    "shiftTab": "Shift+Tab",
+    "arrowUp": "Arrow Up",
+    "arrowDown": "Arrow Down",
+    "scrollDown": "Scroll Down",
+    "handle": {
+      "closePanel": "Close shortcuts panel",
+      "openPanel": "Open shortcuts panel"
+    }
+  },
+  "mainTabs": {
+    "label": "Settings",
+    "agents": "Agents",
+    "appearance": "Appearance",
+    "permissions": "Permissions",
+    "git": "Git",
+    "apiTokens": "API & Tokens",
+    "tasks": "Tasks",
+    "notifications": "Notifications",
+    "plugins": "Plugins",
+    "router": "Router",
+    "config": "Service Config",
+    "about": "About"
+  },
+  "settingsHome": {
+    "back": "Back",
+    "close": "Close settings",
+    "basics": "Basics",
+    "configRequiredDescription": "Configure model services before running this service.",
+    "application": "Appearance",
+    "workflow": "Workflow",
+    "advanced": "Advanced",
+    "config": {
+      "detail": "Model pool, agents, routing, memory, search, and service settings"
+    },
+    "mcp": {
+      "detail": "Configure MCP tools from global or project JSON"
+    },
+    "appearanceMode": {
+      "title": "Theme Mode",
+      "detail": "Follow the system appearance, or pin a light / dark theme.",
+      "system": "Follow System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "chatInput": {
+      "title": "Chat & Input",
+      "detail": "Tool display, scroll behavior, and send shortcut"
+    },
+    "codeEditor": {
+      "detail": "Word wrap, line numbers, minimap, and font size"
+    },
+    "permissions": {
+      "detail": "Manage allowed and blocked tool rules"
+    },
+    "telemetry": {
+      "title": "Telemetry",
+      "detail": "Send anonymous usage data to help improve the product"
+    },
+    "gateway": {
+      "detail": "Connect Feishu, WeChat, and other IM channels"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "description": "Control which notification events you receive.",
+    "webPush": {
+      "title": "Web Push Notifications",
+      "enable": "Enable Push Notifications",
+      "disable": "Disable Push Notifications",
+      "enabled": "Push notifications are enabled",
+      "loading": "Updating...",
+      "unsupported": "Push notifications are not supported in this browser.",
+      "denied": "Push notifications are blocked. Please allow them in your browser settings."
+    },
+    "events": {
+      "title": "Event Types",
+      "actionRequired": "Action required",
+      "stop": "Run stopped",
+      "error": "Run failed"
+    }
+  },
+  "appearanceSettings": {
+    "darkMode": {
+      "label": "Dark Mode",
+      "description": "Toggle between light and dark themes"
+    },
+    "projectSorting": {
+      "label": "Project Sorting",
+      "description": "How projects are ordered in the sidebar",
+      "alphabetical": "Alphabetical",
+      "recentActivity": "Recent Activity"
+    },
+    "codeEditor": {
+      "title": "Code Editor",
+      "theme": {
+        "label": "Editor Theme",
+        "description": "Default theme for the code editor"
+      },
+      "wordWrap": {
+        "label": "Word Wrap",
+        "description": "Enable word wrapping by default in the editor"
+      },
+      "showMinimap": {
+        "label": "Show Minimap",
+        "description": "Display a minimap for easier navigation in diff view"
+      },
+      "lineNumbers": {
+        "label": "Show Line Numbers",
+        "description": "Display line numbers in the editor"
+      },
+      "fontSize": {
+        "label": "Font Size",
+        "description": "Applies to the code editor only (px). Chat and sidebar keep the system default."
+      }
+    }
+  },
+  "mcpForm": {
+    "title": {
+      "add": "Add MCP Server",
+      "edit": "Edit MCP Server"
+    },
+    "importMode": {
+      "form": "Form Input",
+      "json": "JSON Import"
+    },
+    "scope": {
+      "label": "Scope",
+      "userGlobal": "User (Global)",
+      "projectLocal": "Project (Local)",
+      "userDescription": "User scope: Available across all projects on your machine",
+      "projectDescription": "Local scope: Only available in the selected project",
+      "cannotChange": "Scope cannot be changed when editing an existing server"
+    },
+    "fields": {
+      "serverName": "Server Name",
+      "transportType": "Transport Type",
+      "command": "Command",
+      "arguments": "Arguments (one per line)",
+      "jsonConfig": "JSON Configuration",
+      "url": "URL",
+      "envVars": "Environment Variables (KEY=value, one per line)",
+      "headers": "Headers (KEY=value, one per line)",
+      "selectProject": "Select a project..."
+    },
+    "placeholders": {
+      "serverName": "my-server"
+    },
+    "validation": {
+      "missingType": "Missing required field: type",
+      "stdioRequiresCommand": "stdio type requires a command field",
+      "httpRequiresUrl": "{{type}} type requires a url field",
+      "invalidJson": "Invalid JSON format",
+      "jsonHelp": "Paste your MCP server configuration in JSON format. Example formats:",
+      "jsonExampleStdio": "• stdio: {\"type\":\"stdio\",\"command\":\"npx\",\"args\":[\"@upstash/context7-mcp\"]}",
+      "jsonExampleHttp": "• http/sse: {\"type\":\"http\",\"url\":\"https://api.example.com/mcp\"}"
+    },
+    "configDetails": "Configuration Details (from {{configFile}})",
+    "projectPath": "Path: {{path}}",
+    "actions": {
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "addServer": "Add Server",
+      "updateServer": "Update Server"
+    }
+  },
+  "saveStatus": {
+    "success": "Settings saved successfully!",
+    "error": "Failed to save settings",
+    "saving": "Saving..."
+  },
+  "footerActions": {
+    "save": "Save Settings",
+    "cancel": "Cancel"
+  },
+  "git": {
+    "title": "Git Configuration",
+    "description": "Configure your git identity for commits. These settings will be applied globally via git config --global",
+    "name": {
+      "label": "Git Name",
+      "help": "Your name for git commits"
+    },
+    "email": {
+      "label": "Git Email",
+      "help": "Your email for git commits"
+    },
+    "actions": {
+      "save": "Save Configuration",
+      "saving": "Saving..."
+    },
+    "status": {
+      "success": "Saved successfully"
+    }
+  },
+  "apiKeys": {
+    "title": "API Keys",
+    "description": "Generate API keys to access the external API from other applications.",
+    "newKey": {
+      "alertTitle": "⚠️ Save Your API Key",
+      "alertMessage": "This is the only time you'll see this key. Store it securely.",
+      "iveSavedIt": "I've saved it"
+    },
+    "form": {
+      "placeholder": "API Key Name (e.g., Production Server)",
+      "createButton": "Create",
+      "cancelButton": "Cancel"
+    },
+    "newButton": "New API Key",
+    "empty": "No API keys created yet.",
+    "list": {
+      "created": "Created:",
+      "lastUsed": "Last used:"
+    },
+    "confirmDelete": "Are you sure you want to delete this API key?",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "github": {
+      "title": "GitHub Tokens",
+      "description": "Add GitHub Personal Access Tokens to clone private repositories via the external API.",
+      "descriptionAlt": "Add GitHub Personal Access Tokens to clone private repositories. You can also pass tokens directly in API requests without storing them.",
+      "addButton": "Add Token",
+      "form": {
+        "namePlaceholder": "Token Name (e.g., Personal Repos)",
+        "tokenPlaceholder": "GitHub Personal Access Token (ghp_...)",
+        "descriptionPlaceholder": "Description (optional)",
+        "addButton": "Add Token",
+        "cancelButton": "Cancel",
+        "howToCreate": "How to create a GitHub Personal Access Token →"
+      },
+      "empty": "No GitHub tokens added yet.",
+      "added": "Added:",
+      "confirmDelete": "Are you sure you want to delete this GitHub token?"
+    },
+    "apiDocsLink": "API Documentation",
+    "documentation": {
+      "title": "External API Documentation",
+      "description": "Learn how to use the external API to trigger PilotDeck sessions from your applications.",
+      "viewLink": "View API Documentation →"
+    },
+    "loading": "Loading...",
+    "version": {
+      "updateAvailable": "Update available: v{{version}}"
+    }
+  },
+  "tasks": {
+    "checking": "Checking TaskMaster installation...",
+    "notInstalled": {
+      "title": "TaskMaster AI CLI Not Installed",
+      "description": "TaskMaster CLI is required to use task management features. Install it to get started:",
+      "installCommand": "npm install -g task-master-ai",
+      "viewOnGitHub": "View on GitHub",
+      "afterInstallation": "After installation:",
+      "steps": {
+        "restart": "Restart this application",
+        "autoAvailable": "TaskMaster features will automatically become available",
+        "initCommand": "Use task-master init in your project directory"
+      }
+    },
+    "settings": {
+      "enableLabel": "Enable TaskMaster Integration",
+      "enableDescription": "Show TaskMaster tasks, banners, and sidebar indicators across the interface"
+    }
+  },
+  "agents": {
+    "authStatus": {
+      "checking": "Checking...",
+      "connected": "Connected",
+      "notConnected": "Not connected",
+      "disconnected": "Disconnected",
+      "checkingAuth": "Checking authentication status...",
+      "loggedInAs": "Logged in as {{email}}",
+      "authenticatedUser": "authenticated user"
+    },
+    "account": {
+      "claude": {
+        "description": "Anthropic Claude AI assistant"
+      },
+      "cursor": {
+        "description": "Cursor AI-powered code editor"
+      },
+      "codex": {
+        "description": "OpenAI Codex AI assistant"
+      },
+      "gemini": {
+        "description": "Google Gemini AI assistant"
+      },
+      "pilotdeck": {
+        "description": "OpenBMB PilotDeck AI assistant"
+      }
+    },
+    "connectionStatus": "Connection Status",
+    "login": {
+      "title": "Login",
+      "reAuthenticate": "Re-authenticate",
+      "description": "Sign in to your {{agent}} account to enable AI features",
+      "reAuthDescription": "Sign in with a different account or refresh credentials",
+      "button": "Login",
+      "reLoginButton": "Re-login"
+    },
+    "error": "Error: {{error}}"
+  },
+  "permissions": {
+    "title": "Permission Settings",
+    "controlTitle": "Permission Control",
+    "description": "Manage which tools the assistant can run without asking. Grants from the chat \"Add permission\" button land here too.",
+    "export": "Export",
+    "import": "Import",
+    "importExportHint": "Share or back up your tool permissions as JSON.",
+    "exportSuccess": "Exported {{allowed}} allowed and {{blocked}} blocked tools.",
+    "exportError": "Failed to export permissions.",
+    "importReadError": "Could not read the selected file.",
+    "importInvalid": "Not a valid permissions export. Expected JSON with allowedTools / disallowedTools.",
+    "importConfirmBody": "Merge {{allowed}} allowed and {{blocked}} blocked tools into your existing permissions?",
+    "importSuccess": "Imported. Added {{addedAllowed}} allowed and {{addedBlocked}} blocked tools.",
+    "skipPermissions": {
+      "title": "Skip permission prompts",
+      "description": "Run tool calls without asking for confirmation. This maps to bypassPermissions and should only be used in trusted workspaces.",
+      "warning": "Permission prompts are currently bypassed. Allowed and blocked rules below are still saved, but this global mode lets the agent run without asking."
+    },
+    "allowedTools": {
+      "title": "Allowed Tools",
+      "description": "Tools that are automatically allowed without prompting for permission",
+      "placeholder": "e.g., \"Bash(git log:*)\" or \"Write\"",
+      "quickAdd": "Quick add common tools:",
+      "empty": "No allowed tools configured"
+    },
+    "blockedTools": {
+      "title": "Blocked Tools",
+      "description": "Tools that are automatically blocked without prompting for permission",
+      "placeholder": "e.g., \"Bash(rm:*)\"",
+      "empty": "No blocked tools configured"
+    },
+    "allowedCommands": {
+      "title": "Allowed Shell Commands",
+      "description": "Shell commands that are automatically allowed without prompting",
+      "placeholder": "e.g., \"Shell(ls)\" or \"Shell(git status)\"",
+      "quickAdd": "Quick add common commands:",
+      "empty": "No allowed commands configured"
+    },
+    "blockedCommands": {
+      "title": "Blocked Shell Commands",
+      "description": "Shell commands that are automatically blocked",
+      "placeholder": "e.g., \"Shell(rm -rf)\" or \"Shell(sudo)\"",
+      "empty": "No blocked commands configured"
+    },
+    "toolExamples": {
+      "title": "Tool Pattern Examples:",
+      "bashGitLog": "- Allow all git log commands",
+      "bashGitDiff": "- Allow all git diff commands",
+      "write": "- Allow all Write tool usage",
+      "bashRm": "- Block all rm commands (dangerous)"
+    },
+    "shellExamples": {
+      "title": "Shell Command Examples:",
+      "ls": "- Allow ls command",
+      "gitStatus": "- Allow git status",
+      "npmInstall": "- Allow npm install",
+      "rmRf": "- Block recursive delete"
+    },
+    "codex": {
+      "permissionMode": "Permission Mode",
+      "description": "Controls how Codex handles file modifications and command execution",
+      "modes": {
+        "default": {
+          "title": "Default",
+          "description": "Only trusted commands (ls, cat, grep, git status, etc.) run automatically. Other commands are skipped. Can write to workspace."
+        },
+        "bypassPermissions": {
+          "title": "Bypass Permissions",
+          "description": "Full system access with no restrictions. All commands run automatically with full disk and network access. Use with caution."
+        }
+      },
+      "technicalDetails": "Technical details",
+      "technicalInfo": {
+        "default": "sandboxMode=workspace-write, approvalPolicy=untrusted. Trusted commands: cat, cd, grep, head, ls, pwd, tail, git status/log/diff/show, find (without -exec), etc.",
+        "bypassPermissions": "sandboxMode=danger-full-access, approvalPolicy=never. Full system access, use only in trusted environments.",
+        "overrideNote": "You can override this per-session using the mode button in the chat interface."
+      }
+    },
+    "actions": {
+      "add": "Add",
+      "remove": "Remove"
+    }
+  },
+  "mcpServers": {
+    "title": "MCP Servers",
+    "description": {
+      "pilotdeck": "Model Context Protocol servers provide additional tools and data sources to PilotDeck",
+      "cursor": "Model Context Protocol servers provide additional tools and data sources to Cursor",
+      "codex": "Model Context Protocol servers provide additional tools and data sources to Codex"
+    },
+    "addButton": "Add MCP Server",
+    "empty": "No MCP servers configured",
+    "serverType": "Type",
+    "scope": {
+      "local": "local",
+      "user": "user"
+    },
+    "config": {
+      "command": "Command",
+      "url": "URL",
+      "args": "Args",
+      "environment": "Environment"
+    },
+    "tools": {
+      "title": "Tools",
+      "count": "({{count}}):",
+      "more": "+{{count}} more"
+    },
+    "actions": {
+      "edit": "Edit server",
+      "delete": "Delete server"
+    },
+    "help": {
+      "title": "About Codex MCP",
+      "description": "Codex supports stdio-based MCP servers. You can add servers that extend Codex's capabilities with additional tools and resources."
+    }
+  },
+  "mcpConfig": {
+    "title": "MCP Servers",
+    "description": "Edit PilotDeck MCP config. Global config lives in ~/.pilotdeck/mcp.json; project config lives in .pilotdeck/mcp.json and overrides global servers with the same name.",
+    "project": "Project for project-scoped config",
+    "scopes": {
+      "global": "Global",
+      "project": "Project"
+    },
+    "serverCount": "{{count}} configured server",
+    "serverCount_plural": "{{count}} configured servers",
+    "noPath": "Config path unavailable",
+    "addStdio": "Add stdio template",
+    "addRemote": "Add remote template",
+    "saved": "MCP config saved. New sessions and the next runtime rebuild will use it.",
+    "fixJsonBeforeTemplate": "Fix the JSON before inserting a template.",
+    "empty": "No MCP servers configured yet.",
+    "advanced": "Advanced: raw JSON",
+    "expand": "Expand",
+    "unnamed": "Unnamed server",
+    "noSummary": "No command or URL configured",
+    "nameRequired": "Every MCP server needs a name before saving.",
+    "transport": {
+      "http": "Streamable HTTP"
+    },
+    "fields": {
+      "name": "Name",
+      "command": "Launch command",
+      "args": "Arguments",
+      "env": "Environment variables",
+      "envPassThrough": "Environment variable pass-through",
+      "perSession": "Per-session server",
+      "perSessionHelp": "Start a fresh MCP process for each agent session.",
+      "url": "URL",
+      "headers": "Headers"
+    },
+    "placeholders": {
+      "key": "Key",
+      "value": "Value"
+    },
+    "actions": {
+      "addArg": "Add argument",
+      "addEnv": "Add environment variable",
+      "addVariable": "Add variable",
+      "addHeader": "Add header"
+    }
+  },
+  "pilotDeckConfig": {
+    "loading": "Loading PilotDeck config...",
+    "header": {
+      "configFile": "Config file",
+      "configPreview": "Config preview",
+      "unsaved": "Unsaved"
+    },
+    "viewMode": {
+      "form": "Form",
+      "rawYaml": "Raw YAML"
+    },
+	    "actions": {
+	      "opening": "Opening...",
+	      "revealFile": "Reveal in Finder",
+	      "revealFileMac": "Reveal in Finder",
+	      "revealFileWindows": "Reveal in Explorer",
+	      "revealFileGeneric": "Reveal in file manager",
+	      "refresh": "Refresh",
+	      "reloadCurrent": "Reload current config",
+	      "saving": "Saving...",
+	      "saveAndReload": "Save and reload current config",
+	      "saveAndReloadShort": "Save & reload",
+	      "remove": "Remove",
+	      "removeModel": "Remove model",
+	      "add": "Add",
+	      "dismiss": "Dismiss",
+	      "showDetails": "Show config details",
+	      "hideDetails": "Hide config details"
+	    },
+	    "status": {
+	      "unsavedChanges": "Unsaved changes",
+	      "noUnsavedChanges": "No unsaved changes",
+	      "fixYamlInFilesystem": "Fix the config file in the filesystem, then refresh.",
+	      "fixYamlInRawEditor": "Fix the Raw YAML below, then save to re-enable form settings.",
+	      "subsystems": {
+	        "pending": "Waiting for config parsing.",
+	        "processEnv": {
+	          "label": "Process Env",
+	          "applied": "Native settings have been applied to this process."
+	        },
+	        "memory": {
+	          "label": "Memory",
+	          "enabled": "Memory service is enabled.",
+	          "disabled": "memory.enabled is false."
+	        },
+	        "router": {
+	          "label": "Router (CCR)",
+	          "enabled": "Router dashboard uses native records.",
+	          "disabled": "router.enabled is false."
+	        },
+	        "gateway": {
+	          "label": "Gateway",
+	          "enabled": "Gateway is enabled.",
+	          "disabled": "gateway.enabled is false."
+	        }
+	      }
+	    },
+	    "rawYaml": {
+	      "configValid": "Config is valid",
+	      "unsaved": "(unsaved)",
+	      "configInvalid": "Config has validation errors",
+	      "configInvalidSeeBelow": "Config has validation errors — see below",
+	      "errors": "Errors",
+	      "warnings": "Warnings",
+	      "yamlParseError": "The config file YAML failed to parse. Fix the Raw YAML below, then save.",
+	      "yamlParseErrorWithDetail": "The config file YAML failed to parse: {{error}}",
+	      "cannotParse": "Could not parse the config file YAML. Fix the Raw YAML above, then save to restore form settings.",
+	      "rawYaml": "Raw YAML"
+	    },
+    "sectionGroups": {
+      "basic": "Basic",
+      "basicDescription": "Configure model services before running this service.",
+      "features": "Features",
+      "extensions": "Extensions",
+      "advanced": "Advanced"
+    },
+    "sections": {
+      "backToMenu": "Back to service config",
+      "runtime": {
+        "label": "Service",
+        "description": "Ports, proxy, and paths"
+      },
+      "models": {
+        "label": "Model Pool",
+        "description": "Models available to agents, memory, and routing"
+      },
+      "agents": {
+        "label": "Agents",
+        "description": "Main agent + subagents model bindings"
+      },
+      "alwaysOn": {
+        "label": "Always-On",
+        "description": "Automatic discovery and workspace opt-in"
+      },
+      "cron": {
+        "label": "Cron",
+        "description": "Scheduled background task runtime"
+      },
+      "memory": {
+        "label": "Memory",
+        "description": "PilotDeck memory service"
+      },
+      "tools": {
+        "label": "Search",
+        "description": "Web search provider"
+      },
+      "customEnv": {
+        "label": "Env Vars",
+        "description": "Custom environment variables for sessions"
+      },
+      "router": {
+        "label": "Router",
+        "description": "PilotDeck Router"
+      },
+      "gateway": {
+        "label": "Gateway",
+        "description": "Messaging gateway home + channels"
+      },
+      "officePreview": {
+        "label": "Office File Preview Service",
+        "description": "Read-only preview for Word, Excel, and PPT"
+      }
+    },
+    "panels": {
+      "runtime": {
+        "title": "Service",
+        "description": "Configure service ports, data paths, and network proxy. Changes to ports or paths usually require restarting the service.",
+        "advancedToggle": "Advanced settings",
+        "fields": {
+          "host": { "label": "Host", "description": "Bind interface for the HTTP/WebSocket server." },
+          "serverPort": { "label": "Server port", "description": "Express + WebSocket port." },
+          "vitePort": { "label": "Vite port", "description": "Frontend dev server (only used when running `npm run dev`)." },
+          "apiTimeout": { "label": "API timeout (ms)", "description": "Per-request upstream timeout." },
+          "databasePath": { "label": "Database path", "description": "SQLite auth/projects database (~ expands to home)." },
+          "workspacesRoot": { "label": "Workspaces root", "description": "Directory under which projects are scanned." },
+          "proxyUrl": { "label": "HTTPS proxy", "description": "Outbound HTTPS proxy URL. Applies to both Gateway and UI Server (proxy.url in pilotdeck.yaml)." },
+          "proxyNoProxy": { "label": "No-proxy list", "description": "Comma-separated hostnames/IPs that bypass the proxy (proxy.noProxy in pilotdeck.yaml). 127.0.0.1 and localhost are always excluded." }
+        }
+      },
+      "officePreview": {
+        "title": "Office File Preview Service",
+        "description": "Choose how Office files are previewed in read-only mode. PDF always uses PilotDeck's built-in viewer.",
+        "fields": {
+          "service": {
+            "label": "Preview service",
+            "description": "Built-in preview needs no installation and supports DOCX, XLSX, and PPTX. LibreOffice supports more legacy formats using print layout."
+          },
+          "binaryPath": {
+            "label": "LibreOffice executable path",
+            "description": "Optional. Enter the full soffice/libreoffice path for custom installations; leave empty to auto-detect.",
+            "placeholder": "/Applications/LibreOffice.app/Contents/MacOS/soffice"
+          },
+          "detectedBinaryPath": {
+            "label": "Auto-scanned paths",
+            "description": "Selecting a detected path writes it to the executable path above; select auto-detect to clear the manual path."
+          }
+        },
+        "options": {
+          "builtin": "Built-in preview (recommended)",
+          "libreOffice": "LibreOffice compatibility preview",
+          "libreOfficeUnavailable": "LibreOffice (unavailable)",
+          "autoDetect": "Auto-detect (no fixed path)",
+          "candidateAvailable": "{{path}} (available)",
+          "candidateUnavailable": "{{path}} (unavailable)",
+          "candidateAvailableShort": "Available",
+          "candidateUnavailableShort": "Unavailable"
+        },
+        "scan": {
+          "button": "Scan",
+          "title": "Select LibreOffice path",
+          "scanning": "Scanning available paths..."
+        },
+        "status": {
+          "checking": "Checking LibreOffice...",
+          "available": "LibreOffice is available",
+          "unavailable": "LibreOffice is unavailable",
+          "unknown": "LibreOffice status is temporarily unavailable",
+          "error": "Could not check LibreOffice status",
+          "refresh": "Check again",
+          "noDetectedPaths": "No candidate paths were found yet. You can still enter a full path manually and check again.",
+          "path": "Path: {{path}}",
+          "version": "Version: {{version}}"
+        },
+        "builtinNote": "Built-in preview works out of the box: DOCX keeps document layout, XLSX supports worksheet tabs and cell selection, and PPTX supports slide browsing. Legacy DOC, XLS, and PPT files require LibreOffice.",
+        "unavailableWarning": "LibreOffice is selected, but no LibreOffice/soffice executable is available on this machine. Install LibreOffice or switch to Built-in preview."
+      },
+      "models": {
+        "title": "Model Pool",
+        "description": "Configure model providers, API keys, base URLs, and enabled models. Agents, memory, and routing choose from the enabled models here.",
+        "providerIdDuplicate": "A Provider id with this name already exists.",
+        "addProvider": "Add provider",
+        "addProviderTitle": "Add a provider",
+        "cancel": "Cancel",
+        "customProvider": "Custom",
+        "manualSetup": "Manual setup",
+        "modelCount": "{{count}} models",
+        "emptyProviders": "No providers configured yet. Click \"Add provider\" to get started.",
+        "providerId": "id",
+        "protocol": "Protocol",
+        "protocolOptions": {
+          "openai": "openai (chat-completions)",
+          "openaiResponses": "openai-responses (Responses API)",
+          "anthropic": "anthropic (messages API)",
+          "google": "google (Gemini API)"
+        },
+        "baseUrl": "Base URL",
+        "baseUrlHint": "For native Google Gemini, use https://generativelanguage.googleapis.com. For OpenAI-compatible and Responses API providers, include the /v1 suffix.",
+        "defaultsTo": "Defaults to",
+        "fromCatalog": "from catalog.",
+        "effective": "Effective:",
+        "apiKey": "API key",
+        "optional": "optional",
+        "maskedKeyPlaceholder": "Existing key kept — type to replace",
+        "keyHidden": "Key hidden; leave as-is to keep, retype to replace.",
+        "enabledModels": "Enabled models",
+        "supportsImageInput": "supports image input",
+        "clickEnable": "Click to enable",
+        "clickDisable": "Click to disable",
+        "customModelPlaceholder": "Custom model ID",
+        "providerAdvancedToggle": "Advanced retry settings",
+        "providerRetry": {
+          "requestMaxRetries": { "label": "Request max retries", "description": "Maximum retries for non-streaming requests." },
+          "streamMaxRetries": { "label": "Stream max retries", "description": "Maximum retries for streaming requests." },
+          "streamIdleTimeoutMs": { "label": "Stream idle timeout (ms)", "description": "Abort a stream if no data is received for this duration. Defaults to 600000 ms." },
+          "baseDelayMs": { "label": "Base delay (ms)", "description": "Initial delay before the first retry." },
+          "maxDelayMs": { "label": "Max delay (ms)", "description": "Maximum delay between retries." }
+        }
+      },
+      "agents": {
+        "title": "Agents",
+        "description": "Set the main agent, subagents, and model parameters.",
+        "advancedToggle": "Advanced settings",
+        "mainModel": {
+          "label": "Main agent model",
+          "description": "Model used for the main conversation."
+        },
+        "capabilities": {
+          "title": "Model Settings",
+          "imageInput": "Model supports image input",
+          "enabled": "Enabled",
+          "disabled": "Disabled",
+          "overrideActive": "Image input is set manually.",
+          "catalogSupportsImage": "Catalog default supports images.",
+          "catalogTextOnly": "Catalog default is text only.",
+          "noCatalog": "No catalog entry; defaulting to text only.",
+          "imageWarning": "Enable only when the upstream model supports images.",
+          "maxOutputTokens": "Max output tokens",
+          "maxOutputDescription": "Maximum tokens generated in one response. Leave empty to use the default.",
+          "maxContextTokens": "Max context tokens",
+          "maxContextDescription": "Context window used for auto-compaction. Leave empty to use the model default."
+        },
+        "subagents": {
+          "label": "Subagents default",
+          "description": "Default model for subagents on non-router paths.",
+          "inherit": "Inherit main agent model",
+          "routerNote": "When PilotDeck Router or Token Saver is enabled, subagent requests enter the router first. By default, the subagent policy re-judges each subagent turn and picks a tier model. This default only acts as a direct subagent fallback or inherited baseline; it does not override the subagent routing policy in Router advanced settings."
+        }
+      },
+      "customEnv": {
+        "title": "Environment Variables",
+        "description": "Custom env vars injected into every agent session. Persisted in config.yaml — no need to reconfigure after switching sessions.",
+        "empty": "No custom environment variables configured.",
+        "existingValueKept": "Existing value kept — type to replace",
+        "valueHidden": "Value hidden; leave as-is to keep, retype to replace.",
+        "addVariable": "Add variable",
+        "quickAddKeys": "Quick add common keys:",
+        "add": "Add"
+      },
+      "alwaysOn": {
+        "title": "Always-On",
+        "description": "Configure automatic discovery globally and opt individual workspaces in.",
+        "enabled": { "label": "Enabled", "description": "Master switch for Always-On background agent." },
+        "trigger": {
+          "title": "Trigger",
+          "description": "Controls when and how often discovery runs fire.",
+          "autoDiscovery": { "label": "Auto discovery", "description": "When enabled, Always-On periodically inspects opted-in workspaces and proposes follow-up plans." },
+          "tickInterval": { "label": "Tick interval (minutes)", "description": "How often the daemon checks opted-in workspaces." },
+          "cooldown": { "label": "Cooldown (minutes)", "description": "Minimum time between discovery runs per workspace." },
+          "dailyBudget": { "label": "Daily budget", "description": "Maximum automatic discovery runs per workspace per day." },
+          "heartbeatStale": { "label": "Heartbeat stale (seconds)", "description": "Heartbeats older than this are considered stale." },
+          "recentUserMsg": { "label": "Recent user msg (minutes)", "description": "Only fire if the user sent a message within this window." },
+          "preferChannel": { "label": "Preferred channel", "description": "Channel the discovery agent prefers to interact through." }
+        },
+        "dormancy": {
+          "title": "Dormancy",
+          "description": "File-system watcher that pauses discovery while the user is actively editing.",
+          "enabled": { "label": "Enabled", "description": "Suppress discovery fires while the workspace has recent file changes." },
+          "debounce": { "label": "Debounce (ms)", "description": "Wait this long after the last file change before resuming." },
+          "ignoreGlobs": { "label": "Ignore globs", "description": "File patterns excluded from dormancy detection, one per line." }
+        },
+        "workspace": {
+          "title": "Workspace",
+          "description": "Isolated workspace strategy for Always-On runs.",
+          "gitWorktree": { "label": "Git worktree base dir", "description": "Root directory for git worktree-based isolation." },
+          "snapshotDir": { "label": "Snapshot base dir", "description": "Root directory for snapshot-based isolation." },
+          "snapshotMaxBytes": { "label": "Snapshot max bytes", "description": "Maximum size of a workspace snapshot." },
+          "maxPlansPerCycle": { "label": "Max plans per cycle", "description": "Maximum number of plans that can be accumulated in a single isolation environment cycle." },
+          "gitLfs": { "label": "Git LFS", "description": "Include Git LFS objects in workspace snapshots." }
+        },
+        "execution": {
+          "title": "Execution",
+          "description": "Safety limits for each Always-On run.",
+          "maxTurns": { "label": "Max turns", "description": "Maximum number of agent turns per run." },
+          "maxToolCalls": { "label": "Max tool calls", "description": "Maximum total tool calls per run." },
+          "timeout": { "label": "Timeout (minutes)", "description": "Hard timeout for each run." }
+        },
+        "workspaceOptIn": {
+          "title": "Workspace opt-in",
+          "description": "Only enabled workspaces receive Always-On heartbeats and scheduled discovery checks.",
+          "empty": "No recognized projects yet. Add or open a workspace first."
+        }
+      },
+      "cron": {
+        "title": "Cron",
+        "description": "Configure the background scheduler used by Cron jobs. Create and manage jobs from the Cron module.",
+        "enabled": {
+          "label": "Enabled",
+          "description": "Master switch for scheduled Cron background tasks."
+        },
+        "timezone": {
+          "label": "Timezone",
+          "description": "IANA timezone used as the scheduler default."
+        },
+        "maxConcurrentRuns": {
+          "label": "Max concurrent runs",
+          "description": "Maximum number of Cron runs that may execute at the same time."
+        }
+      },
+      "memory": {
+        "title": "Memory",
+        "description": "Configure the memory service, automatic build intervals, and memory data management.",
+        "enabled": {
+          "label": "Enabled",
+          "description": "Toggles the memory service."
+        },
+        "model": {
+          "label": "Memory Model",
+          "description": "Provider/model the memory pipeline calls.",
+          "inherit": "inherit (use main agent's model)"
+        },
+        "automation": {
+          "autoIndex": {
+            "label": "Auto index interval (minutes)",
+            "description": "Set to 0 to disable automatic indexing."
+          },
+          "autoDream": {
+            "label": "Auto Dream interval (minutes)",
+            "description": "Automatic Dream only runs after memory files have changed."
+          }
+        },
+        "autoIndexInterval": {
+          "label": "Auto index interval",
+          "description": "Interval for automatic file scanning. \"0\" disables the automatic task."
+        },
+        "autoDreamInterval": {
+          "label": "Auto Dream interval",
+          "description": "Interval for automatic memory consolidation. Auto Dream runs only when memory files changed since the last Dream."
+        },
+        "intervalUnits": {
+          "minutes": "Minutes",
+          "hours": "Hours"
+        },
+        "data": {
+          "title": "Data management",
+          "description": "Export, import, or clear one project or all memory.",
+          "target": {
+            "label": "Managed target",
+            "description": "Choose a project or all memory.",
+            "all": "All memory",
+            "projectFallback": "Untitled project"
+          },
+          "actions": {
+            "export": "Export",
+            "import": "Import",
+            "clear": "Clear"
+          },
+          "status": {
+            "exporting": "Exporting {{target}}...",
+            "exported": "Exported {{target}}.",
+            "importing": "Importing {{target}}...",
+            "imported": "Imported {{target}}.",
+            "clearing": "Clearing {{target}}...",
+            "cleared": "Cleared {{target}}."
+          },
+          "confirm": {
+            "importProject": "Importing will overwrite memory for \"{{target}}\". Continue?",
+            "importAll": "Importing will overwrite all memory. Continue?",
+            "clearProject": "Clear memory for \"{{target}}\"?",
+            "clearAll": "Clear all memory? This deletes every project's memory and the global user background."
+          },
+          "errors": {
+            "missingProject": "No project is available.",
+            "invalidImport": "Choose a valid JSON backup file.",
+            "invalidExport": "The exported content was not valid JSON."
+          }
+        }
+      },
+      "tools": {
+        "title": "Search",
+        "description": "Configure the search service used by the agent's web_search tool.",
+        "enabled": {
+          "label": "Enable web search",
+          "description": "When disabled, the agent will not receive the web_search tool."
+        },
+        "provider": {
+          "label": "Search provider",
+          "description": "The active search service.",
+          "glm": "GLM / Z.AI Web Search",
+          "tavily": "Tavily",
+          "serper": "Serper",
+          "brave": "Brave Search",
+          "custom": "Custom"
+        },
+        "apiKey": {
+          "label": "API key",
+          "description": "API key for the selected provider.",
+          "placeholder": "provider API key",
+          "maskedPlaceholder": "Existing key kept — type to replace",
+          "keyHidden": "Key hidden; leave as-is to keep, retype to replace."
+        },
+        "endpoint": {
+          "label": "Endpoint",
+          "description": "Custom endpoint. Leave empty to use the default.",
+          "placeholder": "Default endpoint"
+        },
+        "custom": {
+          "name": {
+            "label": "Name",
+            "description": "Name of this custom search service."
+          },
+          "auth": {
+            "label": "Auth",
+            "description": "How the API key is sent.",
+            "bearer": "Bearer header",
+            "bodyApiKey": "API key in JSON body",
+            "queryApiKey": "API key in query string",
+            "none": "No API key"
+          },
+          "method": {
+            "label": "HTTP method",
+            "description": "Request method."
+          },
+          "params": {
+            "label": "Parameter names",
+            "description": "Parameter names for the query and API key."
+          },
+          "mapping": {
+            "label": "Result mapping",
+            "description": "Fields used to read search results from the response."
+          }
+        },
+        "test": {
+          "button": "Test connection",
+          "testing": "Testing…",
+          "needsKey": "Enter an API key first.",
+          "success": "Connected: {{count}} result(s), {{latency}}ms.",
+          "failedPrefix": "Connection failed: {{error}}"
+        }
+      },
+      "router": {
+        "title": "PilotDeck Router",
+        "description": "Embedded router for fan-out across providers (tier-based routing, token saver, auto-orchestrate).",
+        "enabled": { "label": "Enabled", "description": "When on, agents use the router instead of the configured provider directly." },
+        "advancedToggle": "Advanced settings",
+        "levels": {
+          "modelPlaceholder": "Select a configured model",
+          "default": {
+            "label": "Default",
+            "description": "Primary route used when no tier-specific decision applies."
+          },
+          "judge": {
+            "label": "Judge model",
+            "description": "Model used to classify the request before choosing a token-saving tier."
+          },
+          "simple": {
+            "label": "Simple",
+            "description": "Quick Q&A, confirmations, light rewrites, and simple file operations."
+          },
+          "medium": {
+            "label": "Medium",
+            "description": "Single tool calls, short generation, small file edits, and standard coding changes."
+          },
+          "complex": {
+            "label": "Complex",
+            "description": "Work that should be decomposed or delegated to sub-agents."
+          },
+          "reasoning": {
+            "label": "Reasoning",
+            "description": "Multi-file analysis, long-context work, reports, and deep reasoning."
+          }
+        },
+        "zeroUsageRetry": {
+          "label": "Zero-usage retry",
+          "description": "Automatically retry when the upstream returns a response with zero tokens used.",
+          "maxAttempts": { "label": "Max attempts", "description": "Maximum retry attempts before giving up." }
+        },
+        "transientRetry": {
+          "label": "Transient error retry",
+          "description": "Automatically retry on transient errors (rate limits, server errors, overloaded) with exponential backoff.",
+          "maxAttempts": { "label": "Max attempts", "description": "Maximum retry attempts before giving up." },
+          "baseDelayMs": { "label": "Base delay (ms)", "description": "Initial delay before the first retry, in milliseconds." },
+          "maxDelayMs": { "label": "Max delay (ms)", "description": "Maximum delay between retries, in milliseconds." }
+        },
+        "tokenSaver": {
+          "title": "Token Saver",
+          "description": "A lightweight judge classifies each turn into a tier and routes it to a cost-appropriate model.",
+          "judgeModel": "Judge model",
+          "defaultTier": "Default tier",
+          "judgeTimeout": { "label": "Judge timeout (ms)", "description": "Maximum time to wait for the judge decision." },
+          "subagentPolicy": { "label": "Sub-agent policy", "description": "How sub-agents are routed: 'judge' re-evaluates each sub-agent turn, 'skip' keeps the direct sub-agent route." }
+        },
+        "autoOrchestrate": {
+          "title": "Auto Orchestrate",
+          "description": "Automatically fan out complex turns into parallel sub-agents when the judge assigns certain tiers.",
+          "triggerTiers": "Trigger tiers",
+          "slimPrompt": { "label": "Slim system prompt", "description": "Use a shorter system prompt for orchestrated sub-agents to save tokens." }
+        },
+        "stats": { "label": "Stats collection", "description": "Track token usage and cost per session. Powers the Dashboard tab." },
+        "pricing": {
+          "title": "Model Pricing",
+          "description": "Custom pricing per model ($/million tokens). Used when the API doesn't report cost.",
+          "keyFormat": "Key format:",
+          "empty": "No custom pricing configured. Built-in defaults cover common models (DeepSeek, Claude, GPT, Gemini, GLM, Qwen, Llama, etc).",
+          "inputPerM": "Input $/M",
+          "outputPerM": "Output $/M",
+          "cachePerM": "Cache $/M",
+          "addTitle": "Add model pricing",
+          "add": "Add"
+        },
+        "scenarios": {
+          "title": "Scenarios",
+          "description": "Map scenario names to models. default is the primary route.",
+          "empty": "No scenarios configured.",
+          "add": "Add"
+        },
+        "fallback": {
+          "title": "Fallback Chains",
+          "description": "Ordered fallback models per scenario. If the primary fails, the router tries the next.",
+          "empty": "No fallback chains configured.",
+          "addModel": "Add fallback model",
+          "add": "Add"
+        },
+        "tiers": {
+          "title": "Tiers",
+          "description": "Complexity tiers the judge can route to. Pick a model for each — descriptions are pre-filled.",
+          "placeholder": "Describe when the judge should pick this tier…",
+          "add": "Add"
+        },
+        "rules": {
+          "title": "Judge Rules",
+          "empty": "No custom rules. The judge uses tier descriptions only.",
+          "placeholder": "Add a rule for the judge…",
+          "add": "Add"
+        }
+      },
+      "gateway": {
+        "title": "Gateway",
+        "description": "Messaging gateway (Feishu / Telegram / Discord / Slack) — channel-level secrets are best edited via Raw YAML.",
+        "enabled": { "label": "Enabled", "description": "When on, the gateway home is generated and channels with credentials come online." },
+        "home": { "label": "Gateway home", "description": "Working directory for gateway state and per-channel configs." }
+      },
+      "subsystemReload": {
+        "title": "Subsystem reload status",
+        "fallbackDescription": "Reload status will appear after the first save or external edit.",
+        "lastReload": "Last reload: {{source}} at {{time}}"
+      }
+    }
+  },
+  "pluginSettings": {
+    "title": "Plugins",
+    "description": "Extend the interface with custom plugins. Install from git or drop a folder in ~/.pilotdeck/plugins/",
+    "installPlaceholder": "https://github.com/user/my-plugin",
+    "installButton": "Install",
+    "installing": "Installing…",
+    "securityWarning": "Only install plugins whose source code you have reviewed or from authors you trust.",
+    "scanningPlugins": "Scanning plugins…",
+    "noPluginsInstalled": "No plugins installed",
+    "pullLatest": "Pull latest from git",
+    "noGitRemote": "No git remote — update not available",
+    "uninstallPlugin": "Uninstall plugin",
+    "confirmUninstall": "Click again to confirm",
+    "confirmUninstallMessage": "Remove {{name}}? This cannot be undone.",
+    "cancel": "Cancel",
+    "remove": "Remove",
+    "updateFailed": "Update failed",
+    "installFailed": "Installation failed",
+    "uninstallFailed": "Uninstall failed",
+    "toggleFailed": "Toggle failed",
+    "starterPluginLabel": "Starter Plugin",
+    "starter": "Starter",
+    "docs": "Docs",
+    "starterPlugin": {
+      "name": "Project Stats",
+      "badge": "starter",
+      "description": "File counts, lines of code, file-type breakdown, and recent activity for your project.",
+      "install": "Install"
+    },
+    "terminalPlugin": {
+      "name": "Terminal",
+      "badge": "official",
+      "description": "Integrated terminal with full shell access directly within the interface.",
+      "install": "Install"
+    },
+    "morePlugins": "More",
+    "enable": "Enable",
+    "disable": "Disable",
+    "installAriaLabel": "Plugin git repository URL",
+    "tab": "tab",
+    "runningStatus": "running"
+  },
+  "about": {
+    "title": "About",
+    "version": "Version",
+    "checking": "Checking for updates...",
+    "upToDate": "Up to date",
+    "updateAvailable": "Update available",
+    "unavailable": "Unable to check for updates",
+    "checkForUpdates": "Check for Updates",
+    "currentVersion": "Current: {{version}}",
+    "latestVersion": "Latest: {{version}}",
+    "updateNow": "Update Now",
+    "updating": "Updating...",
+    "updateComplete": "Update complete!",
+    "updateFailed": "Update failed",
+    "restartToApply": "Restart to Apply",
+    "restartingTitle": "Restarting PilotDeck...",
+    "restartingDescription": "Page will reload automatically when server is ready.",
+    "restartWaitingDescription": "Restart may take a little while. Please wait.",
+    "restartFailedTitle": "Automatic restart ran into a problem",
+    "restartFailedDescription": "Restart PilotDeck manually from the command line, then refresh this page.",
+    "refreshPage": "Refresh page",
+    "downloadUpdate": "Download Update",
+    "downloading": "Downloading... {{percent}}%",
+    "downloadComplete": "Download complete",
+    "downloadFailed": "Download failed",
+    "installUpdate": "Install Update",
+    "cancelDownload": "Cancel",
+    "dismiss": "Dismiss"
+  },
+  "gateway": {
+    "title": "IM Channels",
+    "description": "Configure instant messaging channels (Feishu, WeChat, WeCom) so the agent can be reached from IM apps.",
+    "connected": "Connected",
+    "notConfigured": "Not configured",
+    "enabled": "Enabled",
+    "loadFailed": "Unable to load IM channel status. Try again later.",
+    "edit": "Edit",
+    "setup": "Set Up",
+    "testConnection": "Test Connection",
+    "save": "Save",
+    "disable": "Disable",
+    "cancel": "Cancel",
+    "dismiss": "Dismiss",
+    "feishu": {
+      "title": "Feishu / Lark",
+      "label": "Feishu Bot",
+      "domain": "Domain",
+      "domainOptions": {
+        "feishu": "feishu.cn (Feishu)",
+        "lark": "larksuite.com (Lark)"
+      },
+      "connectionMode": "Connection Mode",
+      "chooseMethod": "Choose how to configure the Feishu bot:",
+      "qrScan": "QR Code Scan",
+      "qrScanDesc": "Scan with Feishu app to auto-create a bot",
+      "manualInput": "Manual Input",
+      "manualInputDesc": "Enter App ID and Secret from Developer Console",
+      "startQr": "Generate QR Code",
+      "connecting": "Connecting to Feishu…",
+      "scanPrompt": "Open Feishu / Lark app and scan the QR code",
+      "qrSuccess": "App created successfully — config saved and enabled",
+      "retry": "Retry"
+    },
+    "weixin": {
+      "title": "WeChat (iLink)",
+      "label": "WeChat Bot",
+      "qrLogin": "QR Code Login",
+      "relogin": "Re-login",
+      "loadingQr": "Generating QR code…",
+      "scanPrompt": "Open WeChat and scan the QR code to log in",
+      "loginSuccess": "Login successful — credentials saved",
+      "waitingForLogin": "WeChat waiting for QR login",
+      "starting": "WeChat channel is starting",
+      "expired": "WeChat login expired; scan again",
+      "failed": "WeChat channel failed to start",
+      "qrPreparing": "The WeChat background channel is preparing a QR code. Try again shortly.",
+      "noRuntimeQr": "No QR code is available. Make sure the WeChat channel is enabled and waiting for login."
+    },
+    "wecom": {
+      "title": "Enterprise WeChat / WeCom",
+      "label": "WeCom Bot",
+      "chooseMethod": "Choose how to configure the WeCom AI Bot:",
+      "qrSetup": "QR Code Setup",
+      "qrSetupDesc": "Scan with WeCom to create or retrieve bot credentials",
+      "manualInput": "Manual Input",
+      "manualInputDesc": "Copy Bot ID and Secret from the WeCom admin console",
+      "startQr": "Generate WeCom QR Code",
+      "connecting": "Connecting to WeCom…",
+      "scanPrompt": "Open WeCom and scan the QR code",
+      "qrSuccess": "WeCom configured — bot credentials saved and enabled",
+      "retry": "Retry",
+      "botId": "Bot ID",
+      "secret": "Secret",
+      "websocketUrl": "WebSocket URL",
+      "dmPolicy": "DM Policy",
+      "groupPolicy": "Group Policy",
+      "policyHint": "Basic policies are written to pilotdeck.yaml; edit YAML later for finer user or group allowlists.",
+      "saveSuccess": "WeCom config saved"
+    }
+  }
+}

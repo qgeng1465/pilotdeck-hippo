@@ -1,0 +1,428 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { Dispatch, KeyboardEvent, RefObject, SetStateAction } from 'react';
+import { api } from '../../../utils/api';
+import { isImeEnterEvent } from '../../../utils/ime';
+import {
+  ADD_WORKSPACE_FILE_MENTION_EVENT,
+  hasWorkspaceFileMention,
+  insertWorkspaceFileMention,
+  isWorkspaceFileMentionRequest,
+} from '../../../utils/workspaceFileMention';
+import { escapeRegExp } from '../utils/chatFormatting';
+import type { Project } from '../../../types/app';
+
+interface ProjectFileNode {
+  name: string;
+  type: 'file' | 'directory';
+  path?: string;
+  children?: ProjectFileNode[];
+}
+
+export interface MentionableFile {
+  name: string;
+  path: string;
+  relativePath?: string;
+}
+
+interface UseFileMentionsOptions {
+  selectedProject: Project | null;
+  mentionScopeKey: string | null;
+  input: string;
+  setInput: Dispatch<SetStateAction<string>>;
+  textareaRef: RefObject<HTMLTextAreaElement>;
+}
+
+const flattenFileTree = (files: ProjectFileNode[], basePath = ''): MentionableFile[] => {
+  let flattened: MentionableFile[] = [];
+
+  files.forEach((file) => {
+    const fullPath = basePath ? `${basePath}/${file.name}` : file.name;
+    if (file.type === 'directory' && file.children) {
+      flattened = flattened.concat(flattenFileTree(file.children, fullPath));
+      return;
+    }
+
+    if (file.type === 'file') {
+      flattened.push({
+        name: file.name,
+        path: fullPath,
+        relativePath: file.path,
+      });
+    }
+  });
+
+  return flattened;
+};
+
+export function useFileMentions({
+  selectedProject,
+  mentionScopeKey,
+  input,
+  setInput,
+  textareaRef,
+}: UseFileMentionsOptions) {
+  const [fileList, setFileList] = useState<MentionableFile[]>([]);
+  const [fileMentions, setFileMentions] = useState<string[]>([]);
+  const [filteredFiles, setFilteredFiles] = useState<MentionableFile[]>([]);
+  const [showFileDropdown, setShowFileDropdown] = useState(false);
+  const [selectedFileIndex, setSelectedFileIndex] = useState(-1);
+  const [cursorPosition, setCursorPositionState] = useState(0);
+  const [atSymbolPosition, setAtSymbolPosition] = useState(-1);
+  const hasCursorPositionRef = useRef(false);
+  const wasDropdownOpenRef = useRef(false);
+
+  const setCursorPosition = useCallback((position: number) => {
+    hasCursorPositionRef.current = true;
+    setCursorPositionState(position);
+  }, []);
+
+  // Track the latest in-flight fetch so a refresh triggered by reopening
+  // the @ dropdown can supersede the one kicked off on project switch.
+  const inFlightFetchRef = useRef<AbortController | null>(null);
+
+  const fetchProjectFiles = useCallback(async () => {
+    const projectName = selectedProject?.name;
+    if (!projectName) {
+      setFileList([]);
+      setFilteredFiles([]);
+      return;
+    }
+
+    inFlightFetchRef.current?.abort();
+    const abortController = new AbortController();
+    inFlightFetchRef.current = abortController;
+
+    try {
+      const response = await api.getFiles(projectName, { signal: abortController.signal });
+      if (!response.ok) {
+        return;
+      }
+      const files = (await response.json()) as ProjectFileNode[];
+      if (abortController.signal.aborted) {
+        return;
+      }
+      setFileList(flattenFileTree(files));
+    } catch (error) {
+      // Ignore aborts from rapid project switches / refreshes.
+      if ((error as { name?: string })?.name === 'AbortError') {
+        return;
+      }
+      console.error('Error fetching files:', error);
+    } finally {
+      if (inFlightFetchRef.current === abortController) {
+        inFlightFetchRef.current = null;
+      }
+    }
+  }, [selectedProject?.name]);
+
+  // Initial fetch + reset on project change.
+  useEffect(() => {
+    setFileList([]);
+    setFileMentions([]);
+    setFilteredFiles([]);
+    setCursorPositionState(0);
+    hasCursorPositionRef.current = false;
+    fetchProjectFiles();
+    return () => {
+      inFlightFetchRef.current?.abort();
+    };
+  }, [fetchProjectFiles]);
+
+  // Cursor and mention UI state belong to a single draft. A conversation
+  // switch can keep the same project mounted, so project identity alone is
+  // not enough to prevent insertion at a previous conversation's cursor.
+  useEffect(() => {
+    setFileMentions([]);
+    setFilteredFiles([]);
+    setShowFileDropdown(false);
+    setSelectedFileIndex(-1);
+    setCursorPositionState(0);
+    setAtSymbolPosition(-1);
+    hasCursorPositionRef.current = false;
+    wasDropdownOpenRef.current = false;
+  }, [mentionScopeKey]);
+
+  // Refresh whenever the @ dropdown transitions from closed → open, so
+  // files created / renamed / deleted in the Files tab since the last
+  // project switch show up immediately. We intentionally do NOT refetch
+  // on every keystroke while the dropdown is already open — the snapshot
+  // taken on open is good enough for that session of typing.
+  useEffect(() => {
+    const wasOpen = wasDropdownOpenRef.current;
+    wasDropdownOpenRef.current = showFileDropdown;
+    if (!wasOpen && showFileDropdown) {
+      fetchProjectFiles();
+    }
+  }, [showFileDropdown, fetchProjectFiles]);
+
+  useEffect(() => {
+    const textBeforeCursor = input.slice(0, cursorPosition);
+    const lastAtIndex = textBeforeCursor.lastIndexOf('@');
+
+    if (lastAtIndex === -1) {
+      setShowFileDropdown(false);
+      setAtSymbolPosition(-1);
+      return;
+    }
+
+    const textAfterAt = textBeforeCursor.slice(lastAtIndex + 1);
+    if (textAfterAt.includes(' ')) {
+      setShowFileDropdown(false);
+      setAtSymbolPosition(-1);
+      return;
+    }
+
+    setAtSymbolPosition(lastAtIndex);
+    setShowFileDropdown(true);
+    setSelectedFileIndex(-1);
+
+    const matchingFiles = fileList
+      .filter(
+        (file) =>
+          file.name.toLowerCase().includes(textAfterAt.toLowerCase()) ||
+          file.path.toLowerCase().includes(textAfterAt.toLowerCase()),
+      )
+      .slice(0, 10);
+
+    setFilteredFiles(matchingFiles);
+  }, [input, cursorPosition, fileList]);
+
+  const activeFileMentions = useMemo(() => {
+    if (!input || fileMentions.length === 0) {
+      return [];
+    }
+    return fileMentions.filter((path) => hasWorkspaceFileMention(input, path));
+  }, [fileMentions, input]);
+
+  const sortedFileMentions = useMemo(() => {
+    if (activeFileMentions.length === 0) {
+      return [];
+    }
+    const uniqueMentions = Array.from(new Set(activeFileMentions));
+    return uniqueMentions.sort((mentionA, mentionB) => mentionB.length - mentionA.length);
+  }, [activeFileMentions]);
+
+  const fileMentionRegex = useMemo(() => {
+    if (sortedFileMentions.length === 0) {
+      return null;
+    }
+    const pattern = sortedFileMentions.map(escapeRegExp).join('|');
+    return new RegExp(`((?<!\\S)(?:${pattern})(?=$|\\s))`, 'g');
+  }, [sortedFileMentions]);
+
+  const fileMentionSet = useMemo(() => new Set(sortedFileMentions), [sortedFileMentions]);
+
+  const focusMention = useCallback(
+    (position: number) => {
+      if (textareaRef.current && !textareaRef.current.matches(':focus')) {
+        textareaRef.current.focus();
+      }
+
+      requestAnimationFrame(() => {
+        if (!textareaRef.current) return;
+        textareaRef.current.setSelectionRange(position, position);
+        if (!textareaRef.current.matches(':focus')) {
+          textareaRef.current.focus();
+        }
+      });
+    },
+    [textareaRef],
+  );
+
+  const addExternalFileMention = useCallback(
+    (relativePath: string) => {
+      const insertionPosition = hasCursorPositionRef.current ? cursorPosition : input.length;
+      const result = insertWorkspaceFileMention(input, relativePath, insertionPosition);
+
+      if (!result.alreadyPresent) {
+        setInput(result.input);
+      }
+      setCursorPosition(result.cursorPosition);
+      setFileMentions((previousMentions) =>
+        previousMentions.includes(relativePath)
+          ? previousMentions
+          : [...previousMentions, relativePath],
+      );
+      focusMention(result.cursorPosition);
+    },
+    [cursorPosition, focusMention, input, setCursorPosition, setInput],
+  );
+
+  useEffect(() => {
+    const handleAddWorkspaceFileMention = (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+      if (!isWorkspaceFileMentionRequest(detail)) return;
+      if (detail.projectName !== selectedProject?.name) return;
+      addExternalFileMention(detail.relativePath);
+    };
+
+    window.addEventListener(ADD_WORKSPACE_FILE_MENTION_EVENT, handleAddWorkspaceFileMention);
+    return () => {
+      window.removeEventListener(ADD_WORKSPACE_FILE_MENTION_EVENT, handleAddWorkspaceFileMention);
+    };
+  }, [addExternalFileMention, selectedProject?.name]);
+
+  const renderInputWithMentions = useCallback(
+    (text: string) => {
+      if (!text) {
+        return '';
+      }
+      if (!fileMentionRegex) {
+        return text;
+      }
+
+      const parts = text.split(fileMentionRegex);
+      return parts.map((part, index) =>
+        fileMentionSet.has(part) ? (
+          <span
+            key={`mention-${index}`}
+            className="-ml-0.5 rounded-md bg-blue-200/70 box-decoration-clone px-0.5 text-transparent dark:bg-blue-300/40"
+          >
+            {part}
+          </span>
+        ) : (
+          <span key={`text-${index}`}>{part}</span>
+        ),
+      );
+    },
+    [fileMentionRegex, fileMentionSet],
+  );
+
+  const selectFile = useCallback(
+    (file: MentionableFile) => {
+      const textBeforeAt = input.slice(0, atSymbolPosition);
+      const textAfterAtQuery = input.slice(atSymbolPosition);
+      const spaceIndex = textAfterAtQuery.indexOf(' ');
+      const textAfterQuery = spaceIndex !== -1 ? textAfterAtQuery.slice(spaceIndex) : '';
+
+      const newInput = `${textBeforeAt}${file.path} ${textAfterQuery}`;
+      const newCursorPosition = textBeforeAt.length + file.path.length + 1;
+
+      setInput(newInput);
+      setCursorPosition(newCursorPosition);
+      setFileMentions((previousMentions) =>
+        previousMentions.includes(file.path) ? previousMentions : [...previousMentions, file.path],
+      );
+
+      setShowFileDropdown(false);
+      setAtSymbolPosition(-1);
+      focusMention(newCursorPosition);
+    },
+    [input, atSymbolPosition, focusMention, setCursorPosition, setInput],
+  );
+
+  const handleFileMentionsKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLTextAreaElement>): boolean => {
+      if ((event.key === 'Backspace' || event.key === 'Delete') && sortedFileMentions.length > 0) {
+        const textarea = textareaRef.current;
+        const selectionStart = textarea?.selectionStart ?? cursorPosition;
+        const selectionEnd = textarea?.selectionEnd ?? selectionStart;
+        if (selectionStart === selectionEnd) {
+          const mentionRanges = sortedFileMentions.flatMap((mention) => {
+            const ranges: Array<{ mention: string; start: number; end: number }> = [];
+            let searchFrom = 0;
+            while (searchFrom <= input.length - mention.length) {
+              const start = input.indexOf(mention, searchFrom);
+              if (start === -1) break;
+              const end = start + mention.length;
+              const hasLeadingBoundary = start === 0 || /\s/.test(input[start - 1]);
+              const hasTrailingBoundary = end === input.length || /\s/.test(input[end]);
+              if (hasLeadingBoundary && hasTrailingBoundary) ranges.push({ mention, start, end });
+              searchFrom = Math.max(end, start + 1);
+            }
+            return ranges;
+          });
+          const range = mentionRanges.find(({ start, end }) => (
+            event.key === 'Backspace'
+              ? selectionStart === end || (selectionStart === end + 1 && /\s/.test(input[end] || ''))
+              : selectionStart === start || (selectionStart + 1 === start && /\s/.test(input[selectionStart] || ''))
+          ));
+
+          if (range) {
+            event.preventDefault();
+            let removeStart = range.start;
+            let removeEnd = range.end;
+            if (/\s/.test(input[removeEnd] || '')) {
+              removeEnd += 1;
+            } else if (removeStart > 0 && /\s/.test(input[removeStart - 1] || '')) {
+              removeStart -= 1;
+            }
+            const nextInput = `${input.slice(0, removeStart)}${input.slice(removeEnd)}`;
+            setInput(nextInput);
+            setCursorPosition(removeStart);
+            setFileMentions((mentions) => mentions.filter((mention) => (
+              mention !== range.mention || hasWorkspaceFileMention(nextInput, mention)
+            )));
+            focusMention(removeStart);
+            setShowFileDropdown(false);
+            return true;
+          }
+        }
+      }
+
+      if (!showFileDropdown || filteredFiles.length === 0) {
+        return false;
+      }
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        setSelectedFileIndex((previousIndex) =>
+          previousIndex < filteredFiles.length - 1 ? previousIndex + 1 : 0,
+        );
+        return true;
+      }
+
+      if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        setSelectedFileIndex((previousIndex) =>
+          previousIndex > 0 ? previousIndex - 1 : filteredFiles.length - 1,
+        );
+        return true;
+      }
+
+      if (event.key === 'Tab' || event.key === 'Enter') {
+        if (isImeEnterEvent(event)) {
+          return false;
+        }
+        event.preventDefault();
+        if (selectedFileIndex >= 0) {
+          selectFile(filteredFiles[selectedFileIndex]);
+        } else if (filteredFiles.length > 0) {
+          selectFile(filteredFiles[0]);
+        }
+        return true;
+      }
+
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setShowFileDropdown(false);
+        return true;
+      }
+
+      return false;
+    },
+    [
+      cursorPosition,
+      filteredFiles,
+      focusMention,
+      input,
+      selectFile,
+      selectedFileIndex,
+      setCursorPosition,
+      setInput,
+      showFileDropdown,
+      sortedFileMentions,
+      textareaRef,
+    ],
+  );
+
+  return {
+    showFileDropdown,
+    filteredFiles,
+    selectedFileIndex,
+    renderInputWithMentions,
+    selectFile,
+    setCursorPosition,
+    handleFileMentionsKeyDown,
+  };
+}

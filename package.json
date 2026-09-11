@@ -1,0 +1,72 @@
+{
+  "name": "pilotdeck",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0 <23"
+  },
+  "workspaces": [
+    "ui"
+  ],
+  "bin": {
+    "pilotdeck": "./dist/src/cli/pilotdeck.js"
+  },
+  "scripts": {
+    "check:runtime": "node scripts/check-node-runtime.mjs",
+    "install:browser": "npx @playwright/mcp install-browser chrome-for-testing",
+    "install:asr": "node scripts/install-asr.mjs",
+    "prebuild": "npm run check:runtime && node scripts/bootstrap-pilotdeck-config.mjs && cd src/context/memory/edgeclaw-memory-core && npm run build",
+    "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.json && node -e \"require('fs').cpSync('src/extension/plugins/builtin','dist/src/extension/plugins/builtin',{recursive:true})\"",
+    "server": "npm run check:runtime && tsx src/cli/pilotdeck.ts server",
+    "server:built": "npm run check:runtime && node dist/src/cli/pilotdeck.js server",
+    "skills:migrate": "tsx src/cli/pilotdeck.ts skills migrate",
+    "predev": "npm run check:runtime && node scripts/bootstrap-pilotdeck-config.mjs",
+    "dev": "node scripts/dev-launcher.mjs",
+    "test": "npm run build && node --test --test-force-exit --test-timeout 60000 \"dist/tests/**/*.test.js\" \"dist/tests/**/*.spec.js\"",
+    "e2e:real-compaction": "npm run build && PILOTDECK_RUN_REAL_COMPACTION_E2E=1 node dist/tests/agent/e2e/run-real-compaction.js",
+    "e2e:real-agent-lifecycle-hooks": "npm run build && PILOTDECK_RUN_REAL_AGENT_LIFECYCLE_E2E=1 node dist/tests/agent/e2e/run-real-agent-lifecycle-hooks.js",
+    "benchmark": "tsx benchmarks/run.ts",
+    "benchmark:no-regression": "tsx benchmarks/assertNoRegression.ts",
+    "benchmark:demo": "tsx benchmarks/run-demo.ts",
+    "benchmark:smoke": "tsx benchmarks/smoke.ts",
+    "benchmark:ablation": "tsx benchmarks/ablation.ts",
+    "benchmark:tune": "tsx benchmarks/tune.ts",
+    "benchmark:real-llm": "tsx benchmarks/realLlmEval.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.0",
+    "@types/ws": "^8.18.1",
+    "ink-testing-library": "^4.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@google/genai": "^2.10.0",
+    "@huggingface/transformers": "^4.2.0",
+    "@larksuiteoapi/node-sdk": "^1.65.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@types/react": "^19.2.14",
+    "@types/turndown": "^5.0.6",
+    "@vscode/ripgrep": "^1.18.0",
+    "csv-parse": "^7.0.0",
+    "edgeclaw-memory-core": "file:src/context/memory/edgeclaw-memory-core",
+    "ink": "^7.0.2",
+    "ink-text-input": "^6.0.0",
+    "js-tiktoken": "^1.0.21",
+    "jsonrepair": "^3.14.0",
+    "mupdf": "^1.27.0",
+    "parse5": "^8.0.1",
+    "react": "^19.2.6",
+    "sharp": "^0.34.5",
+    "slice-ansi": "^9.0.0",
+    "string-width": "^8.2.1",
+    "strip-ansi": "^7.2.0",
+    "turndown": "^7.2.4",
+    "undici": "^8.2.0",
+    "weixin-ilink": "^0.1.0",
+    "ws": "^8.21.0",
+    "yaml": "^2.8.4"
+  },
+  "packageManager": "pnpm@10.32.1"
+}

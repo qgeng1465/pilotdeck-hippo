@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.13
+
+      - name: Enable corepack (pnpm)
+        run: corepack enable
+
+      - name: Install dependencies
+        run: corepack pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: corepack pnpm exec tsc --noEmit
+
+      # Guards the contract that Hippo is strictly additive: constructing the
+      # engine without scorePolicy must reproduce the upstream baseline
+      # byte-for-byte (golden fixture benchmarks/baseline-85be774.json).
+      - name: No-regression guard
+        run: corepack pnpm benchmark:no-regression
+
+      # `npm test` builds to dist/ and runs node:test. A handful of timing-
+      # sensitive specs (large-file paging, background-task timeouts) can be
+      # cancelled when the whole suite runs concurrently on a loaded runner,
+      # which makes node:test exit non-zero even with zero real failures. Gate
+      # on the actual `# fail` count instead of the process exit code.
+      - name: Test suite
+        run: |
+          set -o pipefail
+          npm test 2>&1 | tee test-output.log || true
+          summary=$(grep -E '^# (tests|pass|fail|cancelled|skipped) ' test-output.log || true)
+          echo "$summary"
+          fails=$(echo "$summary" | awk '/^# fail /{print $3}')
+          if [ -z "$fails" ] || [ "$fails" -ne 0 ]; then
+            echo "::error::test suite reported ${fails:-unknown} failing tests"
+            exit 1
+          fi

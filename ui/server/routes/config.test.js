@@ -1,0 +1,1545 @@
+import express from 'express';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { validatePilotDeckConfig } from '../services/pilotdeckConfig.js';
+import { rewriteModelReferences } from '../services/modelReferences.js';
+
+const nativeFetch = globalThis.fetch;
+const tempDirs = [];
+
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+  vi.resetModules();
+  delete process.env.PILOT_HOME;
+  delete process.env.PILOTDECK_CONFIG_PATH;
+  for (const dir of tempDirs.splice(0)) {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+describe('pilotdeck config model validation', () => {
+  it('rejects an agent model missing from an existing provider', () => {
+    const validation = validatePilotDeckConfig({
+      agent: { model: 'ollama/missing' },
+      model: { providers: { ollama: { protocol: 'openai', url: 'http://localhost:11434/v1', models: { known: {} } } } },
+    });
+    expect(validation.valid).toBe(false);
+    expect(validation.errors.join('\n')).toContain('agent.model="ollama/missing"');
+  });
+});
+
+describe('config test-connection route', () => {
+  it('uses protocol-versioned chat completions when the root base URL works', async () => {
+    const calls = [];
+    vi.stubGlobal('fetch', vi.fn(async (url) => {
+      calls.push(String(url));
+      return jsonResponse({ choices: [{ message: { content: 'ok' } }] });
+    }));
+
+    const { request } = await createConfigApp();
+    const data = await request('/api/config/test-connection', {
+      method: 'POST',
+      body: JSON.stringify({
+        providerType: 'openai',
+        baseUrl: 'https://api.openai.com',
+        apiKey: 'sk-test',
+        model: 'gpt-test',
+      }),
+    });
+
+    expect(data.ok).toBe(true);
+    expect(data.supportsImage).toBe(true);
+    expect(data.imageCheckSource).toBe('probe');
+    expect(data.imageSupport).toMatchObject({ status: 'supported', supported: true });
+    expect(calls).toEqual([
+      'https://api.openai.com/v1/chat/completions',
+      'https://api.openai.com/v1/chat/completions',
+    ]);
+  });
+
+  it('allows enough completion tokens for reasoning models to return chat text', async () => {
+    const requestBodies = [];
+    vi.stubGlobal('fetch', vi.fn(async (_url, options) => {
+      requestBodies.push(JSON.parse(options.body));
+      return jsonResponse({ choices: [{ message: { content: 'ok' } }] });
+    }));
+
+    const { request } = await createConfigApp();
+    const data = await request('/api/config/test-connection', {
+      method: 'POST',
+      body: JSON.stringify({
+        providerType: 'openai',
+        baseUrl: 'https://api.moonshot.cn/v1',
+        apiKey: 'sk-test',
+        model: 'kimi-k3',
+      }),
+    });
+
+    expect(data.ok).toBe(true);
+    expect(requestBodies[0]).toMatchObject({
+      model: 'kimi-k3',
+      max_tokens: 8,
+      messages: [{ role: 'user', content: 'Reply exactly: 1' }],
+    });
+  });
+
+  it('falls back to unversioned chat completions when protocol-versioned probing misses', async () => {
+    const calls = [];
+    vi.stubGlobal('fetch', vi.fn(async (url) => {
+      calls.push(String(url));
+      if (String(url) === 'https://api.openai.com/v1/chat/completions') {
+        return jsonResponse({ error: { message: 'not found' } }, { ok: false, status: 404, statusText: 'Not Found' });
+      }
+      return jsonResponse({ choices: [{ message: { content: 'ok' } }] });
+    }));
+
+    const { request } = await createConfigApp();
+    const data = await request('/api/config/test-connection', {
+      method: 'POST',
+      body: JSON.stringify({
+        providerType: 'openai',
+        baseUrl: 'https://api.openai.com',
+        apiKey: 'sk-test',
+        model: 'gpt-test',
+      }),
+    });
+
+    expect(data.ok).toBe(true);
+    expect(calls).toEqual([
+      'https://api.openai.com/v1/chat/completions',
+      'https://api.openai.com/chat/completions',
+      'https://api.openai.com/chat/completions',
+    ]);
+  });
+
+  it('falls back to unversioned chat completions when protocol-versioned probing returns unexpected JSON', async () => {
+    const calls = [];
+    vi.stubGlobal('fetch', vi.fn(async (url, init) => {
+      calls.push(String(url));
+      const body = init?.body ? JSON.parse(init.body) : {};
+      const hasImage = JSON.stringify(body).includes('image_url');
+      if (String(url) === 'https://api.openai.com/v1/chat/completions') {
+        return jsonResponse({ ok: true });
+      }
+      if (hasImage) {
+        return jsonResponse({ choices: [{ message: { content: 'image ok' } }] });
+      }
+      return jsonResponse({ choices: [{ message: { content: 'ok' } }] });
+    }));
+
+    const { request } = await createConfigApp();
+    const data = await request('/api/config/test-connection', {
+      method: 'POST',
+      body: JSON.stringify({
+        providerType: 'openai',
+        baseUrl: 'https://api.openai.com',
+        apiKey: 'sk-test',
+        model: 'gpt-test',
+      }),
+    });
+
+    expect(data.ok).toBe(true);
+    expect(data.supportsImage).toBe(true);
+    expect(calls).toEqual([
+      'https://api.openai.com/v1/chat/completions',
+      'https://api.openai.com/chat/completions',
+      'https://api.openai.com/chat/completions',
+    ]);
+  });
+
+  it('returns supportsImage false when the validated endpoint rejects image input', async () => {
+    const calls = [];
+    vi.stubGlobal('fetch', vi.fn(async (url, init) => {
+      calls.push(String(url));
+      const body = init?.body ? JSON.parse(init.body) : {};
+      const hasImage = JSON.stringify(body).includes('image_url');
+      if (hasImage) {
+        return jsonResponse(
+          { error: { message: 'image input not supported' } },
+          { ok: false, status: 400, statusText: 'Bad Request' },
+        );
+      }
+      return jsonResponse({ choices: [{ message: { content: 'ok' } }] });
+    }));
+
+    const { request } = await createConfigApp();
+    const data = await request('/api/config/test-connection', {
+      method: 'POST',
+      body: JSON.stringify({
+        providerType: 'openai',
+        baseUrl: 'https://api.openai.com',
+        apiKey: 'sk-test',
+        model: 'gpt-test',
+      }),
+    });
+
+    expect(data.ok).toBe(true);
+    expect(data.supportsImage).toBe(false);
+    expect(data.imageCheckSource).toBe('probe');
+    expect(data.imageSupport).toMatchObject({
+      status: 'unsupported',
+      supported: false,
+      reasonCode: 'explicit_unsupported',
+    });
+    expect(calls).toEqual([
+      'https://api.openai.com/v1/chat/completions',
+      'https://api.openai.com/v1/chat/completions',
+    ]);
+  });
+
+  it('falls back to unversioned messages for Anthropic when protocol-versioned probing returns unexpected JSON', async () => {
+    const calls = [];
+    vi.stubGlobal('fetch', vi.fn(async (url) => {
+      calls.push(String(url));
+      if (String(url) === 'https://api.anthropic.com/v1/messages') {
+        return jsonResponse({ ok: true });
+      }
+      return jsonResponse({ type: 'message', content: [{ type: 'text', text: 'ok' }] });
+    }));
+
+    const { request } = await createConfigApp();
+    const data = await request('/api/config/test-connection', {
+      method: 'POST',
+      body: JSON.stringify({
+        providerType: 'anthropic',
+        baseUrl: 'https://api.anthropic.com',
+        apiKey: 'sk-test',
+        model: 'claude-test',
+      }),
+    });
+
+    expect(data.ok).toBe(true);
+    expect(calls).toEqual([
+      'https://api.anthropic.com/v1/messages',
+      'https://api.anthropic.com/messages',
+      'https://api.anthropic.com/messages',
+    ]);
+  });
+
+  it('falls back to unversioned Gemini endpoint when protocol-versioned probing returns unexpected JSON', async () => {
+    const calls = [];
+    vi.stubGlobal('fetch', vi.fn(async (url) => {
+      calls.push(String(url));
+      if (String(url) === 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent') {
+        return jsonResponse({ ok: true });
+      }
+      return jsonResponse({ candidates: [{ content: { parts: [{ text: 'ok' }] } }] });
+    }));
+
+    const { request } = await createConfigApp();
+    const data = await request('/api/config/test-connection', {
+      method: 'POST',
+      body: JSON.stringify({
+        providerType: 'google',
+        baseUrl: 'https://generativelanguage.googleapis.com',
+        apiKey: 'sk-test',
+        model: 'gemini-pro',
+      }),
+    });
+
+    expect(data.ok).toBe(true);
+    expect(calls).toEqual([
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+      'https://generativelanguage.googleapis.com/models/gemini-pro:generateContent',
+      'https://generativelanguage.googleapis.com/models/gemini-pro:generateContent',
+    ]);
+  });
+
+  it('does not duplicate existing version paths', async () => {
+    const calls = [];
+    vi.stubGlobal('fetch', vi.fn(async (url) => {
+      calls.push(String(url));
+      return jsonResponse({ choices: [{ message: { content: 'ok' } }] });
+    }));
+
+    const { request } = await createConfigApp();
+    const data = await request('/api/config/test-connection', {
+      method: 'POST',
+      body: JSON.stringify({
+        providerType: 'openai',
+        baseUrl: 'https://api.openai.com/v1',
+        apiKey: 'sk-test',
+        model: 'gpt-test',
+      }),
+    });
+
+    expect(data.ok).toBe(true);
+    expect(calls).toEqual([
+      'https://api.openai.com/v1/chat/completions',
+      'https://api.openai.com/v1/chat/completions',
+    ]);
+  });
+
+  it('accepts full OpenAI-compatible endpoint URLs', async () => {
+    const calls = [];
+    vi.stubGlobal('fetch', vi.fn(async (url) => {
+      calls.push(String(url));
+      return jsonResponse({ choices: [{ message: { content: 'ok' } }] });
+    }));
+
+    const { request } = await createConfigApp();
+    const data = await request('/api/config/test-connection', {
+      method: 'POST',
+      body: JSON.stringify({
+        providerType: 'openai',
+        baseUrl: 'https://api.openai.com/v1/chat/completions',
+        apiKey: 'sk-test',
+        model: 'gpt-test',
+      }),
+    });
+
+    expect(data.ok).toBe(true);
+    expect(calls).toEqual([
+      'https://api.openai.com/v1/chat/completions',
+      'https://api.openai.com/v1/chat/completions',
+    ]);
+  });
+
+  it('fails when the provider returns no chat text or reasoning output', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({ choices: [{ message: { content: '' } }] })));
+
+    const { request } = await createConfigApp();
+    const data = await request('/api/config/test-connection', {
+      method: 'POST',
+      body: JSON.stringify({
+        providerType: 'openai',
+        baseUrl: 'https://api.openai.com',
+        apiKey: 'sk-test',
+        model: 'gpt-test',
+      }),
+    });
+
+    expect(data.ok).toBe(false);
+    expect(data.error).toContain('did not produce any chat text');
+  });
+
+  it('accepts OpenAI-compatible reasoning output from a constrained probe', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({
+      choices: [{ message: { content: '', reasoning_content: 'Brief reasoning' } }],
+    })));
+
+    const { request } = await createConfigApp();
+    const data = await request('/api/config/test-connection', {
+      method: 'POST',
+      body: JSON.stringify({
+        providerType: 'openai',
+        baseUrl: 'https://api.moonshot.cn/v1',
+        apiKey: 'sk-test',
+        model: 'kimi-k3',
+      }),
+    });
+
+    expect(data.ok).toBe(true);
+  });
+
+  it('accepts Responses API output_text content parts', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({
+      object: 'response',
+      output: [{
+        type: 'message',
+        content: [{ type: 'output_text', output_text: 'ok' }],
+      }],
+    })));
+
+    const { request } = await createConfigApp();
+    const data = await request('/api/config/test-connection', {
+      method: 'POST',
+      body: JSON.stringify({
+        providerType: 'openai-responses',
+        baseUrl: 'https://api.openai.com/v1',
+        apiKey: 'sk-test',
+        model: 'gpt-test',
+      }),
+    });
+
+    expect(data.ok).toBe(true);
+  });
+
+  it('allows Ollama connection tests without an API key', async () => {
+    const calls = [];
+    const authHeaders = [];
+    vi.stubGlobal('fetch', vi.fn(async (url, init) => {
+      calls.push(String(url));
+      authHeaders.push(init?.headers?.Authorization ?? init?.headers?.authorization);
+      return jsonResponse({ choices: [{ message: { content: 'ok' } }] });
+    }));
+
+    const { request } = await createConfigApp();
+    const data = await request('/api/config/test-connection', {
+      method: 'POST',
+      body: JSON.stringify({
+        providerId: 'ollama',
+        providerType: 'openai',
+        baseUrl: 'http://localhost:11434/v1',
+        apiKey: '',
+        model: 'qwen3:0.6b',
+      }),
+    });
+
+    expect(data.ok).toBe(true);
+    expect(calls).toEqual([
+      'http://localhost:11434/v1/chat/completions',
+      'http://localhost:11434/v1/chat/completions',
+    ]);
+    expect(authHeaders).toEqual([undefined, undefined]);
+  });
+});
+
+describe('config model-list route', () => {
+  it('preserves a non-JSON upstream authentication error status', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => ({
+      ...jsonResponse({}, { ok: false, status: 401, statusText: 'Unauthorized' }),
+      text: async () => 'Authentication Fails (governor)',
+    })));
+
+    const { requestStatus } = await createConfigApp();
+    const response = await requestStatus('/api/config/models', {
+      method: 'POST',
+      body: JSON.stringify({
+        providerId: 'deepseek',
+        providerType: 'openai',
+        baseUrl: 'https://api.deepseek.com/models',
+        apiKey: '',
+      }),
+    });
+
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ ok: false, error: 'Authentication Fails (governor)' });
+  });
+});
+
+describe('config model-pool connection test routes', () => {
+  it('uses a custom endpoint for catalog providers', async () => {
+    const probe = vi.fn().mockResolvedValue({ ok: true });
+    const { requestStatus } = await createConfigApp({ probe });
+    const response = await requestStatus('/api/config/test-connections', {
+      method: 'POST',
+      body: JSON.stringify({
+        providerId: 'openai',
+        endpoint: 'https://proxy.example/v1///',
+        apiKey: 'key',
+        models: ['model-a'],
+        retryPolicy: retryPolicy(),
+      }),
+    });
+    expect(response.status).toBe(200);
+    expect(probe).toHaveBeenCalledWith(expect.objectContaining({ baseUrl: 'https://proxy.example/v1' }));
+  });
+
+  it('reuses the text probe endpoint for the image probe', async () => {
+    const probe = vi.fn()
+      .mockResolvedValueOnce({ ok: true, endpointUrl: 'https://fallback.example/chat/completions' })
+      .mockResolvedValueOnce({ ok: true });
+    const { requestStatus } = await createConfigApp({ probe });
+    const response = await requestStatus('/api/config/test-connections', {
+      method: 'POST',
+      body: JSON.stringify({ providerId: 'openai', apiKey: 'key', models: ['model-a'], retryPolicy: retryPolicy() }),
+    });
+    expect(response.status).toBe(200);
+    expect(probe).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      endpointUrl: 'https://fallback.example/chat/completions',
+    }));
+  });
+
+  it('matches a connection test against a catalog default endpoint when provider url is empty', async () => {
+    const probe = vi.fn().mockResolvedValue({ ok: true });
+    const initial = {
+      agent: { model: 'openai/model-a' },
+      model: { providers: { openai: { protocol: 'openai', url: '', apiKey: 'key', models: {} } } },
+    };
+    const { requestStatus, writePilotDeckConfig } = await createConfigApp({ config: initial, probe });
+    const tested = await requestStatus('/api/config/test-connections', {
+      method: 'POST',
+      body: JSON.stringify({ providerId: 'openai', apiKey: 'key', models: ['model-a'], retryPolicy: retryPolicy() }),
+    });
+    expect(tested.status).toBe(200);
+    const next = {
+      ...initial,
+      model: { providers: { openai: { ...initial.model.providers.openai, models: { 'model-a': {} } } } },
+    };
+    const saved = await requestStatus('/api/config', {
+      method: 'PUT',
+      headers: { 'x-user': 'one' },
+      body: JSON.stringify({ config: next, modelTestBindings: [{ testId: tested.body.testId }] }),
+    });
+    expect(saved.status).toBe(200);
+    expect(writePilotDeckConfig).toHaveBeenCalled();
+  });
+
+  it('matches the UI catalog endpoint for MiniMax when provider url is empty', async () => {
+    const probe = vi.fn().mockResolvedValue({ ok: true });
+    const initial = {
+      agent: { model: 'minimax/model-a' },
+      model: { providers: { minimax: { protocol: 'openai', url: '', apiKey: 'key', models: {} } } },
+    };
+    const { requestStatus } = await createConfigApp({ config: initial, probe });
+    const tested = await requestStatus('/api/config/test-connections', {
+      method: 'POST',
+      body: JSON.stringify({ providerId: 'minimax', apiKey: 'key', models: ['model-a'], retryPolicy: retryPolicy() }),
+    });
+    expect(tested.status).toBe(200);
+    expect(probe).toHaveBeenCalledWith(expect.objectContaining({ baseUrl: 'https://api.minimax.io/v1' }));
+  });
+
+  it('runs batch text/image probes and accepts manual image capabilities', async () => {
+    const probe = vi.fn()
+      .mockResolvedValueOnce({ ok: true })
+      .mockResolvedValueOnce({ ok: false, imageUnsupported: false, error: 'unknown' })
+      .mockResolvedValueOnce({ ok: true })
+      .mockResolvedValueOnce({ ok: true });
+    const { requestStatus } = await createConfigApp({ probe });
+    const body = {
+      providerId: 'openai',
+      apiKey: 'key',
+      models: ['model-a', 'model-b'],
+      retryPolicy: retryPolicy(),
+    };
+
+    const tested = await requestStatus('/api/config/test-connections', {
+      method: 'POST',
+      headers: { 'x-user': 'settings-user' },
+      body: JSON.stringify(body),
+    });
+    expect(tested.status).toBe(200);
+    expect(tested.body.status).toBe('manual_input_required');
+    expect(tested.body.models).toEqual([
+      expect.objectContaining({ modelId: 'model-a', textInput: 'supported', imageInput: 'unknown' }),
+      expect.objectContaining({ modelId: 'model-b', textInput: 'supported', imageInput: 'supported' }),
+    ]);
+
+    const completed = await requestStatus(`/api/config/test-connections/${tested.body.testId}/image-capabilities`, {
+      method: 'PUT',
+      headers: { 'x-user': 'settings-user' },
+      body: JSON.stringify({ models: [{ modelId: 'model-a', imageInput: 'unsupported' }] }),
+    });
+    expect(completed.status).toBe(200);
+    expect(completed.body.status).toBe('passed');
+
+    const replayed = await requestStatus(`/api/config/test-connections/${tested.body.testId}/image-capabilities`, {
+      method: 'PUT',
+      headers: { 'x-user': 'settings-user' },
+      body: JSON.stringify({ models: [{ modelId: 'model-a', imageInput: 'unsupported' }] }),
+    });
+    expect(replayed.status).toBe(200);
+    expect(replayed.body).toEqual(completed.body);
+
+    expect(probe).toHaveBeenCalledTimes(4);
+    expect(probe).toHaveBeenNthCalledWith(1, expect.objectContaining({ retryPolicy: body.retryPolicy }));
+  });
+
+  it('reuses a saved provider key when the settings UI submits a masked key', async () => {
+    const probe = vi.fn().mockResolvedValue({ ok: true });
+    const { requestStatus } = await createConfigApp({
+      config: {
+        model: {
+          providers: {
+            openai: {
+              protocol: 'openai',
+              url: 'https://api.openai.com/v1',
+              apiKey: 'saved-secret',
+              models: {},
+            },
+          },
+        },
+      },
+      probe,
+    });
+    const response = await requestStatus('/api/config/test-connections', {
+      method: 'POST',
+      headers: { 'x-user': 'settings-user' },
+      body: JSON.stringify({
+        providerId: 'openai',
+        apiKey: '********',
+        models: ['model-a'],
+        retryPolicy: retryPolicy(),
+      }),
+    });
+    expect(response.status).toBe(200);
+    expect(probe).toHaveBeenCalledWith(expect.objectContaining({ apiKey: 'saved-secret' }));
+  });
+
+  it('isolates config test IDs by user', async () => {
+    const probe = vi.fn().mockResolvedValue({ ok: false, code: 'MODEL_NOT_FOUND', error: 'missing' });
+    const { requestStatus } = await createConfigApp({ probe });
+    const tested = await requestStatus('/api/config/test-connections', {
+      method: 'POST',
+      headers: { 'x-user': 'owner' },
+      body: JSON.stringify({ providerId: 'openai', apiKey: 'key', models: ['model-a'], retryPolicy: retryPolicy() }),
+    });
+    const otherUser = await requestStatus(`/api/config/test-connections/${tested.body.testId}/image-capabilities`, {
+      method: 'PUT',
+      headers: { 'x-user': 'other' },
+      body: JSON.stringify({ models: [{ modelId: 'model-a', imageInput: 'supported' }] }),
+    });
+    expect(otherUser.status).toBe(404);
+  });
+
+  it('binds a passing test to model configuration during save', async () => {
+    const probe = vi.fn().mockResolvedValue({ ok: true });
+    const initial = {
+      agent: { model: 'openai/model-a' },
+      model: { providers: { openai: { protocol: 'openai', url: 'https://api.openai.com/v1', apiKey: 'key', models: { 'model-a': {} } } } },
+    };
+    const { requestStatus, writePilotDeckConfig } = await createConfigApp({ config: initial, probe });
+    const tested = await requestStatus('/api/config/test-connections', {
+      method: 'POST', headers: { 'x-user': 'settings-user' },
+      body: JSON.stringify({ providerId: 'openai', apiKey: 'key', models: ['model-a'], retryPolicy: { maxRetries: 1, maxStreamRetries: 1, streamIdleTimeoutMs: 1000 } }),
+    });
+    expect(tested.status).toBe(200);
+    expect(tested.body.status).toBe('passed');
+
+    const saved = await requestStatus('/api/config', {
+      method: 'PUT', headers: { 'x-user': 'settings-user' },
+      body: JSON.stringify({ config: initial, modelTestBindings: [{ testId: tested.body.testId }] }),
+    });
+    expect(saved.status).toBe(200);
+    expect(writePilotDeckConfig.mock.calls[0][0].model.providers.openai.models['model-a'].connectionTest).toMatchObject({ status: 'passed', textInput: 'supported', imageInput: 'supported' });
+    expect(writePilotDeckConfig.mock.calls[0][0].model.providers.openai.models['model-a'].multimodal).toMatchObject({ input: ['text', 'image'] });
+  });
+
+  it('writes a passing binding for a newly referenced model', async () => {
+    const probe = vi.fn().mockResolvedValue({ ok: true });
+    const initial = {
+      agent: { model: 'openai/model-a' },
+      model: { providers: { openai: { protocol: 'openai', url: 'https://api.openai.com/v1', apiKey: 'key', models: { 'model-a': {} } } } },
+    };
+    const { requestStatus, writePilotDeckConfig } = await createConfigApp({ config: initial, probe });
+    const tested = await requestStatus('/api/config/test-connections', {
+      method: 'POST', headers: { 'x-user': 'settings-user' },
+      body: JSON.stringify({ providerId: 'openai', apiKey: 'key', models: ['model-b'], retryPolicy: { maxRetries: 1, maxStreamRetries: 1, streamIdleTimeoutMs: 1000 } }),
+    });
+    const next = {
+      ...initial,
+      agent: { model: 'openai/model-b' },
+      model: { providers: { openai: { ...initial.model.providers.openai, models: { 'model-a': {}, 'model-b': {} } } } },
+    };
+    const saved = await requestStatus('/api/config', {
+      method: 'PUT', headers: { 'x-user': 'settings-user' },
+      body: JSON.stringify({ config: next, modelTestBindings: [{ testId: tested.body.testId }] }),
+    });
+    expect(saved.status).toBe(200);
+    expect(writePilotDeckConfig.mock.calls[0][0].model.providers.openai.models['model-b'].connectionTest).toMatchObject({ status: 'passed' });
+  });
+
+  it('rejects a newly referenced model without a passing test binding', async () => {
+    const initial = {
+      agent: { model: 'openai/model-a' },
+      model: { providers: { openai: { protocol: 'openai', url: 'https://api.openai.com/v1', apiKey: 'key', models: { 'model-a': {} } } } },
+    };
+    const { requestStatus } = await createConfigApp({ config: initial });
+    const next = {
+      ...initial,
+      agent: { model: 'openai/model-b' },
+      model: { providers: { openai: { ...initial.model.providers.openai, models: { 'model-a': {}, 'model-b': {} } } } },
+    };
+    const response = await requestStatus('/api/config', {
+      method: 'PUT', headers: { 'x-user': 'settings-user' },
+      body: JSON.stringify({ config: next }),
+    });
+    expect(response.status).toBe(409);
+    expect(response.body.code).toBe('MODEL_TEST_REQUIRED');
+  });
+
+  it('requires a test when an existing unreferenced model becomes the agent model', async () => {
+    const initial = stringifyYaml({
+      agent: { model: 'openai/model-a' },
+      model: { providers: { openai: { protocol: 'openai', url: 'https://api.openai.com/v1', apiKey: 'key', models: { 'model-a': {} } } } },
+    });
+    const { request } = await createDiskConfigApp(initial);
+    const added = stringifyYaml({
+      agent: { model: 'openai/model-a' },
+      model: { providers: { openai: { protocol: 'openai', url: 'https://api.openai.com/v1', apiKey: 'key', models: { 'model-a': {}, 'model-b': {} } } } },
+    });
+    const first = await request('/api/config', { method: 'PUT', body: JSON.stringify({ raw: added }) });
+    expect(first.status).toBe(200);
+
+    const referenced = stringifyYaml({
+      agent: { model: 'openai/model-b' },
+      model: { providers: { openai: { protocol: 'openai', url: 'https://api.openai.com/v1', apiKey: 'key', models: { 'model-a': {}, 'model-b': {} } } } },
+    });
+    const second = await request('/api/config', { method: 'PUT', body: JSON.stringify({ raw: referenced }) });
+    expect(second.status).toBe(409);
+    expect(second.body.code).toBe('MODEL_TEST_REQUIRED');
+  });
+
+  it('returns a user-facing error string for invalid test bindings', async () => {
+    const initial = {
+      agent: { model: 'openai/model-a' },
+      model: { providers: { openai: { protocol: 'openai', url: 'https://api.openai.com/v1', apiKey: 'key', models: { 'model-a': {} } } } },
+    };
+    const { requestStatus } = await createConfigApp({ config: initial });
+    const response = await requestStatus('/api/config', {
+      method: 'PUT',
+      body: JSON.stringify({ config: initial, modelTestBindings: [{ testId: 'missing-test' }] }),
+    });
+    expect(response.status).toBe(404);
+    expect(response.body).toMatchObject({ code: 'TEST_NOT_FOUND', error: 'Connection test was not found.' });
+  });
+
+  it('allows new subagent and memory references without separate test bindings', async () => {
+    const initial = {
+      agent: { model: 'openai/model-a' },
+      model: { providers: { openai: { protocol: 'openai', url: 'https://api.openai.com/v1', apiKey: 'key', models: { 'model-a': {} } } } },
+    };
+    const { requestStatus, writePilotDeckConfig } = await createConfigApp({ config: initial });
+    const next = {
+      ...initial,
+      agent: { model: 'openai/model-a', subagents: { default: 'openai/model-b' } },
+      memory: { enabled: true, model: 'openai/model-b' },
+      model: { providers: { openai: { ...initial.model.providers.openai, models: { 'model-a': {}, 'model-b': {} } } } },
+    };
+    const response = await requestStatus('/api/config', {
+      method: 'PUT',
+      body: JSON.stringify({ config: next }),
+    });
+    expect(response.status).toBe(200);
+    expect(writePilotDeckConfig).toHaveBeenCalled();
+  });
+
+  it('allows router and pricing references without separate model test bindings', async () => {
+    const initial = {
+      agent: { model: 'openai/model-a' },
+      model: { providers: { openai: { protocol: 'openai', url: 'https://api.openai.com/v1', apiKey: 'key', models: { 'model-a': {} } } } },
+    };
+    const { requestStatus } = await createConfigApp({ config: initial });
+    const next = {
+      ...initial,
+      memory: { model: 'openai/model-b' },
+      router: {
+        scenarios: { default: 'openai/model-b' },
+        stats: { modelPricing: { 'openai/model-b': { input: 1, output: 1 } }, baselineModel: { provider: 'openai', model: 'model-b' } },
+      },
+      model: { providers: { openai: { ...initial.model.providers.openai, models: { 'model-a': {}, 'model-b': {} } } } },
+    };
+    const response = await requestStatus('/api/config', {
+      method: 'PUT', headers: { 'x-user': 'settings-user' },
+      body: JSON.stringify({ config: next }),
+    });
+    expect(response.status).toBe(200);
+  });
+
+  it('allows an unreferenced new model without a binding', async () => {
+    const initial = {
+      agent: { model: 'openai/model-a' },
+      model: { providers: { openai: { protocol: 'openai', url: 'https://api.openai.com/v1', apiKey: 'key', models: { 'model-a': {} } } } },
+    };
+    const { requestStatus, writePilotDeckConfig } = await createConfigApp({ config: initial });
+    const next = {
+      ...initial,
+      model: { providers: { openai: { ...initial.model.providers.openai, models: { 'model-a': {}, 'model-b': {} } } } },
+    };
+    const response = await requestStatus('/api/config', {
+      method: 'PUT',
+      body: JSON.stringify({ config: next }),
+    });
+    expect(response.status).toBe(200);
+    expect(writePilotDeckConfig).toHaveBeenCalled();
+  });
+
+  it('allows an existing model connection change without a binding', async () => {
+    const initial = {
+      agent: { model: 'openai/model-a' },
+      model: { providers: { openai: { protocol: 'openai', url: 'https://api.openai.com/v1', apiKey: 'key', models: { 'model-a': {} } } } },
+    };
+    const { requestStatus, writePilotDeckConfig } = await createConfigApp({ config: initial });
+    const next = {
+      ...initial,
+      model: { providers: { openai: { ...initial.model.providers.openai, url: 'https://api.example.test/v1', models: { 'model-a': {} } } } },
+    };
+    const response = await requestStatus('/api/config', {
+      method: 'PUT',
+      body: JSON.stringify({ config: next }),
+    });
+    expect(response.status).toBe(200);
+    expect(writePilotDeckConfig).toHaveBeenCalled();
+  });
+
+});
+
+describe('config model reference and rename routes', () => {
+  const baseConfig = {
+    agent: { model: 'old-provider/old-model', subagents: { default: 'old-provider/old-model' } },
+    memory: { model: 'old-provider/old-model' },
+    model: { providers: { 'old-provider': { protocol: 'openai', url: 'https://example.test/v1', apiKey: 'key', models: { 'old-model': {} } } } },
+    router: {
+      scenarios: { default: 'old-provider/old-model' },
+      fallback: { default: ['old-provider/old-model'] },
+      tokenSaver: { judge: 'old-provider/old-model', tiers: { fast: { model: 'old-provider/old-model' } } },
+      stats: {
+        modelPricing: { 'old-provider/old-model': { input: 1, output: 2 } },
+        baselineModel: { provider: 'old-provider', model: 'old-model' },
+      },
+    },
+  };
+
+  it('returns references without exposing credentials', async () => {
+    const { requestStatus } = await createConfigApp({ config: baseConfig });
+    const response = await requestStatus('/api/config/model-references?providerId=old-provider&modelId=old-model');
+    expect(response.status).toBe(200);
+    expect(response.body.references).toHaveLength(9);
+    expect(JSON.stringify(response.body)).not.toContain('key');
+  });
+
+  it('supports provider-level reference lookup', async () => {
+    const { requestStatus } = await createConfigApp({ config: baseConfig });
+    const response = await requestStatus('/api/config/model-references?providerId=old-provider');
+    expect(response.status).toBe(200);
+    expect(response.body.modelId).toBeUndefined();
+    expect(response.body.references).toHaveLength(9);
+  });
+
+  it('supports model IDs containing slashes', async () => {
+    const config = {
+      agent: { model: 'custom/anthropic/claude-sonnet-4-6' },
+      model: {
+        providers: {
+          custom: {
+            protocol: 'openai',
+            url: 'https://example.test/v1',
+            apiKey: 'key',
+            models: { 'anthropic/claude-sonnet-4-6': {} },
+          },
+        },
+      },
+    };
+    const { requestStatus } = await createConfigApp({ config });
+    const response = await requestStatus(
+      '/api/config/model-references?providerId=custom&modelId=anthropic%2Fclaude-sonnet-4-6',
+    );
+    expect(response.status).toBe(200);
+    expect(response.body.references).toEqual([
+      {
+        path: 'agent.model',
+        value: 'custom/anthropic/claude-sonnet-4-6',
+        kind: 'agent',
+      },
+    ]);
+  });
+
+  it('atomically rewrites provider/model references and pricing keys', async () => {
+    const { requestStatus, writePilotDeckConfig } = await createConfigApp({ config: baseConfig });
+    const nextConfig = structuredClone(baseConfig);
+    nextConfig.model.providers = {
+      'new-provider': { ...nextConfig.model.providers['old-provider'], models: { 'new-model': {} } },
+    };
+    const response = await requestStatus('/api/config', {
+      method: 'PUT',
+      body: JSON.stringify({
+        config: nextConfig,
+        providerRenames: [{ from: 'old-provider', to: 'new-provider' }],
+        modelRenames: [{ providerId: 'new-provider', from: 'old-model', to: 'new-model' }],
+      }),
+    });
+    expect(response.status).toBe(200);
+    const saved = writePilotDeckConfig.mock.calls[0][0];
+    expect(saved.agent.model).toBe('new-provider/new-model');
+    expect(saved.router.tokenSaver.tiers.fast.model).toBe('new-provider/new-model');
+    expect(saved.router.stats.modelPricing).toEqual({ 'new-provider/new-model': { input: 1, output: 2 } });
+    expect(saved.router.stats.baselineModel).toEqual({ provider: 'new-provider', model: 'new-model' });
+  });
+
+  it('rewrites legacy string baseline references', () => {
+    const config = structuredClone(baseConfig);
+    config.router.stats.baselineModel = 'old-provider/old-model';
+    rewriteModelReferences(config, {
+      providerRenames: new Map([['old-provider', 'new-provider']]),
+      modelRenames: new Map([['old-provider/old-model', { providerId: 'new-provider', modelId: 'new-model' }]]),
+    });
+    expect(config.router.stats.baselineModel).toBe('new-provider/new-model');
+  });
+
+  it('rejects deletion while a model remains referenced', async () => {
+    const { requestStatus, writePilotDeckConfig } = await createConfigApp({ config: baseConfig });
+    const response = await requestStatus('/api/config', {
+      method: 'PUT',
+      body: JSON.stringify({ config: { ...baseConfig, model: { providers: {} } } }),
+    });
+    expect(response.status).toBe(409);
+    expect(response.body.code).toBe('MODEL_IN_USE');
+    expect(writePilotDeckConfig).not.toHaveBeenCalled();
+  });
+
+  it('allows deletion of an unreferenced model', async () => {
+    const initial = structuredClone(baseConfig);
+    initial.model.providers['old-provider'].models.unused = {};
+    const { requestStatus, writePilotDeckConfig } = await createConfigApp({ config: initial });
+    const response = await requestStatus('/api/config', {
+      method: 'PUT',
+      body: JSON.stringify({ config: baseConfig }),
+    });
+    expect(response.status).toBe(200);
+    expect(writePilotDeckConfig).toHaveBeenCalled();
+  });
+
+  it('rejects rename metadata that does not match the provider map', async () => {
+    const { requestStatus, writePilotDeckConfig } = await createConfigApp({ config: baseConfig });
+    const response = await requestStatus('/api/config', {
+      method: 'PUT',
+      body: JSON.stringify({
+        config: baseConfig,
+        providerRenames: [{ from: 'missing', to: 'new-provider' }],
+      }),
+    });
+    expect(response.status).toBe(400);
+    expect(response.body.code).toBe('RENAME_INVALID');
+    expect(writePilotDeckConfig).not.toHaveBeenCalled();
+  });
+});
+
+describe('config test-web-search route', () => {
+  it('probes GLM with its bearer header and request body', async () => {
+    let captured;
+    vi.stubGlobal('fetch', vi.fn(async (url, init) => {
+      captured = { url: String(url), init };
+      return jsonResponse({ search_result: [{ title: 'result' }] });
+    }));
+
+    const { requestStatus } = await createConfigApp();
+    const data = await requestStatus('/api/config/test-web-search', {
+      method: 'POST',
+      body: JSON.stringify({ provider: 'glm', apiKey: 'glm-key' }),
+    });
+
+    expect(data.status).toBe(200);
+    expect(data.body).toMatchObject({ ok: true, organicCount: 1 });
+    expect(captured.url).toBe('https://api.z.ai/api/paas/v4/web_search');
+    expect(captured.init.headers.Authorization).toBe('Bearer glm-key');
+    expect(JSON.parse(captured.init.body)).toEqual({
+      search_engine: 'search-prime',
+      search_query: 'hello',
+      count: 3,
+      search_recency_filter: 'noLimit',
+    });
+  });
+
+  it('probes Tavily with api_key in the request body', async () => {
+    let captured;
+    vi.stubGlobal('fetch', vi.fn(async (url, init) => {
+      captured = { url: String(url), init };
+      return jsonResponse({ results: [{ title: 'result' }] });
+    }));
+
+    const { requestStatus } = await createConfigApp();
+    const data = await requestStatus('/api/config/test-web-search', {
+      method: 'POST',
+      body: JSON.stringify({ provider: 'tavily', apiKey: 'tavily-key' }),
+    });
+
+    expect(data.status).toBe(200);
+    expect(data.body).toMatchObject({ ok: true, organicCount: 1 });
+    expect(captured.url).toBe('https://api.tavily.com/search');
+    expect(JSON.parse(captured.init.body)).toEqual({
+      api_key: 'tavily-key',
+      query: 'hello',
+      max_results: 3,
+      include_answer: true,
+      search_depth: 'basic',
+    });
+  });
+
+  it('probes custom POST providers using configured auth and result path', async () => {
+    let captured;
+    vi.stubGlobal('fetch', vi.fn(async (url, init) => {
+      captured = { url: String(url), init };
+      return jsonResponse({ payload: [{ title: 'result' }] });
+    }));
+
+    const { requestStatus } = await createConfigApp();
+    const data = await requestStatus('/api/config/test-web-search', {
+      method: 'POST',
+      body: JSON.stringify({
+        provider: 'custom',
+        apiKey: 'custom-key',
+        endpoint: 'https://example.test/search',
+        customProvider: { method: 'POST', auth: 'bodyApiKey', apiKeyParam: 'key', resultsPath: 'payload' },
+      }),
+    });
+
+    expect(data.status).toBe(200);
+    expect(data.body).toMatchObject({ ok: true, organicCount: 1 });
+    expect(captured.url).toBe('https://example.test/search');
+    expect(JSON.parse(captured.init.body)).toEqual({ query: 'hello', key: 'custom-key' });
+  });
+
+  it('probes custom GET providers using query authentication', async () => {
+    let captured;
+    vi.stubGlobal('fetch', vi.fn(async (url, init) => {
+      captured = { url: String(url), init };
+      return jsonResponse({ results: [{ title: 'result' }] });
+    }));
+
+    const { requestStatus } = await createConfigApp();
+    const data = await requestStatus('/api/config/test-web-search', {
+      method: 'POST',
+      body: JSON.stringify({
+        provider: 'custom',
+        apiKey: 'custom-key',
+        endpoint: 'https://example.test/search',
+        customProvider: { method: 'GET', auth: 'queryApiKey', queryParam: 'q', apiKeyParam: 'token' },
+      }),
+    });
+
+    expect(data.status).toBe(200);
+    expect(data.body).toMatchObject({ ok: true, organicCount: 1 });
+    expect(captured.url).toBe('https://example.test/search?q=hello&token=custom-key');
+    expect(captured.init.method).toBe('GET');
+    expect(captured.init.body).toBeUndefined();
+  });
+
+  it('rejects non-HTTP(S) endpoints before making an upstream request', async () => {
+    vi.stubGlobal('fetch', vi.fn());
+
+    const { requestStatus } = await createConfigApp();
+    const data = await requestStatus('/api/config/test-web-search', {
+      method: 'POST',
+      body: JSON.stringify({ provider: 'glm', apiKey: 'key', endpoint: 'ftp://example.test/search' }),
+    });
+
+    expect(data.status).toBe(400);
+    expect(data.body).toEqual({ ok: false, error: 'Invalid endpoint URL: ftp://example.test/search' });
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  it('probes Serper with its API key header', async () => {
+    let captured;
+    vi.stubGlobal('fetch', vi.fn(async (url, init) => {
+      captured = { url: String(url), init };
+      return jsonResponse({ organic: [{ title: 'result' }] });
+    }));
+
+    const { requestStatus } = await createConfigApp();
+    const data = await requestStatus('/api/config/test-web-search', {
+      method: 'POST',
+      body: JSON.stringify({ provider: 'serper', apiKey: 'serper-key' }),
+    });
+
+    expect(data.status).toBe(200);
+    expect(data.body).toMatchObject({ ok: true, organicCount: 1 });
+    expect(captured.url).toBe('https://google.serper.dev/search');
+    expect(captured.init.headers['X-API-KEY']).toBe('serper-key');
+    expect(JSON.parse(captured.init.body)).toEqual({ q: 'hello', num: 3 });
+  });
+
+  it('probes Brave with its subscription token header', async () => {
+    let captured;
+    vi.stubGlobal('fetch', vi.fn(async (url, init) => {
+      captured = { url: String(url), init };
+      return jsonResponse({ web: { results: [{ title: 'result' }] } });
+    }));
+
+    const { requestStatus } = await createConfigApp();
+    const data = await requestStatus('/api/config/test-web-search', {
+      method: 'POST',
+      body: JSON.stringify({ provider: 'brave', apiKey: 'brave-key' }),
+    });
+
+    expect(data.status).toBe(200);
+    expect(data.body).toMatchObject({ ok: true, organicCount: 1 });
+    expect(captured.url).toBe('https://api.search.brave.com/res/v1/web/search?q=hello&count=3');
+    expect(captured.init.headers['X-Subscription-Token']).toBe('brave-key');
+    expect(captured.init.method).toBe('GET');
+  });
+
+  it('rejects an unsupported provider without making an upstream request', async () => {
+    vi.stubGlobal('fetch', vi.fn());
+
+    const { requestStatus } = await createConfigApp();
+    const data = await requestStatus('/api/config/test-web-search', {
+      method: 'POST',
+      body: JSON.stringify({ provider: 'zai', apiKey: 'key' }),
+    });
+
+    expect(data.status).toBe(400);
+    expect(data.body).toEqual({ ok: false, error: 'Unsupported web search provider.' });
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  it('resolves a masked API key from the saved web-search config', async () => {
+    const authorizationHeaders = [];
+    vi.stubGlobal('fetch', vi.fn(async (_url, init) => {
+      authorizationHeaders.push(init?.headers?.Authorization);
+      return jsonResponse({ search_result: [{ title: 'result' }] });
+    }));
+
+    const { request } = await createConfigApp({
+      config: {
+        tools: {
+          webSearch: {
+            provider: 'glm',
+            apiKey: 'saved-search-key',
+          },
+        },
+      },
+    });
+    const data = await request('/api/config/test-web-search', {
+      method: 'POST',
+      body: JSON.stringify({
+        provider: 'glm',
+        apiKey: '********',
+        endpoint: 'https://api.z.ai/api/paas/v4/web_search',
+      }),
+    });
+
+    expect(data.ok).toBe(true);
+    expect(data.organicCount).toBe(1);
+    expect(authorizationHeaders).toEqual(['Bearer saved-search-key']);
+  });
+
+  it('prefers a newly entered API key over the saved key', async () => {
+    const authorizationHeaders = [];
+    vi.stubGlobal('fetch', vi.fn(async (_url, init) => {
+      authorizationHeaders.push(init?.headers?.Authorization);
+      return jsonResponse({ search_result: [] });
+    }));
+
+    const { request } = await createConfigApp({
+      config: {
+        tools: {
+          webSearch: {
+            provider: 'glm',
+            apiKey: 'saved-search-key',
+          },
+        },
+      },
+    });
+    const data = await request('/api/config/test-web-search', {
+      method: 'POST',
+      body: JSON.stringify({
+        provider: 'glm',
+        apiKey: 'new-search-key',
+        endpoint: 'https://api.z.ai/api/paas/v4/web_search',
+      }),
+    });
+
+    expect(data.ok).toBe(true);
+    expect(authorizationHeaders).toEqual(['Bearer new-search-key']);
+  });
+
+  it('rejects a masked API key when no saved key exists', async () => {
+    vi.stubGlobal('fetch', vi.fn());
+
+    const { request } = await createConfigApp();
+    const data = await request('/api/config/test-web-search', {
+      method: 'POST',
+      body: JSON.stringify({
+        provider: 'glm',
+        apiKey: '********',
+        endpoint: 'https://api.z.ai/api/paas/v4/web_search',
+      }),
+    });
+
+    expect(data.ok).toBe(false);
+    expect(data.error).toBe('API key is required.');
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  it('does not send a saved masked API key to a caller-controlled provider endpoint', async () => {
+    vi.stubGlobal('fetch', vi.fn());
+
+    const { request } = await createConfigApp({
+      config: {
+        tools: {
+          webSearch: {
+            provider: 'glm',
+            apiKey: 'saved-search-key',
+          },
+        },
+      },
+    });
+    const data = await request('/api/config/test-web-search', {
+      method: 'POST',
+      body: JSON.stringify({
+        provider: 'custom',
+        apiKey: '********',
+        endpoint: 'https://attacker.example/search',
+        customProvider: { auth: 'bearer', method: 'POST' },
+      }),
+    });
+
+    expect(data.ok).toBe(false);
+    expect(data.error).toContain('Enter the Web Search API key again');
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  it('does not preserve a masked Web Search key when its credential scope changes on save', async () => {
+    const { request, writePilotDeckConfig } = await createConfigApp({
+      config: {
+        tools: {
+          webSearch: {
+            provider: 'glm',
+            apiKey: 'saved-search-key',
+          },
+        },
+      },
+    });
+    const data = await request('/api/config', {
+      method: 'PUT',
+      body: JSON.stringify({
+        config: {
+          tools: {
+            webSearch: {
+              provider: 'custom',
+              apiKey: '********',
+              endpoint: 'https://attacker.example/search',
+              customProvider: { auth: 'bearer', method: 'POST' },
+            },
+          },
+        },
+      }),
+    });
+
+    expect(data.error).toContain('Enter the Web Search API key again');
+    expect(writePilotDeckConfig).not.toHaveBeenCalled();
+  });
+});
+
+describe('config provider rename secret preservation', () => {
+  it('restores masked provider secrets when only the provider ID changes', async () => {
+    const initial = stringifyYaml({
+      schemaVersion: 1,
+      agent: { model: 'old-provider/gpt-test' },
+      model: {
+        providers: {
+          'old-provider': {
+            protocol: 'openai',
+            url: 'https://api.example.test/v1',
+            apiKey: 'sk-saved-secret',
+            models: { 'gpt-test': {} },
+          },
+        },
+      },
+    });
+    const { request, configPath } = await createDiskConfigApp(initial);
+    const renamed = stringifyYaml({
+      schemaVersion: 1,
+      agent: { model: 'new-provider/gpt-test' },
+      model: {
+        providers: {
+          'new-provider': {
+            protocol: 'openai',
+            url: 'https://api.example.test/v1',
+            apiKey: '********',
+            models: { 'gpt-test': {} },
+          },
+        },
+      },
+    });
+
+    const response = await request('/api/config', {
+      method: 'PUT',
+      body: JSON.stringify({
+        raw: renamed,
+        providerRenames: [{ from: 'old-provider', to: 'new-provider' }],
+      }),
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body.validation.valid).toBe(true);
+    expect(
+      parseYaml(readFileSync(configPath, 'utf8')).model.providers['new-provider'].apiKey,
+    ).toBe('sk-saved-secret');
+  });
+
+  it('requires new credentials when a rename also changes the provider scope', async () => {
+    const initial = stringifyYaml({
+      schemaVersion: 1,
+      agent: { model: 'old-provider/gpt-test' },
+      model: {
+        providers: {
+          'old-provider': {
+            protocol: 'openai',
+            url: 'https://api.example.test/v1',
+            apiKey: 'sk-saved-secret',
+            models: { 'gpt-test': {} },
+          },
+        },
+      },
+    });
+    const { request, configPath } = await createDiskConfigApp(initial);
+    const renamed = stringifyYaml({
+      schemaVersion: 1,
+      agent: { model: 'new-provider/gpt-test' },
+      model: {
+        providers: {
+          'new-provider': {
+            protocol: 'openai',
+            url: 'https://other.example.test/v1',
+            apiKey: '********',
+            models: { 'gpt-test': {} },
+          },
+        },
+      },
+    });
+
+    const response = await request('/api/config', {
+      method: 'PUT',
+      body: JSON.stringify({
+        raw: renamed,
+        providerRenames: [{ from: 'old-provider', to: 'new-provider' }],
+      }),
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toContain('Enter provider credentials again');
+    expect(
+      parseYaml(readFileSync(configPath, 'utf8')).model.providers['old-provider'].apiKey,
+    ).toBe('sk-saved-secret');
+
+    const retryWithoutRenameMetadata = await request('/api/config', {
+      method: 'PUT',
+      body: JSON.stringify({ raw: renamed }),
+    });
+
+    expect(retryWithoutRenameMetadata.status).toBe(400);
+    expect(retryWithoutRenameMetadata.body.error).toContain(
+      'masked secrets could not be restored',
+    );
+    expect(
+      parseYaml(readFileSync(configPath, 'utf8')).model.providers['old-provider'].apiKey,
+    ).toBe('sk-saved-secret');
+  });
+});
+
+describe('config write revisions', () => {
+  it('rejects a stale full-config save instead of overwriting a newer write', async () => {
+    const initial = stringifyYaml({
+      schemaVersion: 1,
+      customEnv: { SAVE_VERSION: 'initial' },
+    });
+    const { request, configPath } = await createDiskConfigApp(initial);
+    const loaded = await request('/api/config');
+
+    expect(loaded.status).toBe(200);
+    expect(loaded.body.revision).toEqual(expect.any(String));
+
+    const firstWrite = await request('/api/config', {
+      method: 'PUT',
+      body: JSON.stringify({
+        raw: stringifyYaml({
+          schemaVersion: 1,
+          customEnv: { SAVE_VERSION: 'first' },
+        }),
+        baseRevision: loaded.body.revision,
+      }),
+    });
+
+    expect(firstWrite.status).toBe(200);
+    expect(firstWrite.body.revision).not.toBe(loaded.body.revision);
+
+    const staleWrite = await request('/api/config', {
+      method: 'PUT',
+      body: JSON.stringify({
+        raw: stringifyYaml({
+          schemaVersion: 1,
+          customEnv: { SAVE_VERSION: 'stale' },
+        }),
+        baseRevision: loaded.body.revision,
+      }),
+    });
+
+    expect(staleWrite.status).toBe(409);
+    expect(staleWrite.body.code).toBe('CONFIG_CONFLICT');
+    expect(
+      parseYaml(readFileSync(configPath, 'utf8')).customEnv.SAVE_VERSION,
+    ).toBe('first');
+  });
+});
+
+
+describe('config routes invalid YAML fallback', () => {
+  it('returns raw invalid YAML instead of failing GET /api/config', async () => {
+    const brokenRaw = 'schemaVersion: 1\nmodel:\n  providers: [\n';
+    const { request } = await createDiskConfigApp(brokenRaw);
+
+    const response = await request('/api/config');
+
+    expect(response.status).toBe(200);
+    expect(response.body.raw).toBe(brokenRaw);
+    expect(response.body.configDisabled).toBe(true);
+    expect(response.body.parseError).toEqual(expect.any(String));
+    expect(response.body.validation.valid).toBe(false);
+    expect(response.body.validation.errors[0]).toMatch(/^Invalid YAML:/);
+  });
+
+  it('saves repaired raw YAML after the existing file is invalid', async () => {
+    const { request, configPath } = await createDiskConfigApp('schemaVersion: 1\nmodel:\n  providers: [\n');
+    const repaired = stringifyYaml({
+      schemaVersion: 1,
+      agent: { model: 'openai/gpt-4.1-mini' },
+      model: {
+        providers: {
+          openai: {
+            protocol: 'openai',
+            url: 'https://api.openai.com/v1',
+            apiKey: 'sk-test',
+            models: { 'gpt-4.1-mini': {} },
+          },
+        },
+      },
+    });
+
+    const response = await request('/api/config', {
+      method: 'PUT',
+      body: JSON.stringify({ raw: repaired }),
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body.configDisabled).toBeUndefined();
+    expect(response.body.validation.valid).toBe(true);
+    expect(parseYaml(readFileSync(configPath, 'utf8')).model.providers.openai.apiKey).toBe('sk-test');
+  });
+
+  it('rejects reload without applying defaults when YAML is invalid', async () => {
+    const reloadPilotDeckConfig = vi.fn(async () => ({ processEnv: { reloaded: true } }));
+    const { request } = await createDiskConfigApp('schemaVersion: 1\nmodel:\n  providers: [\n', { reloadPilotDeckConfig });
+
+    const response = await request('/api/config/reload', { method: 'POST' });
+
+    expect(response.status).toBe(400);
+    expect(response.body.configDisabled).toBe(true);
+    expect(response.body.validation.valid).toBe(false);
+    expect(response.body.validation.errors[0]).toMatch(/^Invalid YAML:/);
+    expect(reloadPilotDeckConfig).not.toHaveBeenCalled();
+  });
+
+  it('rejects structured config saves without overwriting invalid YAML', async () => {
+    const brokenRaw = 'schemaVersion: 1\nmodel:\n  providers: [\n';
+    const { request, configPath } = await createDiskConfigApp(brokenRaw);
+
+    const response = await request('/api/config', {
+      method: 'PUT',
+      body: JSON.stringify({ config: { schemaVersion: 1, model: { providers: {} } } }),
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.configDisabled).toBe(true);
+    expect(response.body.validation.errors[0]).toMatch(/^Invalid YAML:/);
+    expect(readFileSync(configPath, 'utf8')).toBe(brokenRaw);
+  });
+});
+
+async function createConfigApp({ config = {}, probe } = {}) {
+  const writePilotDeckConfig = vi.fn(async (nextConfig) => ({
+    config: nextConfig,
+    raw: stringifyYaml(nextConfig),
+    validation: { valid: true, errors: [], warnings: [] },
+  }));
+  const writeRawPilotDeckYaml = vi.fn(async (nextConfig) => ({
+    config: nextConfig,
+    raw: stringifyYaml(nextConfig),
+    validation: { valid: true, errors: [], warnings: [] },
+  }));
+  vi.doMock('../services/pilotdeckConfigWatcher.js', () => ({
+    suppressNextWatchEvent: vi.fn(),
+  }));
+  vi.doMock('../services/pilotdeckConfigReloader.js', () => ({
+    reloadPilotDeckConfig: vi.fn(async () => undefined),
+  }));
+  if (probe) {
+    vi.doMock('../services/modelConnectionProbe.js', () => ({ probeModelConnection: probe }));
+  }
+  vi.doMock('../services/pilotdeckConfig.js', async () => {
+    const actual = await vi.importActual('../services/pilotdeckConfig.js');
+    return {
+      ...actual,
+      readPilotDeckConfigFile: vi.fn(() => ({ exists: false, configPath: '', config, rawYaml: {} })),
+      writePilotDeckConfig,
+      writeRawPilotDeckYaml,
+    };
+  });
+  vi.doMock('../pilotdeck-bridge.js', () => ({
+    getPilotDeckGateway: vi.fn(async () => ({ reloadConfig: vi.fn(async () => undefined) })),
+  }));
+
+  const { default: configRoutes } = await import('./config.js');
+  const app = express();
+  app.use(express.json());
+  app.use((req, _res, next) => { req.user = { id: req.headers['x-user'] || 'one' }; next(); });
+  app.use('/api/config', configRoutes);
+
+  return {
+    request: (path, init) => requestBodyJson(app, path, init),
+    requestStatus: (path, init) => requestStatusJson(app, path, init),
+    writePilotDeckConfig,
+    writeRawPilotDeckYaml,
+  };
+}
+
+async function requestBodyJson(app, path, init = {}) {
+  const server = app.listen(0);
+  try {
+    const { port } = server.address();
+    const response = await nativeFetch(`http://127.0.0.1:${port}${path}`, {
+      ...init,
+      headers: { 'Content-Type': 'application/json', ...(init.headers || {}) },
+    });
+    return response.json();
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+}
+
+async function createDiskConfigApp(initialRaw, overrides = {}) {
+  const pilotHome = mkdtempSync(join(tmpdir(), 'pilotdeck-config-route-'));
+  tempDirs.push(pilotHome);
+  const configPath = join(pilotHome, 'pilotdeck.yaml');
+  writeFileSync(configPath, initialRaw, 'utf8');
+
+  process.env.PILOT_HOME = pilotHome;
+  process.env.PILOTDECK_CONFIG_PATH = configPath;
+
+  vi.resetModules();
+  vi.doUnmock('../services/pilotdeckConfig.js');
+  vi.doMock('../services/pilotdeckConfigWatcher.js', () => ({
+    suppressNextWatchEvent: vi.fn(),
+  }));
+  vi.doMock('../services/pilotdeckConfigReloader.js', () => ({
+    reloadPilotDeckConfig: overrides.reloadPilotDeckConfig ?? vi.fn(async () => ({ processEnv: { reloaded: true } })),
+  }));
+  vi.doMock('../pilotdeck-bridge.js', () => ({
+    getPilotDeckGateway: vi.fn(async () => ({ reloadConfig: vi.fn(async () => undefined) })),
+  }));
+
+  const { default: configRoutes } = await import('./config.js');
+  const app = express();
+  app.use(express.json());
+  app.use('/api/config', configRoutes);
+
+  return {
+    configPath,
+    request: (path, init) => requestStatusJson(app, path, init),
+  };
+}
+
+async function requestStatusJson(app, path, init = {}) {
+  const server = app.listen(0);
+  try {
+    const { port } = server.address();
+    const response = await nativeFetch(`http://127.0.0.1:${port}${path}`, {
+      ...init,
+      headers: { 'Content-Type': 'application/json', ...(init.headers || {}) },
+    });
+    return { status: response.status, body: await response.json() };
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+}
+
+function jsonResponse(payload, overrides = {}) {
+  return {
+    ok: true,
+    status: 200,
+    statusText: 'OK',
+    ...overrides,
+    text: async () => JSON.stringify(payload),
+    json: async () => payload,
+  };
+}
+
+function retryPolicy() {
+  return { maxRetries: 2, maxStreamRetries: 3, streamIdleTimeoutMs: 30000, baseDelayMs: 1000, maxDelayMs: 60000 };
+}

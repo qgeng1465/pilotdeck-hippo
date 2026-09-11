@@ -1,0 +1,248 @@
+{
+  "emptyProject": "选择一个项目以查看 Always-On。",
+  "actions": {
+    "refresh": "刷新"
+  },
+  "tabs": {
+    "dashboard": "仪表盘",
+    "plans": "计划"
+  },
+  "dashboard": {
+    "title": "Always-On 仪表盘",
+    "subtitle": "所有工作区的活动动态。",
+    "loading": "正在加载事件…",
+    "empty": "暂无 Always-On 事件记录。",
+    "stats": {
+      "todayEvents": "今日事件",
+      "activeProjects": "活跃项目",
+      "running": "正在运行"
+    },
+    "eventList": {
+      "title": "近期事件"
+    },
+    "detail": {
+      "back": "返回事件列表",
+      "placeholder": "详细内容即将推出。"
+    },
+    "runDetail": {
+      "back": "返回事件列表",
+      "backToPlans": "返回计划列表",
+      "loading": "加载中…",
+      "untitled": "未命名计划",
+      "workspaceStrategy": "工作区",
+      "executionSession": "执行会话",
+      "openSession": "打开会话",
+      "outcome": "结果",
+      "plan": "计划",
+      "report": "报告",
+      "noPlanContent": "暂无计划内容。",
+      "noReportContent": "暂无报告。",
+      "apply": "应用到主分支",
+      "archive": "归档"
+    },
+    "phase": {
+      "discoveryStarted": "发现已启动",
+      "planProduced": "已产出计划",
+      "noPlan": "未产出计划",
+      "workspaceStarted": "正在准备工作区",
+      "workspaceReady": "工作区就绪",
+      "executionStarted": "开始执行",
+      "executionCompleted": "执行完成",
+      "reportStarted": "正在生成报告",
+      "reportProduced": "已产出报告",
+      "applyStarted": "开始应用",
+      "applyCompleted": "应用完成",
+      "runCompleted": "运行完成",
+      "runFailed": "运行失败",
+      "cronStarted": "定时任务已启动",
+      "cronCompleted": "定时任务完成",
+      "cronFailed": "定时任务失败"
+    }
+  },
+  "plansCron": {
+    "title": "计划",
+    "subtitle": "所有项目的 Always-On 计划。",
+    "loading": "正在加载计划…",
+    "empty": "暂无计划。",
+    "unassigned": "未关联项目",
+    "columns": {
+      "title": "标题",
+      "type": "类型",
+      "createdAt": "创建时间",
+      "status": "状态",
+      "actions": "操作"
+    },
+    "actions": {
+      "retry": "重新执行",
+      "delete": "删除",
+      "runNow": "立即运行",
+      "stop": "停止",
+      "applyCycle": "全部应用",
+      "archiveCycle": "归档"
+    },
+    "type": {
+      "plan": "计划",
+      "cronJob": "定时任务"
+    },
+    "status": {
+      "created": "刚创建",
+      "preparingWorkspace": "正在创建隔离环境",
+      "executing": "正在执行",
+      "completedWaiting": "执行完成",
+      "failed": "执行失败",
+      "archived": "已归档",
+      "scheduled": "已安排",
+      "running": "运行中"
+    },
+    "workCycle": "工作周期",
+    "plans": "个计划",
+    "cycleStatus": {
+      "active": "活跃",
+      "applying": "正在应用…",
+      "applied": "已应用",
+      "archived": "已归档"
+    }
+  },
+  "cron": {
+    "title": "Cron",
+    "subtitle": "所有项目的定时 cron 任务。",
+    "loading": "正在加载 cron 任务...",
+    "empty": "暂无活跃 cron 任务。",
+    "unassigned": "未关联项目",
+    "tabs": {
+      "list": "任务列表",
+      "create": "创建任务"
+    },
+    "columns": {
+      "title": "标题",
+      "createdAt": "创建时间",
+      "nextRunAt": "下次运行",
+      "status": "状态",
+      "actions": "操作"
+    },
+    "actions": {
+      "delete": "删除",
+      "edit": "编辑",
+      "runNow": "立即运行",
+      "stop": "停止"
+    },
+    "deleteConfirm": {
+      "title": "删除定时任务？",
+      "description": "该定时任务将被永久删除，且无法恢复。",
+      "cancel": "取消",
+      "confirm": "删除",
+      "deleting": "正在删除…",
+      "failed": "删除定时任务失败。"
+    },
+    "status": {
+      "scheduled": "已安排",
+      "running": "运行中"
+    },
+    "create": {
+      "title": "创建 Cron 任务",
+      "subtitle": "安排一次性或周期性的后台提示词任务。",
+      "success": "Cron 任务已创建。",
+      "fields": {
+        "prompt": "提示词",
+        "workspace": "工作区",
+        "scheduleType": "任务类型",
+        "date": "日期",
+        "time": "时间",
+        "timezone": "时区",
+        "repeatPeriod": "重复周期",
+        "executionDay": "执行日",
+        "weekday": "星期",
+        "monthDay": "日期",
+        "month": "月份",
+        "expression": "Cron 表达式"
+      },
+      "placeholders": {
+        "prompt": "描述 PilotDeck 在任务运行时应该做什么。",
+        "workspace": "选择工作区",
+        "expression": "30 8 * * 1"
+      },
+      "schedule": {
+        "once": "一次性",
+        "cron": "周期",
+        "advanced": "高级 Cron 表达式",
+        "daily": "每天",
+        "weekly": "每周",
+        "monthly": "每月",
+        "yearly": "每年"
+      },
+      "options": {
+        "everyDay": "每天"
+      },
+      "weekdays": {
+        "monday": "周一",
+        "tuesday": "周二",
+        "wednesday": "周三",
+        "thursday": "周四",
+        "friday": "周五",
+        "saturday": "周六",
+        "sunday": "周日"
+      },
+      "months": {
+        "january": "一月",
+        "february": "二月",
+        "march": "三月",
+        "april": "四月",
+        "may": "五月",
+        "june": "六月",
+        "july": "七月",
+        "august": "八月",
+        "september": "九月",
+        "october": "十月",
+        "november": "十一月",
+        "december": "十二月"
+      },
+      "help": {
+        "expressionFormat": "格式：分钟 小时 日期 月份 星期",
+        "monthlyDateMayBeSkipped": "不存在该日期的月份不会触发任务。",
+        "yearlyLeapDay": "仅在闰年触发任务。"
+      },
+      "plan": {
+        "label": "计划：",
+        "currentLabel": "当前计划：",
+        "daily": "每天 {{time}}",
+        "weekly": "每{{weekday}} {{time}}",
+        "monthly": "每月 {{day}} 日 {{time}}",
+        "yearly": "每年 {{month}} 月 {{day}} 日 {{time}}"
+      },
+      "validation": {
+        "messageRequired": "请填写提示词。",
+        "workspaceRequired": "请选择工作区。",
+        "dateRequired": "请选择日期。",
+        "timeRequired": "请选择时间。",
+        "timezoneRequired": "请填写时区。",
+        "timezoneInvalid": "时区无效，请输入有效的 IANA 时区。",
+        "runAtInvalid": "所选运行时间在该时区中不存在。",
+        "runAtFuture": "运行时间必须晚于当前时间。",
+        "expressionInvalid": "Cron 表达式格式无效。"
+      },
+      "actions": {
+        "expandAdvanced": "展开",
+        "collapseAdvanced": "收起",
+        "submit": "创建任务"
+      }
+    },
+    "edit": {
+      "title": "编辑 Cron 任务",
+      "subtitle": "修改该任务的提示词或执行计划。",
+      "disabled": {
+        "running": "请先停止正在运行的任务，再进行编辑。",
+        "unsupported": "该任务使用了当前页面不支持编辑的计划规则。",
+        "incomplete": "该任务缺少编辑所需的完整信息。"
+      },
+      "errors": {
+        "running": "该任务正在运行，请先停止后再保存。",
+        "conflict": "该任务已发生变化，请刷新列表后重新编辑。",
+        "saveFailed": "保存 Cron 任务修改失败。"
+      },
+      "actions": {
+        "cancel": "取消",
+        "save": "保存修改"
+      }
+    }
+  }
+}

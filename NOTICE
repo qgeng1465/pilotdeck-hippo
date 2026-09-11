@@ -1,0 +1,35 @@
+PilotDeck-Hippo NOTICE
+======================
+
+This repository is a competition fork of PilotDeck.
+
+Upstream project
+----------------
+PilotDeck — A WorkSpace-Centric Open-Source Agent Operating System
+Copyright (c) THUNLP / ModelBest / OpenBMB / AI9Stars contributors
+Source: https://github.com/OpenBMB/PilotDeck
+License: AGPL-3.0 (see LICENSE)
+
+Fork baseline: upstream commit 85be774 (see README "Fresh Code" section for
+the full SHA once this repository is git-initialized).
+
+Hippo modifications (this fork)
+-------------------------------
+Selective retention before context compaction ("Hippo 海马记忆"):
+  - src/context/compaction/retention/*  (scoring policy, entity graph,
+    local embedding/BM25 fallback)
+  - src/context/compaction/CompactionEngine.ts (opt-in scorePolicy hook)
+  - src/pilot/config (agent.compaction.retention switch)
+  - tests/context/hippo-retention.spec.ts, tests/context/retention-wiring.spec.ts
+  - benchmarks/* (A/B, ablation, tuning, real-LLM closed-loop evaluation)
+
+Optional local embedding model
+------------------------------
+- Xenova/bge-small-zh-v1.5 (used when PILOTDECK_BGE_MODEL is set)
+  https://huggingface.co/Xenova/bge-small-zh-v1.5 — MIT License.
+  The model is NOT distributed with this repository; it is fetched or
+  provided by the user at runtime. Without it the code falls back to BM25.
+
+Runtime dependencies keep their own licenses; see package.json. This fork
+adds no proprietary assets. All benchmark JSON in benchmarks/results/ is
+sanitized and contains no API keys.

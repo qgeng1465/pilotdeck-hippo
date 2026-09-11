@@ -1,0 +1,16 @@
+{
+  "name": "browser-use",
+  "version": "1.0.0",
+  "description": "Browser automation powered by @playwright/mcp (Microsoft)",
+  "mcpServers": {
+    "browser-use": {
+      "command": "/usr/local/bin/playwright-mcp",
+      "args": [
+        "--browser",
+        "chromium",
+        "--allow-unrestricted-file-access"
+      ],
+      "perSession": true
+    }
+  }
+}

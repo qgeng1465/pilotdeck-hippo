@@ -1,0 +1,246 @@
+import {
+  flattenToolResultBlockText,
+  type CanonicalContentBlock,
+  type CanonicalMessage,
+} from "../../model/index.js";
+import { countTokens } from "./tokenizer.js";
+import { effectiveInputContextTokens } from "./effectiveContext.js";
+
+export type TokenWarningState = "ok" | "warning" | "blocking";
+
+export type TokenBudgetSnapshot = {
+  tokens: number;
+  /** Local tokenizer estimate retained for diagnostics, never UI display. */
+  localEstimateTokens?: number;
+  displayTokens?: number;
+  estimateSource?: "estimator" | "usage";
+  usageTokens?: number;
+  calibrationActualInputTokens?: number;
+  calibrationEstimatedInputTokens?: number;
+  /** Original provider/model context window before subtracting output reserve. */
+  totalContextTokens?: number;
+  /** Prompt/input budget after subtracting any explicit output reserve. */
+  maxContextTokens: number;
+  effectiveContextTokens?: number;
+  maxOutputTokens?: number;
+  warningRatio: number;
+  blockingRatio: number;
+  state: TokenWarningState;
+  ratio: number;
+  source?: "provider" | "calibrated" | "local";
+  exact?: boolean;
+  reservedOutputTokens?: number;
+  estimatorError?: string;
+};
+
+export type TokenBudgetEvaluateOptions = {
+  reservedOutputTokens?: number;
+};
+
+export type TokenBudgetManagerOptions = {
+  /** Fixed token count for image / pdf / audio blocks (default 2000). */
+  multimediaTokens?: number;
+  /** Auto-compact / warning threshold (default 0.8). */
+  warningRatio?: number;
+  /** Hard blocking threshold (default 0.90). */
+  blockingRatio?: number;
+  /** Per-message overhead for role/wrapper boilerplate (default 4 tokens). */
+  perMessageOverhead?: number;
+};
+
+/**
+ * IMAGE_MAX_TOKEN_SIZE — exported so callers (compaction, projection) can
+ * reason about the upper bound without instantiating a manager.
+ */
+export const IMAGE_MAX_TOKEN_SIZE = 2_000;
+const DEFAULT_WARNING_RATIO = 0.8;
+const DEFAULT_BLOCKING_RATIO = 0.90;
+const DEFAULT_PER_MESSAGE_OVERHEAD = 4;
+
+/**
+ * Token budget estimator backed by o200k_base tiktoken encoding.
+ *
+ * Text / code / tool argument blocks are measured with the real BPE
+ * tokenizer via `countTokens()` from `./tokenizer.js`. Multimedia
+ * blocks (image, pdf, audio) still use a fixed placeholder size
+ * (IMAGE_MAX_TOKEN_SIZE = 2000).
+ */
+export class TokenBudgetManager {
+  private readonly multimediaTokens: number;
+  private readonly warningRatio: number;
+  private readonly blockingRatio: number;
+  private readonly perMessageOverhead: number;
+
+  constructor(options: TokenBudgetManagerOptions = {}) {
+    this.multimediaTokens = options.multimediaTokens ?? IMAGE_MAX_TOKEN_SIZE;
+    this.warningRatio = options.warningRatio ?? DEFAULT_WARNING_RATIO;
+    this.blockingRatio = options.blockingRatio ?? DEFAULT_BLOCKING_RATIO;
+    this.perMessageOverhead = options.perMessageOverhead ?? DEFAULT_PER_MESSAGE_OVERHEAD;
+  }
+
+  /**
+   * Token count via o200k_base tiktoken encoding. Replaces the legacy
+   * char/4 estimator for substantially better accuracy, especially with
+   * non-ASCII content (CJK characters, code, JSON).
+   */
+  estimateTextTokens(text: string): number {
+    return countTokens(text);
+  }
+
+  /**
+   * Estimate tokens for raw file content. Now delegates to tiktoken
+   * regardless of file extension (the tokenizer handles encoding
+   * density natively). The ext parameter is retained for API compat.
+   */
+  estimateForFileType(content: string, _ext: string | null | undefined): number {
+    return countTokens(content);
+  }
+
+  /** T4: per-block estimate. Public alias retained for legacy callers. */
+  estimateBlockTokens(block: CanonicalContentBlock): number {
+    return this.estimateForBlock(block);
+  }
+
+  estimateForBlock(block: CanonicalContentBlock): number {
+    switch (block.type) {
+      case "text":
+        // T1 leaf application.
+        return this.estimateTextTokens(block.text);
+      case "thinking":
+        // T5: count the provider-native replay payload when present. For
+        // OpenAI-compatible providers, `reasoningContent` is what enters the
+        // next request as `reasoning_content`; `text` is only the legacy
+        // fallback. Signature remains provider-opaque metadata.
+        return this.estimateTextTokens(block.reasoningContent ?? block.text);
+      case "image":
+        // T6.
+        return this.multimediaTokens;
+      case "pdf":
+        // T7.
+        return this.multimediaTokens;
+      case "audio":
+        // T8: PilotDeck-specific. Legacy lacks audio blocks
+        // (intentional_difference, see §4.2 footnote).
+        return this.multimediaTokens;
+      case "tool_call": {
+        // T9: legacy concatenates name + JSON args before counting.
+        const serialized = `${block.name}${safeJsonStringify(block.input)}`;
+        return this.estimateTextTokens(serialized);
+      }
+      case "tool_result":
+        // T10: count text plus stable placeholders for visual tool output.
+        return this.estimateTextTokens(flattenToolResultBlockText(block));
+      case "tool_result_reference":
+        // T13: PilotDeck-only block; preview only.
+        return this.estimateTextTokens(block.preview);
+      case "media_reference":
+        // Media references materialize back to media blocks before provider requests.
+        return this.multimediaTokens;
+    }
+    return 0;
+  }
+
+  /** T11: per-message estimate including overhead. */
+  estimateForMessage(message: CanonicalMessage): number {
+    let total = this.perMessageOverhead;
+    for (const block of message.content) {
+      total += this.estimateForBlock(block);
+    }
+    return total;
+  }
+
+  /**
+   * Sum of `estimateForMessage` across every message. Backwards-compat
+   * alias `estimateMessagesTokens` is kept — both now use the same
+   * per-message accounting (overhead included).
+   */
+  estimateForMessages(messages: CanonicalMessage[]): number {
+    let total = 0;
+    for (const message of messages) {
+      total += this.estimateForMessage(message);
+    }
+    return total;
+  }
+
+  estimateMessagesTokens(messages: CanonicalMessage[]): number {
+    return this.estimateForMessages(messages);
+  }
+
+  evaluate(
+    messages: CanonicalMessage[],
+    maxContextTokens: number,
+    optionsOrMaxOutputTokens: TokenBudgetEvaluateOptions | number = {},
+  ): TokenBudgetSnapshot {
+    const options = typeof optionsOrMaxOutputTokens === "number"
+      ? { reservedOutputTokens: optionsOrMaxOutputTokens }
+      : optionsOrMaxOutputTokens;
+    return this.snapshotFromTokens(this.estimateMessagesTokens(messages), maxContextTokens, {
+      reservedOutputTokens: options.reservedOutputTokens,
+    });
+  }
+
+  snapshotFromTokens(
+    tokens: number,
+    maxContextTokens: number,
+    options: {
+      reservedOutputTokens?: number;
+      source?: "provider" | "calibrated" | "local";
+      exact?: boolean;
+      estimatorError?: string;
+      usageTokens?: number;
+      localEstimateTokens?: number;
+      displayTokens?: number;
+      calibrationActualInputTokens?: number;
+      calibrationEstimatedInputTokens?: number;
+    } = {},
+  ): TokenBudgetSnapshot {
+    const reserved = Math.max(0, Math.floor(options.reservedOutputTokens ?? 0));
+    const totalContextTokens = Math.max(1, Math.floor(maxContextTokens));
+    const promptBudget = effectiveInputContextTokens(maxContextTokens, reserved);
+    const ratio = promptBudget > 0 ? tokens / promptBudget : 0;
+    let state: TokenWarningState = "ok";
+    if (ratio >= this.blockingRatio) {
+      state = "blocking";
+    } else if (ratio >= this.warningRatio) {
+      state = "warning";
+    }
+    return {
+      tokens,
+      ...(options.localEstimateTokens !== undefined ? { localEstimateTokens: options.localEstimateTokens } : {}),
+      ...(options.displayTokens !== undefined && options.displayTokens !== tokens ? { displayTokens: options.displayTokens } : {}),
+      estimateSource: options.usageTokens !== undefined ? "usage" : "estimator",
+      ...(options.usageTokens !== undefined ? { usageTokens: options.usageTokens } : {}),
+      ...(options.calibrationActualInputTokens !== undefined
+        ? { calibrationActualInputTokens: options.calibrationActualInputTokens }
+        : {}),
+      ...(options.calibrationEstimatedInputTokens !== undefined
+        ? { calibrationEstimatedInputTokens: options.calibrationEstimatedInputTokens }
+        : {}),
+      totalContextTokens,
+      maxContextTokens: promptBudget,
+      effectiveContextTokens: promptBudget,
+      maxOutputTokens: reserved,
+      warningRatio: this.warningRatio,
+      blockingRatio: this.blockingRatio,
+      state,
+      ratio,
+      source: options.source,
+      exact: options.exact,
+      reservedOutputTokens: reserved,
+      estimatorError: options.estimatorError,
+    };
+  }
+}
+
+/**
+ * Stable JSON for token counting. Returns "" for undefined / null / circular
+ * inputs (legacy: an unset tool_use input still costs the name string only).
+ */
+function safeJsonStringify(value: unknown): string {
+  if (value === undefined || value === null) return "";
+  try {
+    return JSON.stringify(value) ?? "";
+  } catch {
+    return "";
+  }
+}

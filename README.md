@@ -179,7 +179,7 @@ corepack pnpm benchmark:real-llm-topic-switch   # 同一个任务跨多次压缩
 - 上游基线：[OpenBMB/PilotDeck](https://github.com/OpenBMB/PilotDeck) `85be774`，fork 起点逐字节可比对（见 `NOTICE`）。
 - 本 fork 的改动集中在 `src/context/compaction/`（保留策略与接入）、`benchmarks/`（评测脚本）、`tests/context/`（专项测试）三处。
 - 仓库公开始终可读，无需授权即可 clone 复核；所有对外数字都来自仓库里已提交的 `benchmarks/results/*.json`，没有第三方评审。
-- 测试与类型检查现状：根套件 `pnpm test` 529 项 / 527 通过 / 0 失败（2 项 skip）；UI 侧 `npx vitest run` 118 个文件 / 922 个用例 / 0 失败；`ui` 的 `tsc --noEmit` 退出码 0。
+- 测试与类型检查现状：根套件 `pnpm test` 533 项 / 531 通过 / 0 失败（2 项 skip）；UI 侧 `npx vitest run` 118 个文件 / 922 个用例 / 0 失败；`ui` 的 `tsc --noEmit` 退出码 0。
 
 ## 许可证与致谢
 

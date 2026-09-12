@@ -179,7 +179,7 @@ Full evidence and reproduction commands: [docs/upstream-fixes.en.md](docs/upstre
 - Upstream baseline: [OpenBMB/PilotDeck](https://github.com/OpenBMB/PilotDeck) `85be774`; the fork point is byte-comparable (see `NOTICE`).
 - This fork's changes are confined to `src/context/compaction/` (policy and wiring), `benchmarks/` (evaluation scripts) and `tests/context/` (dedicated tests).
 - The repository has always been publicly readable, cloneable without any access grant. Every public number comes from the committed `benchmarks/results/*.json`; no third-party review.
-- Current test and typecheck state: root suite `pnpm test` 529 items / 527 passed / 0 failed (2 skipped); UI `npx vitest run` 118 files / 922 tests / 0 failed; `ui`'s `tsc --noEmit` exits 0.
+- Current test and typecheck state: root suite `pnpm test` 533 items / 531 passed / 0 failed (2 skipped); UI `npx vitest run` 118 files / 922 tests / 0 failed; `ui`'s `tsc --noEmit` exits 0.
 
 ## License and credits
 

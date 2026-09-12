@@ -3,6 +3,7 @@
   "page": "index.html",
   "date": "2026-09-12",
   "what_this_is": "Judge-facing landing page for the PilotDeck-Hippo competition entry (PilotDeck 创造计划 · 方向三). The page leads with the core mechanism and the committed benchmark numbers. Every number on the page is traceable to a file in the repository.",
+  "re_measured_2026_09_12": "All facts-preserved counts below were re-run on 2026-09-12. We found a prefix-collision bug in our own fact-marker matching (a plain text.includes('FACT1') also matched FACT10-FACT19, and 'FACT2' also matched FACT20), which inflated the verbatim-retention counts by up to 2. Fix: benchmarks/factPresent.ts. Files dated 2026-09-11 were superseded and moved to benchmarks/results/superseded-pre-fix/; the real-LLM and tokenizer-scaling files dated 2026-09-11 were not affected and remain in place.",
 
   "repo": {
     "url": "https://github.com/qgeng1465/pilotdeck-hippo",
@@ -16,23 +17,23 @@
 
   "core_data_sources": {
     "structural_benchmark": {
-      "file": "benchmarks/results/2026-09-11T11-16-22-522Z.json",
+      "file": "benchmarks/results/ab-2026-09-12.json",
       "fields": "groups[].preTokensMedian / upstreamPostTokensMedian / hippoPostTokensMedian / upstreamFactsRetainedMedian / hippoFactsRetainedMedian",
-      "used": "(N=40: 3906/1153/1381, 0->8) (N=80: 8291/2368/2634, 0->9) (N=160: 17034/4739/5339, 0->18); seed 20260911, 10 cases per cell, 30/30 deterministic"
+      "used": "(N=40: 3906/1153/1381, 0->6) (N=80: 8291/2368/2634, 0->7) (N=160: 17034/4739/5339, 0->16); seed 20260911, 10 cases per cell, 30/30 deterministic"
     },
     "holdout": {
-      "file": "benchmarks/results/holdout-2026-09-11T11-19-13-567Z.json",
+      "file": "benchmarks/results/holdout-2026-09-12.json",
       "fields": "rows[] variant='shipped default' mean, comparisons[] winsA/ties/winsB/signTestP",
-      "used": "en80 9.4, en160 17.9, zh80 6.0, zh160 10.0, upstream all 0; each cell 10/0/0, p=0.002; seeds 20260921-20260930; vs previous default 0.7/0.15/0.15: 7 wins / 33 ties / 0 losses (p=1/0.5/1/0.125)"
+      "used": "en80 7.4, en160 15.9, zh80 4.0, zh160 8.0, upstream all 0; each cell 10/0/0, p=0.002; seeds 20260921-20260930; vs previous default 0.7/0.15/0.15: 5 wins / 35 ties / 0 losses (p=1/1/1/0.125)"
     },
     "independent_spotcheck": {
-      "file": "benchmarks/results/spotcheck-seeds20261001-2026-09-11T16-59-44-443Z.json",
+      "file": "benchmarks/results/spotcheck-seeds20261001-2026-09-12.json",
       "record": "docs/independent-spotcheck.md",
-      "used": "en80 9.2, en160 18.0, zh80 6.0, zh160 10.0, upstream all 0; each cell 10/0/0, p=0.002; seeds 20261001-20261010",
+      "used": "en80 7.2, en160 16.0, zh80 4.0, zh160 8.0, upstream all 0; each cell 10/0/0, p=0.002; seeds 20261001-20261010",
       "note": "Author self-run reproducibility spot-check, explicitly NOT a third-party review. Lives on branch spotcheck-polish."
     },
     "extraction_precision": {
-      "file": "benchmarks/results/extraction-precision-2026-09-11T13-39-26-139Z.json",
+      "file": "benchmarks/results/extraction-precision-2026-09-12.json",
       "fields": "rows[].recallMedian / precisionMedian / chanceBaselineMedian / liftOverChance",
       "used": "en40 6/20 100% 2.8x, en80 7/20 100% 5.7x, en160 16/20 100% 11x, zh40 4/20 100% 2.7x, zh80 4/20 100% 5.6x, zh160 8/20 89% 10x; holdout seeds 20260921-20260923, 3 seeds median"
     },
@@ -68,7 +69,7 @@
     "dom_selector_matched": "[title*=\"Selective retention\"]",
     "answer_after_compaction": "us-east-2 has the highest total cost, at $95,025.00.",
     "screenshot": "media/badge-live.png",
-    "video": "media/demo1.mp4"
+    "video": "media/pilotdeck-compaction.webm"
   },
 
   "raw_boundary_record": {

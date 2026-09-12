@@ -1,0 +1,4465 @@
+{
+  "meta": {
+    "what": "Post-compaction context, upstream vs Hippo, on one deterministic synthetic case. Same input messages, same fake summarizer, same tail budget; only scorePolicy differs.",
+    "protocol": "benchmarks/demo/exportContextDiff.ts",
+    "command": "npx tsx benchmarks/demo/exportContextDiff.ts",
+    "repo_path_hint": "<repo>/benchmarks/demo/exportContextDiff.ts",
+    "sourceRevision": {
+      "gitHead": "d09d952",
+      "sourceDigest": "c98c48ab4d306f05",
+      "files": [
+        "src/context/compaction/CompactionEngine.ts",
+        "src/context/compaction/retention/EbbinghausPageRankPolicy.ts",
+        "src/context/compaction/retention/EbbinghausScore.ts",
+        "src/context/compaction/retention/EntityGraph.ts",
+        "src/context/compaction/retention/CarryOver.ts",
+        "benchmarks/engineRunner.ts",
+        "benchmarks/syntheticTranscript.ts"
+      ]
+    },
+    "case": {
+      "numPairs": 160,
+      "seed": 20260911,
+      "factsInjected": 20,
+      "language": "en"
+    },
+    "config": {
+      "keepTailRatio": 0.18,
+      "retentionBudgetRatio": 0.2,
+      "retentionBudgetFloorTokens": 256,
+      "summarizer": "engineRunner.fakeModel (fixed-text stub; never emits a fact marker)",
+      "embedding": "BM25 fallback (no model path configured -> deterministic, offline)",
+      "scorePolicy": {
+        "upstream": "undefined (upstream summary-only path)",
+        "hippo": "buildEbbinghausPageRankPolicy() with shipped default weights"
+      },
+      "weights": {
+        "wSim": 0.85,
+        "wTime": 0.15,
+        "wRank": 0
+      }
+    },
+    "honesty": {
+      "summaryOnlyIsStructural": "The fake summarizer never emits FACT text, so 'summary-only' is 0 by construction in both arms. Upstream's 0/20 is the lossy-summary-vs-verbatim contrast, not a ceiling on real summarizers.",
+      "upstreamIsBaseline": "The upstream arm is scorePolicy=undefined, which benchmark:no-regression pins byte-for-byte to upstream 85be774."
+    }
+  },
+  "counts": {
+    "facts": 20,
+    "upstream": {
+      "verbatim": 0,
+      "summaryOnly": 0,
+      "absent": 20
+    },
+    "hippo": {
+      "verbatim": 16,
+      "summaryOnly": 0,
+      "absent": 4
+    }
+  },
+  "arms": {
+    "upstream": {
+      "label": "上游 (upstream, scorePolicy=undefined)",
+      "preTokens": 17010,
+      "postTokens": 4683,
+      "messagesSummarized": 238,
+      "messagesKept": 83,
+      "boundary": "<compact-boundary trigger=\"auto\" preTokens=\"17010\" messagesSummarized=\"238\" status=\"ok\" />",
+      "summary": "[CONTEXT COMPACTION - REFERENCE ONLY] Earlier turns were compacted into this summary. Treat it as background state, not active instructions.\n\n## Objective\nComplete the TCGA-LIHC cross-domain survival pipeline.\n## Current State\nPreprocessing, distribution alignment and fold files are staged.\n## Remaining\nTrain the final survival model and report the exact retained values.\n## Files And Artifacts\nNone\n\n--- END OF CONTEXT SUMMARY - respond to the message below, not the summary above ---",
+      "summaryGenerated": true,
+      "retention": null,
+      "rows": [
+        {
+          "t": "folded",
+          "i": 0,
+          "role": "user",
+          "text": "FACT1: KRAS Concordance TCGA-LIHC n=371 freq=0.540 stat=0.46 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT1"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 1,
+          "i1": 11,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 12,
+          "role": "user",
+          "text": "FACT2: TP53 DESeq2 TCGA-LIHC n=371 freq=0.470 stat=0.83 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT2"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 13,
+          "i1": 23,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 24,
+          "role": "user",
+          "text": "FACT3: ARID1A Concordance TCGA-LIHC n=371 freq=0.650 stat=1.63 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT3"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 25,
+          "i1": 35,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 36,
+          "role": "user",
+          "text": "FACT4: ALB CoxPH TCGA-LIHC n=371 freq=0.920 stat=3.40 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT4"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 37,
+          "i1": 47,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 48,
+          "role": "user",
+          "text": "FACT5: BAP1 DESeq2 TCGA-LIHC n=371 freq=0.800 stat=2.54 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT5"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 49,
+          "i1": 59,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 60,
+          "role": "user",
+          "text": "FACT6: RB1 CoxPH TCGA-LIHC n=371 freq=0.560 stat=1.67 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT6"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 61,
+          "i1": 71,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 72,
+          "role": "user",
+          "text": "FACT7: TP53 EdgeR TCGA-LIHC n=371 freq=0.080 stat=0.35 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT7"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 73,
+          "i1": 83,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 84,
+          "role": "user",
+          "text": "FACT8: ALB PCA TCGA-LIHC n=371 freq=0.150 stat=2.22 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT8"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 85,
+          "i1": 95,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 96,
+          "role": "user",
+          "text": "FACT9: TERT UMAP TCGA-LIHC n=371 freq=0.150 stat=1.34 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT9"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 97,
+          "i1": 107,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 108,
+          "role": "user",
+          "text": "FACT10: CTNNB1 TransDANN TCGA-LIHC n=371 freq=0.510 stat=0.12 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT10"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 109,
+          "i1": 119,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 120,
+          "role": "user",
+          "text": "FACT11: NRAS UMAP TCGA-LIHC n=371 freq=0.550 stat=0.70 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT11"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 121,
+          "i1": 131,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 132,
+          "role": "user",
+          "text": "FACT12: ALB PCA TCGA-LIHC n=371 freq=0.610 stat=2.16 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT12"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 133,
+          "i1": 143,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 144,
+          "role": "user",
+          "text": "FACT13: APOB UMAP TCGA-LIHC n=371 freq=0.770 stat=2.03 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT13"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 145,
+          "i1": 155,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 156,
+          "role": "user",
+          "text": "FACT14: KRAS LOOCV TCGA-LIHC n=371 freq=0.840 stat=2.91 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT14"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 157,
+          "i1": 167,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 168,
+          "role": "user",
+          "text": "FACT15: KRAS CoxPH TCGA-LIHC n=371 freq=0.320 stat=1.71 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT15"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 169,
+          "i1": 179,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 180,
+          "role": "user",
+          "text": "FACT16: BAP1 CoxPH TCGA-LIHC n=371 freq=0.790 stat=1.82 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT16"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 181,
+          "i1": 191,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 192,
+          "role": "user",
+          "text": "FACT17: BAP1 CoxPH TCGA-LIHC n=371 freq=0.140 stat=2.40 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT17"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 193,
+          "i1": 203,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 204,
+          "role": "user",
+          "text": "FACT18: PIK3CA UMAP TCGA-LIHC n=371 freq=0.780 stat=2.07 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT18"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 205,
+          "i1": 215,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 216,
+          "role": "user",
+          "text": "FACT19: KRAS Concordance TCGA-LIHC n=371 freq=0.570 stat=2.72 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT19"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 217,
+          "i1": 227,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 228,
+          "role": "user",
+          "text": "FACT20: APOB Wasserstein TCGA-LIHC n=371 freq=0.680 stat=3.50 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT20"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 229,
+          "i1": 237,
+          "n": 9
+        },
+        {
+          "t": "kept",
+          "i": 238,
+          "role": "user",
+          "text": "Verify the manifest checksums and report any mismatch before model training. Step 120: sample batch row=1 block=1 gene=TP53 metric=6755 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 239,
+          "role": "assistant",
+          "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=52318 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 240,
+          "role": "user",
+          "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 121: sample batch row=1 block=4 gene=ALB metric=7018 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 241,
+          "role": "assistant",
+          "text": "Fold split written; seed fixed, class balance verified across all folds. reply=56537 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 242,
+          "role": "user",
+          "text": "Run the expression normalization step and write the result into the batch queue. Step 122: sample batch row=2 block=7 gene=TP53 metric=1167 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 243,
+          "role": "assistant",
+          "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=19907 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 244,
+          "role": "user",
+          "text": "Inspect the cluster assignment drift between the source and target cohorts. Step 123: sample batch row=2 block=6 gene=CTNNB1 metric=8690 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 245,
+          "role": "assistant",
+          "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=555 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 246,
+          "role": "user",
+          "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 124: sample batch row=1 block=3 gene=AXIN1 metric=7422 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 247,
+          "role": "assistant",
+          "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=63631 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 248,
+          "role": "user",
+          "text": "Refresh the cached mutation counts after the latest genotype call update. Step 125: sample batch row=1 block=5 gene=PIK3CA metric=2094 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 249,
+          "role": "assistant",
+          "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=22783 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 250,
+          "role": "user",
+          "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 126: sample batch row=2 block=1 gene=AXIN1 metric=2599 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 251,
+          "role": "assistant",
+          "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=27137 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 252,
+          "role": "user",
+          "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 127: sample batch row=2 block=5 gene=CTNNB1 metric=2988 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 253,
+          "role": "assistant",
+          "text": "Manifest checksums verified; staging artifact updated to latest revision. reply=67000 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 254,
+          "role": "user",
+          "text": "Trim low-confidence records and rerun the phenotype summary for the clinical table. Step 128: sample batch row=1 block=6 gene=AXIN1 metric=7564 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 255,
+          "role": "assistant",
+          "text": "Clinical covariate order matches matrix rows; no remap required. reply=89492 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 256,
+          "role": "user",
+          "text": "Trim low-confidence records and rerun the phenotype summary for the clinical table. Step 129: sample batch row=1 block=7 gene=ARID1A metric=1707 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 257,
+          "role": "assistant",
+          "text": "Clinical covariate order matches matrix rows; no remap required. reply=80545 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 258,
+          "role": "user",
+          "text": "Inspect the cluster assignment drift between the source and target cohorts. Step 130: sample batch row=2 block=7 gene=NRAS metric=1603 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 259,
+          "role": "assistant",
+          "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=26250 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 260,
+          "role": "user",
+          "text": "Run the expression normalization step and write the result into the batch queue. Step 131: sample batch row=2 block=6 gene=TERT metric=7786 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 261,
+          "role": "assistant",
+          "text": "Fold split written; seed fixed, class balance verified across all folds. reply=61250 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 262,
+          "role": "user",
+          "text": "Verify the manifest checksums and report any mismatch before model training. Step 132: sample batch row=2 block=4 gene=ARID1A metric=7013 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 263,
+          "role": "assistant",
+          "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=82500 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 264,
+          "role": "user",
+          "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 133: sample batch row=2 block=5 gene=BAP1 metric=5655 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 265,
+          "role": "assistant",
+          "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=13512 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 266,
+          "role": "user",
+          "text": "Inspect the cluster assignment drift between the source and target cohorts. Step 134: sample batch row=1 block=4 gene=APOB metric=8222 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 267,
+          "role": "assistant",
+          "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=95531 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 268,
+          "role": "user",
+          "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 135: sample batch row=1 block=2 gene=CTNNB1 metric=6226 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 269,
+          "role": "assistant",
+          "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=4647 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 270,
+          "role": "user",
+          "text": "Run the expression normalization step and write the result into the batch queue. Step 136: sample batch row=2 block=8 gene=NRAS metric=3890 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 271,
+          "role": "assistant",
+          "text": "Fold split written; seed fixed, class balance verified across all folds. reply=47302 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 272,
+          "role": "user",
+          "text": "Run the expression normalization step and write the result into the batch queue. Step 137: sample batch row=1 block=3 gene=ARID1A metric=4420 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 273,
+          "role": "assistant",
+          "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=47410 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 274,
+          "role": "user",
+          "text": "Run the expression normalization step and write the result into the batch queue. Step 138: sample batch row=1 block=7 gene=TP53 metric=4637 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 275,
+          "role": "assistant",
+          "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=52690 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 276,
+          "role": "user",
+          "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 139: sample batch row=1 block=1 gene=ALB metric=7983 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 277,
+          "role": "assistant",
+          "text": "Clinical covariate order matches matrix rows; no remap required. reply=38516 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 278,
+          "role": "user",
+          "text": "Verify the manifest checksums and report any mismatch before model training. Step 140: sample batch row=2 block=6 gene=ARID1A metric=8519 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 279,
+          "role": "assistant",
+          "text": "Clinical covariate order matches matrix rows; no remap required. reply=91061 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 280,
+          "role": "user",
+          "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 141: sample batch row=2 block=6 gene=CTNNB1 metric=3399 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 281,
+          "role": "assistant",
+          "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=31334 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 282,
+          "role": "user",
+          "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 142: sample batch row=2 block=7 gene=AXIN1 metric=5962 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 283,
+          "role": "assistant",
+          "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=66167 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 284,
+          "role": "user",
+          "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 143: sample batch row=1 block=8 gene=ARID1A metric=9029 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 285,
+          "role": "assistant",
+          "text": "Manifest checksums verified; staging artifact updated to latest revision. reply=59047 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 286,
+          "role": "user",
+          "text": "Trim low-confidence records and rerun the phenotype summary for the clinical table. Step 144: sample batch row=2 block=4 gene=RB1 metric=5656 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 287,
+          "role": "assistant",
+          "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=5960 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 288,
+          "role": "user",
+          "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 145: sample batch row=2 block=4 gene=CTNNB1 metric=1578 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 289,
+          "role": "assistant",
+          "text": "Fold split written; seed fixed, class balance verified across all folds. reply=95714 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 290,
+          "role": "user",
+          "text": "Verify the manifest checksums and report any mismatch before model training. Step 146: sample batch row=2 block=1 gene=CTNNB1 metric=3340 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 291,
+          "role": "assistant",
+          "text": "Fold split written; seed fixed, class balance verified across all folds. reply=7399 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 292,
+          "role": "user",
+          "text": "Inspect the cluster assignment drift between the source and target cohorts. Step 147: sample batch row=2 block=4 gene=CTNNB1 metric=6462 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 293,
+          "role": "assistant",
+          "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=75806 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 294,
+          "role": "user",
+          "text": "Run the expression normalization step and write the result into the batch queue. Step 148: sample batch row=2 block=4 gene=AXIN1 metric=8694 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 295,
+          "role": "assistant",
+          "text": "Clinical covariate order matches matrix rows; no remap required. reply=16314 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 296,
+          "role": "user",
+          "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 149: sample batch row=2 block=3 gene=RB1 metric=6148 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 297,
+          "role": "assistant",
+          "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=23039 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 298,
+          "role": "user",
+          "text": "Refresh the cached mutation counts after the latest genotype call update. Step 150: sample batch row=1 block=2 gene=BAP1 metric=9288 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 299,
+          "role": "assistant",
+          "text": "Fold split written; seed fixed, class balance verified across all folds. reply=25583 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 300,
+          "role": "user",
+          "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 151: sample batch row=2 block=4 gene=RB1 metric=7136 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 301,
+          "role": "assistant",
+          "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=63826 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 302,
+          "role": "user",
+          "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 152: sample batch row=1 block=5 gene=RB1 metric=5275 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 303,
+          "role": "assistant",
+          "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=29973 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 304,
+          "role": "user",
+          "text": "Run the expression normalization step and write the result into the batch queue. Step 153: sample batch row=1 block=6 gene=CTNNB1 metric=5806 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 305,
+          "role": "assistant",
+          "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=25775 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 306,
+          "role": "user",
+          "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 154: sample batch row=1 block=5 gene=AXIN1 metric=1793 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 307,
+          "role": "assistant",
+          "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=4414 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 308,
+          "role": "user",
+          "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 155: sample batch row=2 block=6 gene=ALB metric=2615 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 309,
+          "role": "assistant",
+          "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=48953 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 310,
+          "role": "user",
+          "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 156: sample batch row=2 block=8 gene=KRAS metric=5403 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 311,
+          "role": "assistant",
+          "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=20644 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 312,
+          "role": "user",
+          "text": "Verify the manifest checksums and report any mismatch before model training. Step 157: sample batch row=1 block=2 gene=AXIN1 metric=4767 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 313,
+          "role": "assistant",
+          "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=70990 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 314,
+          "role": "user",
+          "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 158: sample batch row=1 block=3 gene=BAP1 metric=9710 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 315,
+          "role": "assistant",
+          "text": "Fold split written; seed fixed, class balance verified across all folds. reply=45785 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 316,
+          "role": "user",
+          "text": "Trim low-confidence records and rerun the phenotype summary for the clinical table. Step 159: sample batch row=2 block=7 gene=APOB metric=5268 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 317,
+          "role": "assistant",
+          "text": "Clinical covariate order matches matrix rows; no remap required. reply=25404 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 318,
+          "role": "user",
+          "text": "Inspect the cluster assignment drift between the source and target cohorts. Step 160: sample batch row=2 block=4 gene=TP53 metric=1749 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 319,
+          "role": "assistant",
+          "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=76047 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 320,
+          "role": "user",
+          "text": "Answer the TCGA-LIHC n/frequency/statistic questions from exact FACT values stored in the conversation.",
+          "truncated": false,
+          "facts": []
+        }
+      ]
+    },
+    "hippo": {
+      "label": "Hippo (shipped default policy)",
+      "preTokens": 17010,
+      "postTokens": 5283,
+      "messagesSummarized": 222,
+      "messagesKept": 99,
+      "boundary": "<compact-boundary trigger=\"auto\" preTokens=\"17010\" messagesSummarized=\"222\" status=\"ok\" />",
+      "summary": "[CONTEXT COMPACTION - REFERENCE ONLY] Earlier turns were compacted into this summary. Treat it as background state, not active instructions.\n\n## Objective\nComplete the TCGA-LIHC cross-domain survival pipeline.\n## Current State\nPreprocessing, distribution alignment and fold files are staged.\n## Remaining\nTrain the final survival model and report the exact retained values.\n## Files And Artifacts\nNone\n\n--- END OF CONTEXT SUMMARY - respond to the message below, not the summary above ---",
+      "summaryGenerated": true,
+      "retention": {
+        "policyId": "ebbinghaus-pagerank",
+        "retainedMessages": 16,
+        "retainedTokens": 600,
+        "budgetTokens": 612,
+        "weights": {
+          "wSim": 0.85,
+          "wTime": 0.15,
+          "wRank": 0
+        }
+      },
+      "rows": [
+        {
+          "t": "folded",
+          "i": 0,
+          "role": "user",
+          "text": "FACT1: KRAS Concordance TCGA-LIHC n=371 freq=0.540 stat=0.46 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT1"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 1,
+          "i1": 11,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 12,
+          "role": "user",
+          "text": "FACT2: TP53 DESeq2 TCGA-LIHC n=371 freq=0.470 stat=0.83 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT2"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 13,
+          "i1": 23,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 24,
+          "role": "user",
+          "text": "FACT3: ARID1A Concordance TCGA-LIHC n=371 freq=0.650 stat=1.63 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT3"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 25,
+          "i1": 35,
+          "n": 11
+        },
+        {
+          "t": "folded",
+          "i": 36,
+          "role": "user",
+          "text": "FACT4: ALB CoxPH TCGA-LIHC n=371 freq=0.920 stat=3.40 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT4"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 37,
+          "i1": 47,
+          "n": 11
+        },
+        {
+          "t": "retained",
+          "i": 48,
+          "role": "user",
+          "text": "FACT5: BAP1 DESeq2 TCGA-LIHC n=371 freq=0.800 stat=2.54 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT5"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 49,
+          "i1": 59,
+          "n": 11
+        },
+        {
+          "t": "retained",
+          "i": 60,
+          "role": "user",
+          "text": "FACT6: RB1 CoxPH TCGA-LIHC n=371 freq=0.560 stat=1.67 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT6"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 61,
+          "i1": 71,
+          "n": 11
+        },
+        {
+          "t": "retained",
+          "i": 72,
+          "role": "user",
+          "text": "FACT7: TP53 EdgeR TCGA-LIHC n=371 freq=0.080 stat=0.35 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT7"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 73,
+          "i1": 83,
+          "n": 11
+        },
+        {
+          "t": "retained",
+          "i": 84,
+          "role": "user",
+          "text": "FACT8: ALB PCA TCGA-LIHC n=371 freq=0.150 stat=2.22 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT8"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 85,
+          "i1": 95,
+          "n": 11
+        },
+        {
+          "t": "retained",
+          "i": 96,
+          "role": "user",
+          "text": "FACT9: TERT UMAP TCGA-LIHC n=371 freq=0.150 stat=1.34 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT9"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 97,
+          "i1": 107,
+          "n": 11
+        },
+        {
+          "t": "retained",
+          "i": 108,
+          "role": "user",
+          "text": "FACT10: CTNNB1 TransDANN TCGA-LIHC n=371 freq=0.510 stat=0.12 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT10"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 109,
+          "i1": 119,
+          "n": 11
+        },
+        {
+          "t": "retained",
+          "i": 120,
+          "role": "user",
+          "text": "FACT11: NRAS UMAP TCGA-LIHC n=371 freq=0.550 stat=0.70 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT11"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 121,
+          "i1": 131,
+          "n": 11
+        },
+        {
+          "t": "retained",
+          "i": 132,
+          "role": "user",
+          "text": "FACT12: ALB PCA TCGA-LIHC n=371 freq=0.610 stat=2.16 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT12"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 133,
+          "i1": 143,
+          "n": 11
+        },
+        {
+          "t": "retained",
+          "i": 144,
+          "role": "user",
+          "text": "FACT13: APOB UMAP TCGA-LIHC n=371 freq=0.770 stat=2.03 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT13"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 145,
+          "i1": 155,
+          "n": 11
+        },
+        {
+          "t": "retained",
+          "i": 156,
+          "role": "user",
+          "text": "FACT14: KRAS LOOCV TCGA-LIHC n=371 freq=0.840 stat=2.91 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT14"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 157,
+          "i1": 167,
+          "n": 11
+        },
+        {
+          "t": "retained",
+          "i": 168,
+          "role": "user",
+          "text": "FACT15: KRAS CoxPH TCGA-LIHC n=371 freq=0.320 stat=1.71 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT15"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 169,
+          "i1": 179,
+          "n": 11
+        },
+        {
+          "t": "retained",
+          "i": 180,
+          "role": "user",
+          "text": "FACT16: BAP1 CoxPH TCGA-LIHC n=371 freq=0.790 stat=1.82 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT16"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 181,
+          "i1": 191,
+          "n": 11
+        },
+        {
+          "t": "retained",
+          "i": 192,
+          "role": "user",
+          "text": "FACT17: BAP1 CoxPH TCGA-LIHC n=371 freq=0.140 stat=2.40 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT17"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 193,
+          "i1": 203,
+          "n": 11
+        },
+        {
+          "t": "retained",
+          "i": 204,
+          "role": "user",
+          "text": "FACT18: PIK3CA UMAP TCGA-LIHC n=371 freq=0.780 stat=2.07 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT18"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 205,
+          "i1": 215,
+          "n": 11
+        },
+        {
+          "t": "retained",
+          "i": 216,
+          "role": "user",
+          "text": "FACT19: KRAS Concordance TCGA-LIHC n=371 freq=0.570 stat=2.72 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT19"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 217,
+          "i1": 227,
+          "n": 11
+        },
+        {
+          "t": "retained",
+          "i": 228,
+          "role": "user",
+          "text": "FACT20: APOB Wasserstein TCGA-LIHC n=371 freq=0.680 stat=3.50 Record this exact value as a checkpoint.",
+          "truncated": false,
+          "facts": [
+            "FACT20"
+          ]
+        },
+        {
+          "t": "elided",
+          "i0": 229,
+          "i1": 237,
+          "n": 9
+        },
+        {
+          "t": "kept",
+          "i": 238,
+          "role": "user",
+          "text": "Verify the manifest checksums and report any mismatch before model training. Step 120: sample batch row=1 block=1 gene=TP53 metric=6755 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 239,
+          "role": "assistant",
+          "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=52318 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 240,
+          "role": "user",
+          "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 121: sample batch row=1 block=4 gene=ALB metric=7018 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 241,
+          "role": "assistant",
+          "text": "Fold split written; seed fixed, class balance verified across all folds. reply=56537 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 242,
+          "role": "user",
+          "text": "Run the expression normalization step and write the result into the batch queue. Step 122: sample batch row=2 block=7 gene=TP53 metric=1167 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 243,
+          "role": "assistant",
+          "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=19907 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 244,
+          "role": "user",
+          "text": "Inspect the cluster assignment drift between the source and target cohorts. Step 123: sample batch row=2 block=6 gene=CTNNB1 metric=8690 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 245,
+          "role": "assistant",
+          "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=555 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 246,
+          "role": "user",
+          "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 124: sample batch row=1 block=3 gene=AXIN1 metric=7422 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 247,
+          "role": "assistant",
+          "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=63631 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 248,
+          "role": "user",
+          "text": "Refresh the cached mutation counts after the latest genotype call update. Step 125: sample batch row=1 block=5 gene=PIK3CA metric=2094 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 249,
+          "role": "assistant",
+          "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=22783 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 250,
+          "role": "user",
+          "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 126: sample batch row=2 block=1 gene=AXIN1 metric=2599 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 251,
+          "role": "assistant",
+          "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=27137 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 252,
+          "role": "user",
+          "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 127: sample batch row=2 block=5 gene=CTNNB1 metric=2988 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 253,
+          "role": "assistant",
+          "text": "Manifest checksums verified; staging artifact updated to latest revision. reply=67000 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 254,
+          "role": "user",
+          "text": "Trim low-confidence records and rerun the phenotype summary for the clinical table. Step 128: sample batch row=1 block=6 gene=AXIN1 metric=7564 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 255,
+          "role": "assistant",
+          "text": "Clinical covariate order matches matrix rows; no remap required. reply=89492 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 256,
+          "role": "user",
+          "text": "Trim low-confidence records and rerun the phenotype summary for the clinical table. Step 129: sample batch row=1 block=7 gene=ARID1A metric=1707 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 257,
+          "role": "assistant",
+          "text": "Clinical covariate order matches matrix rows; no remap required. reply=80545 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 258,
+          "role": "user",
+          "text": "Inspect the cluster assignment drift between the source and target cohorts. Step 130: sample batch row=2 block=7 gene=NRAS metric=1603 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 259,
+          "role": "assistant",
+          "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=26250 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 260,
+          "role": "user",
+          "text": "Run the expression normalization step and write the result into the batch queue. Step 131: sample batch row=2 block=6 gene=TERT metric=7786 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 261,
+          "role": "assistant",
+          "text": "Fold split written; seed fixed, class balance verified across all folds. reply=61250 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 262,
+          "role": "user",
+          "text": "Verify the manifest checksums and report any mismatch before model training. Step 132: sample batch row=2 block=4 gene=ARID1A metric=7013 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 263,
+          "role": "assistant",
+          "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=82500 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 264,
+          "role": "user",
+          "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 133: sample batch row=2 block=5 gene=BAP1 metric=5655 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 265,
+          "role": "assistant",
+          "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=13512 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 266,
+          "role": "user",
+          "text": "Inspect the cluster assignment drift between the source and target cohorts. Step 134: sample batch row=1 block=4 gene=APOB metric=8222 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 267,
+          "role": "assistant",
+          "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=95531 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 268,
+          "role": "user",
+          "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 135: sample batch row=1 block=2 gene=CTNNB1 metric=6226 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 269,
+          "role": "assistant",
+          "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=4647 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 270,
+          "role": "user",
+          "text": "Run the expression normalization step and write the result into the batch queue. Step 136: sample batch row=2 block=8 gene=NRAS metric=3890 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 271,
+          "role": "assistant",
+          "text": "Fold split written; seed fixed, class balance verified across all folds. reply=47302 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 272,
+          "role": "user",
+          "text": "Run the expression normalization step and write the result into the batch queue. Step 137: sample batch row=1 block=3 gene=ARID1A metric=4420 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 273,
+          "role": "assistant",
+          "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=47410 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 274,
+          "role": "user",
+          "text": "Run the expression normalization step and write the result into the batch queue. Step 138: sample batch row=1 block=7 gene=TP53 metric=4637 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 275,
+          "role": "assistant",
+          "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=52690 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 276,
+          "role": "user",
+          "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 139: sample batch row=1 block=1 gene=ALB metric=7983 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 277,
+          "role": "assistant",
+          "text": "Clinical covariate order matches matrix rows; no remap required. reply=38516 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 278,
+          "role": "user",
+          "text": "Verify the manifest checksums and report any mismatch before model training. Step 140: sample batch row=2 block=6 gene=ARID1A metric=8519 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 279,
+          "role": "assistant",
+          "text": "Clinical covariate order matches matrix rows; no remap required. reply=91061 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 280,
+          "role": "user",
+          "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 141: sample batch row=2 block=6 gene=CTNNB1 metric=3399 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 281,
+          "role": "assistant",
+          "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=31334 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 282,
+          "role": "user",
+          "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 142: sample batch row=2 block=7 gene=AXIN1 metric=5962 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 283,
+          "role": "assistant",
+          "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=66167 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 284,
+          "role": "user",
+          "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 143: sample batch row=1 block=8 gene=ARID1A metric=9029 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 285,
+          "role": "assistant",
+          "text": "Manifest checksums verified; staging artifact updated to latest revision. reply=59047 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 286,
+          "role": "user",
+          "text": "Trim low-confidence records and rerun the phenotype summary for the clinical table. Step 144: sample batch row=2 block=4 gene=RB1 metric=5656 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 287,
+          "role": "assistant",
+          "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=5960 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 288,
+          "role": "user",
+          "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 145: sample batch row=2 block=4 gene=CTNNB1 metric=1578 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 289,
+          "role": "assistant",
+          "text": "Fold split written; seed fixed, class balance verified across all folds. reply=95714 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 290,
+          "role": "user",
+          "text": "Verify the manifest checksums and report any mismatch before model training. Step 146: sample batch row=2 block=1 gene=CTNNB1 metric=3340 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 291,
+          "role": "assistant",
+          "text": "Fold split written; seed fixed, class balance verified across all folds. reply=7399 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 292,
+          "role": "user",
+          "text": "Inspect the cluster assignment drift between the source and target cohorts. Step 147: sample batch row=2 block=4 gene=CTNNB1 metric=6462 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 293,
+          "role": "assistant",
+          "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=75806 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 294,
+          "role": "user",
+          "text": "Run the expression normalization step and write the result into the batch queue. Step 148: sample batch row=2 block=4 gene=AXIN1 metric=8694 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 295,
+          "role": "assistant",
+          "text": "Clinical covariate order matches matrix rows; no remap required. reply=16314 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 296,
+          "role": "user",
+          "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 149: sample batch row=2 block=3 gene=RB1 metric=6148 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 297,
+          "role": "assistant",
+          "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=23039 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 298,
+          "role": "user",
+          "text": "Refresh the cached mutation counts after the latest genotype call update. Step 150: sample batch row=1 block=2 gene=BAP1 metric=9288 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 299,
+          "role": "assistant",
+          "text": "Fold split written; seed fixed, class balance verified across all folds. reply=25583 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 300,
+          "role": "user",
+          "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 151: sample batch row=2 block=4 gene=RB1 metric=7136 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 301,
+          "role": "assistant",
+          "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=63826 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 302,
+          "role": "user",
+          "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 152: sample batch row=1 block=5 gene=RB1 metric=5275 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 303,
+          "role": "assistant",
+          "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=29973 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 304,
+          "role": "user",
+          "text": "Run the expression normalization step and write the result into the batch queue. Step 153: sample batch row=1 block=6 gene=CTNNB1 metric=5806 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 305,
+          "role": "assistant",
+          "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=25775 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 306,
+          "role": "user",
+          "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 154: sample batch row=1 block=5 gene=AXIN1 metric=1793 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 307,
+          "role": "assistant",
+          "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=4414 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 308,
+          "role": "user",
+          "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 155: sample batch row=2 block=6 gene=ALB metric=2615 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 309,
+          "role": "assistant",
+          "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=48953 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 310,
+          "role": "user",
+          "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 156: sample batch row=2 block=8 gene=KRAS metric=5403 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 311,
+          "role": "assistant",
+          "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=20644 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 312,
+          "role": "user",
+          "text": "Verify the manifest checksums and report any mismatch before model training. Step 157: sample batch row=1 block=2 gene=AXIN1 metric=4767 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 313,
+          "role": "assistant",
+          "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=70990 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 314,
+          "role": "user",
+          "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 158: sample batch row=1 block=3 gene=BAP1 metric=9710 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 315,
+          "role": "assistant",
+          "text": "Fold split written; seed fixed, class balance verified across all folds. reply=45785 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 316,
+          "role": "user",
+          "text": "Trim low-confidence records and rerun the phenotype summary for the clinical table. Step 159: sample batch row=2 block=7 gene=APOB metric=5268 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 317,
+          "role": "assistant",
+          "text": "Clinical covariate order matches matrix rows; no remap required. reply=25404 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 318,
+          "role": "user",
+          "text": "Inspect the cluster assignment drift between the source and target cohorts. Step 160: sample batch row=2 block=4 gene=TP53 metric=1749 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 319,
+          "role": "assistant",
+          "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=76047 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+          "truncated": false,
+          "facts": []
+        },
+        {
+          "t": "kept",
+          "i": 320,
+          "role": "user",
+          "text": "Answer the TCGA-LIHC n/frequency/statistic questions from exact FACT values stored in the conversation.",
+          "truncated": false,
+          "facts": []
+        }
+      ]
+    }
+  },
+  "facts": [
+    {
+      "marker": "FACT1",
+      "value": "KRAS Concordance TCGA-LIHC n=371 freq=0.540 stat=0.46",
+      "messageIndex": 0,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "absent"
+      }
+    },
+    {
+      "marker": "FACT2",
+      "value": "TP53 DESeq2 TCGA-LIHC n=371 freq=0.470 stat=0.83",
+      "messageIndex": 12,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "absent"
+      }
+    },
+    {
+      "marker": "FACT3",
+      "value": "ARID1A Concordance TCGA-LIHC n=371 freq=0.650 stat=1.63",
+      "messageIndex": 24,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "absent"
+      }
+    },
+    {
+      "marker": "FACT4",
+      "value": "ALB CoxPH TCGA-LIHC n=371 freq=0.920 stat=3.40",
+      "messageIndex": 36,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "absent"
+      }
+    },
+    {
+      "marker": "FACT5",
+      "value": "BAP1 DESeq2 TCGA-LIHC n=371 freq=0.800 stat=2.54",
+      "messageIndex": 48,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "verbatim"
+      }
+    },
+    {
+      "marker": "FACT6",
+      "value": "RB1 CoxPH TCGA-LIHC n=371 freq=0.560 stat=1.67",
+      "messageIndex": 60,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "verbatim"
+      }
+    },
+    {
+      "marker": "FACT7",
+      "value": "TP53 EdgeR TCGA-LIHC n=371 freq=0.080 stat=0.35",
+      "messageIndex": 72,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "verbatim"
+      }
+    },
+    {
+      "marker": "FACT8",
+      "value": "ALB PCA TCGA-LIHC n=371 freq=0.150 stat=2.22",
+      "messageIndex": 84,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "verbatim"
+      }
+    },
+    {
+      "marker": "FACT9",
+      "value": "TERT UMAP TCGA-LIHC n=371 freq=0.150 stat=1.34",
+      "messageIndex": 96,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "verbatim"
+      }
+    },
+    {
+      "marker": "FACT10",
+      "value": "CTNNB1 TransDANN TCGA-LIHC n=371 freq=0.510 stat=0.12",
+      "messageIndex": 108,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "verbatim"
+      }
+    },
+    {
+      "marker": "FACT11",
+      "value": "NRAS UMAP TCGA-LIHC n=371 freq=0.550 stat=0.70",
+      "messageIndex": 120,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "verbatim"
+      }
+    },
+    {
+      "marker": "FACT12",
+      "value": "ALB PCA TCGA-LIHC n=371 freq=0.610 stat=2.16",
+      "messageIndex": 132,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "verbatim"
+      }
+    },
+    {
+      "marker": "FACT13",
+      "value": "APOB UMAP TCGA-LIHC n=371 freq=0.770 stat=2.03",
+      "messageIndex": 144,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "verbatim"
+      }
+    },
+    {
+      "marker": "FACT14",
+      "value": "KRAS LOOCV TCGA-LIHC n=371 freq=0.840 stat=2.91",
+      "messageIndex": 156,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "verbatim"
+      }
+    },
+    {
+      "marker": "FACT15",
+      "value": "KRAS CoxPH TCGA-LIHC n=371 freq=0.320 stat=1.71",
+      "messageIndex": 168,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "verbatim"
+      }
+    },
+    {
+      "marker": "FACT16",
+      "value": "BAP1 CoxPH TCGA-LIHC n=371 freq=0.790 stat=1.82",
+      "messageIndex": 180,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "verbatim"
+      }
+    },
+    {
+      "marker": "FACT17",
+      "value": "BAP1 CoxPH TCGA-LIHC n=371 freq=0.140 stat=2.40",
+      "messageIndex": 192,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "verbatim"
+      }
+    },
+    {
+      "marker": "FACT18",
+      "value": "PIK3CA UMAP TCGA-LIHC n=371 freq=0.780 stat=2.07",
+      "messageIndex": 204,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "verbatim"
+      }
+    },
+    {
+      "marker": "FACT19",
+      "value": "KRAS Concordance TCGA-LIHC n=371 freq=0.570 stat=2.72",
+      "messageIndex": 216,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "verbatim"
+      }
+    },
+    {
+      "marker": "FACT20",
+      "value": "APOB Wasserstein TCGA-LIHC n=371 freq=0.680 stat=3.50",
+      "messageIndex": 228,
+      "role": "user",
+      "fate": {
+        "upstream": "absent",
+        "hippo": "verbatim"
+      }
+    }
+  ],
+  "scoring": {
+    "policyId": "ebbinghaus-pagerank",
+    "weights": {
+      "wSim": 0.85,
+      "wTime": 0.15,
+      "wRank": 0
+    },
+    "queryHint": "Answer the TCGA-LIHC n/frequency/statistic questions from exact FACT values stored in the conversation.",
+    "budgetTokens": 612,
+    "candidateCount": 238,
+    "retainedCount": 16,
+    "candidates": [
+      {
+        "i": 0,
+        "role": "user",
+        "text": "FACT1: KRAS Concordance TCGA-LIHC n=371 freq=0.540 stat=0.46 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.8363,
+        "retained": false,
+        "facts": [
+          "FACT1"
+        ]
+      },
+      {
+        "i": 1,
+        "role": "assistant",
+        "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=73774 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/…",
+        "truncated": true,
+        "score": 0.6765,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 2,
+        "role": "user",
+        "text": "Verify the manifest checksums and report any mismatch before model training. Step 2: sample batch row=1 block=2 gene=AXIN1 metric=5089 residuals=0.33 sample_count=184 batch_versio…",
+        "truncated": true,
+        "score": 0.432,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 3,
+        "role": "assistant",
+        "text": "Manifest checksums verified; staging artifact updated to latest revision. reply=51841 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+        "truncated": false,
+        "score": 0.0559,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 4,
+        "role": "user",
+        "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 3: sample batch row=2 block=2 gene=ALB metric=9983 conditioner=0.74 pseudocount=2 cohort…",
+        "truncated": true,
+        "score": 0.5137,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 5,
+        "role": "assistant",
+        "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=53678 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-lat…",
+        "truncated": true,
+        "score": 0.0564,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 6,
+        "role": "user",
+        "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 4: sample batch row=2 block=7 gene=CTNNB1 metric=6398 residuals=0.33 sample_count=18…",
+        "truncated": true,
+        "score": 0.5098,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 7,
+        "role": "assistant",
+        "text": "Clinical covariate order matches matrix rows; no remap required. reply=81613 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+        "truncated": false,
+        "score": 0.0568,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 8,
+        "role": "user",
+        "text": "Run the expression normalization step and write the result into the batch queue. Step 5: sample batch row=2 block=1 gene=APOB metric=1412 expected_value=0.87 p_value=0.021 fold=3 …",
+        "truncated": true,
+        "score": 0.5434,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 9,
+        "role": "assistant",
+        "text": "Clinical covariate order matches matrix rows; no remap required. reply=45119 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+        "truncated": false,
+        "score": 0.0573,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 10,
+        "role": "user",
+        "text": "Trim low-confidence records and rerun the phenotype summary for the clinical table. Step 6: sample batch row=2 block=5 gene=TP53 metric=7561 kernel_bandwidth=1.25 split_signature=…",
+        "truncated": true,
+        "score": 0.5196,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 11,
+        "role": "assistant",
+        "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=28908 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.…",
+        "truncated": true,
+        "score": 0.0578,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 12,
+        "role": "user",
+        "text": "FACT2: TP53 DESeq2 TCGA-LIHC n=371 freq=0.470 stat=0.83 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.8392,
+        "retained": false,
+        "facts": [
+          "FACT2"
+        ]
+      },
+      {
+        "i": 13,
+        "role": "assistant",
+        "text": "Clinical covariate order matches matrix rows; no remap required. reply=88678 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+        "truncated": false,
+        "score": 0.0583,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 14,
+        "role": "user",
+        "text": "Trim low-confidence records and rerun the phenotype summary for the clinical table. Step 8: sample batch row=2 block=7 gene=BAP1 metric=6832 residuals=0.33 sample_count=184 batch_…",
+        "truncated": true,
+        "score": 0.5117,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 15,
+        "role": "assistant",
+        "text": "Manifest checksums verified; staging artifact updated to latest revision. reply=83302 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+        "truncated": false,
+        "score": 0.0588,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 16,
+        "role": "user",
+        "text": "Trim low-confidence records and rerun the phenotype summary for the clinical table. Step 9: sample batch row=2 block=1 gene=KRAS metric=9295 conditioner=0.74 pseudocount=2 cohort_…",
+        "truncated": true,
+        "score": 0.5166,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 17,
+        "role": "assistant",
+        "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=95683 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+        "truncated": false,
+        "score": 0.6911,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 18,
+        "role": "user",
+        "text": "Run the expression normalization step and write the result into the batch queue. Step 10: sample batch row=2 block=5 gene=NRAS metric=5828 expected_value=0.87 p_value=0.021 fold=3…",
+        "truncated": true,
+        "score": 0.5458,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 19,
+        "role": "assistant",
+        "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=7457 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/coho…",
+        "truncated": true,
+        "score": 0.0598,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 20,
+        "role": "user",
+        "text": "Trim low-confidence records and rerun the phenotype summary for the clinical table. Step 11: sample batch row=1 block=8 gene=KRAS metric=6492 residuals=0.33 sample_count=184 batch…",
+        "truncated": true,
+        "score": 0.5132,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 21,
+        "role": "assistant",
+        "text": "Fold split written; seed fixed, class balance verified across all folds. reply=66475 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+        "truncated": false,
+        "score": 0.0603,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 22,
+        "role": "user",
+        "text": "Refresh the cached mutation counts after the latest genotype call update. Step 12: sample batch row=2 block=4 gene=TP53 metric=1496 residuals=0.33 sample_count=184 batch_version=9…",
+        "truncated": true,
+        "score": 0.5182,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 23,
+        "role": "assistant",
+        "text": "Manifest checksums verified; staging artifact updated to latest revision. reply=13478 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+        "truncated": false,
+        "score": 0.0608,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 24,
+        "role": "user",
+        "text": "FACT3: ARID1A Concordance TCGA-LIHC n=371 freq=0.650 stat=1.63 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.8422,
+        "retained": false,
+        "facts": [
+          "FACT3"
+        ]
+      },
+      {
+        "i": 25,
+        "role": "assistant",
+        "text": "Fold split written; seed fixed, class balance verified across all folds. reply=8287 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+        "truncated": false,
+        "score": 0.0613,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 26,
+        "role": "user",
+        "text": "Verify the manifest checksums and report any mismatch before model training. Step 14: sample batch row=2 block=8 gene=TERT metric=6140 covariate_shift=0.12 batch_effect=0.05 umap_…",
+        "truncated": true,
+        "score": 0.441,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 27,
+        "role": "assistant",
+        "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=1141 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+        "truncated": false,
+        "score": 0.0618,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 28,
+        "role": "user",
+        "text": "Refresh the cached mutation counts after the latest genotype call update. Step 15: sample batch row=1 block=4 gene=CTNNB1 metric=5459 learning_rate=0.0003 optimizer=adam epochs=50…",
+        "truncated": true,
+        "score": 0.5131,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 29,
+        "role": "assistant",
+        "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=76273 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+        "truncated": false,
+        "score": 0.0624,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 30,
+        "role": "user",
+        "text": "Refresh the cached mutation counts after the latest genotype call update. Step 16: sample batch row=1 block=2 gene=CTNNB1 metric=4009 conditioner=0.74 pseudocount=2 cohort_lookup=…",
+        "truncated": true,
+        "score": 0.5247,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 31,
+        "role": "assistant",
+        "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=61190 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/l…",
+        "truncated": true,
+        "score": 0.6866,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 32,
+        "role": "user",
+        "text": "Inspect the cluster assignment drift between the source and target cohorts. Step 17: sample batch row=1 block=7 gene=TERT metric=3381 expected_value=0.87 p_value=0.021 fold=3 refe…",
+        "truncated": true,
+        "score": 0.5164,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 33,
+        "role": "assistant",
+        "text": "Fold split written; seed fixed, class balance verified across all folds. reply=35118 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+        "truncated": false,
+        "score": 0.0634,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 34,
+        "role": "user",
+        "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 18: sample batch row=2 block=5 gene=ARID1A metric=6836 expected_value=0.87 p_value=0…",
+        "truncated": true,
+        "score": 0.5126,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 35,
+        "role": "assistant",
+        "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=60993 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-lat…",
+        "truncated": true,
+        "score": 0.064,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 36,
+        "role": "user",
+        "text": "FACT4: ALB CoxPH TCGA-LIHC n=371 freq=0.920 stat=3.40 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.8454,
+        "retained": false,
+        "facts": [
+          "FACT4"
+        ]
+      },
+      {
+        "i": 37,
+        "role": "assistant",
+        "text": "Fold split written; seed fixed, class balance verified across all folds. reply=20891 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+        "truncated": false,
+        "score": 0.0645,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 38,
+        "role": "user",
+        "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 20: sample batch row=1 block=1 gene=NRAS metric=7567 kernel_bandwidth=1.25 split_signat…",
+        "truncated": true,
+        "score": 0.5596,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 39,
+        "role": "assistant",
+        "text": "Fold split written; seed fixed, class balance verified across all folds. reply=28960 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+        "truncated": false,
+        "score": 0.0651,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 40,
+        "role": "user",
+        "text": "Verify the manifest checksums and report any mismatch before model training. Step 21: sample batch row=1 block=1 gene=PIK3CA metric=4484 calibration_score=0.91 rank_correlation=0.…",
+        "truncated": true,
+        "score": 0.4417,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 41,
+        "role": "assistant",
+        "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=60790 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+        "truncated": false,
+        "score": 0.0656,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 42,
+        "role": "user",
+        "text": "Verify the manifest checksums and report any mismatch before model training. Step 22: sample batch row=2 block=1 gene=PIK3CA metric=5019 expected_value=0.87 p_value=0.021 fold=3 r…",
+        "truncated": true,
+        "score": 0.4363,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 43,
+        "role": "assistant",
+        "text": "Manifest checksums verified; staging artifact updated to latest revision. reply=31580 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+        "truncated": false,
+        "score": 0.0662,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 44,
+        "role": "user",
+        "text": "Trim low-confidence records and rerun the phenotype summary for the clinical table. Step 23: sample batch row=1 block=7 gene=CTNNB1 metric=4822 calibration_score=0.91 rank_correla…",
+        "truncated": true,
+        "score": 0.5196,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 45,
+        "role": "assistant",
+        "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=391 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+        "truncated": false,
+        "score": 0.0667,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 46,
+        "role": "user",
+        "text": "Refresh the cached mutation counts after the latest genotype call update. Step 24: sample batch row=2 block=5 gene=CTNNB1 metric=4567 residuals=0.33 sample_count=184 batch_version…",
+        "truncated": true,
+        "score": 0.5246,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 47,
+        "role": "assistant",
+        "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=96875 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026…",
+        "truncated": true,
+        "score": 0.6964,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 48,
+        "role": "user",
+        "text": "FACT5: BAP1 DESeq2 TCGA-LIHC n=371 freq=0.800 stat=2.54 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.8487,
+        "retained": true,
+        "facts": [
+          "FACT5"
+        ]
+      },
+      {
+        "i": 49,
+        "role": "assistant",
+        "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=84782 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+        "truncated": false,
+        "score": 0.0679,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 50,
+        "role": "user",
+        "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 26: sample batch row=2 block=6 gene=TERT metric=2342 expected_value=0.87 p_value=0.021 f…",
+        "truncated": true,
+        "score": 0.517,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 51,
+        "role": "assistant",
+        "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=95840 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+        "truncated": false,
+        "score": 0.7002,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 52,
+        "role": "user",
+        "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 27: sample batch row=1 block=8 gene=APOB metric=6012 expected_value=0.87 p_value=0.021 f…",
+        "truncated": true,
+        "score": 0.5176,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 53,
+        "role": "assistant",
+        "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=93487 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+        "truncated": false,
+        "score": 0.069,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 54,
+        "role": "user",
+        "text": "Inspect the cluster assignment drift between the source and target cohorts. Step 28: sample batch row=2 block=3 gene=KRAS metric=6599 residuals=0.33 sample_count=184 batch_version…",
+        "truncated": true,
+        "score": 0.5269,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 55,
+        "role": "assistant",
+        "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=84498 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+        "truncated": false,
+        "score": 0.0696,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 56,
+        "role": "user",
+        "text": "Inspect the cluster assignment drift between the source and target cohorts. Step 29: sample batch row=2 block=2 gene=TP53 metric=8820 learning_rate=0.0003 optimizer=adam epochs=50…",
+        "truncated": true,
+        "score": 0.5209,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 57,
+        "role": "assistant",
+        "text": "Clinical covariate order matches matrix rows; no remap required. reply=80818 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+        "truncated": false,
+        "score": 0.0702,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 58,
+        "role": "user",
+        "text": "Refresh the cached mutation counts after the latest genotype call update. Step 30: sample batch row=1 block=7 gene=ARID1A metric=9952 imputation_iterations=12 qc_threshold=0.8 gdc…",
+        "truncated": true,
+        "score": 0.5303,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 59,
+        "role": "assistant",
+        "text": "Fold split written; seed fixed, class balance verified across all folds. reply=43355 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+        "truncated": false,
+        "score": 0.0708,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 60,
+        "role": "user",
+        "text": "FACT6: RB1 CoxPH TCGA-LIHC n=371 freq=0.560 stat=1.67 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.8522,
+        "retained": true,
+        "facts": [
+          "FACT6"
+        ]
+      },
+      {
+        "i": 61,
+        "role": "assistant",
+        "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=69101 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.…",
+        "truncated": true,
+        "score": 0.0714,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 62,
+        "role": "user",
+        "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 32: sample batch row=1 block=8 gene=APOB metric=4140 learning_rate=0.0003 optimizer=ada…",
+        "truncated": true,
+        "score": 0.5547,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 63,
+        "role": "assistant",
+        "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=1409 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+        "truncated": false,
+        "score": 0.7038,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 64,
+        "role": "user",
+        "text": "Run the expression normalization step and write the result into the batch queue. Step 33: sample batch row=2 block=8 gene=KRAS metric=9596 kernel_bandwidth=1.25 split_signature=sh…",
+        "truncated": true,
+        "score": 0.5688,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 65,
+        "role": "assistant",
+        "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=43601 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/…",
+        "truncated": true,
+        "score": 0.6937,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 66,
+        "role": "user",
+        "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 34: sample batch row=1 block=2 gene=PIK3CA metric=5867 kernel_bandwidth=1.25 split_sign…",
+        "truncated": true,
+        "score": 0.5677,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 67,
+        "role": "assistant",
+        "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=15728 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-lat…",
+        "truncated": true,
+        "score": 0.0732,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 68,
+        "role": "user",
+        "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 35: sample batch row=1 block=8 gene=PIK3CA metric=6976 residuals=0.33 sample_count=184 …",
+        "truncated": true,
+        "score": 0.5615,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 69,
+        "role": "assistant",
+        "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=1268 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+        "truncated": false,
+        "score": 0.0738,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 70,
+        "role": "user",
+        "text": "Refresh the cached mutation counts after the latest genotype call update. Step 36: sample batch row=2 block=1 gene=NRAS metric=4170 learning_rate=0.0003 optimizer=adam epochs=50 s…",
+        "truncated": true,
+        "score": 0.5252,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 71,
+        "role": "assistant",
+        "text": "Manifest checksums verified; staging artifact updated to latest revision. reply=78376 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+        "truncated": false,
+        "score": 0.0745,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 72,
+        "role": "user",
+        "text": "FACT7: TP53 EdgeR TCGA-LIHC n=371 freq=0.080 stat=0.35 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.8559,
+        "retained": true,
+        "facts": [
+          "FACT7"
+        ]
+      },
+      {
+        "i": 73,
+        "role": "assistant",
+        "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=24928 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/l…",
+        "truncated": true,
+        "score": 0.6988,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 74,
+        "role": "user",
+        "text": "Inspect the cluster assignment drift between the source and target cohorts. Step 38: sample batch row=2 block=7 gene=BAP1 metric=1603 residuals=0.33 sample_count=184 batch_version…",
+        "truncated": true,
+        "score": 0.533,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 75,
+        "role": "assistant",
+        "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=90443 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/l…",
+        "truncated": true,
+        "score": 0.0757,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 76,
+        "role": "user",
+        "text": "Trim low-confidence records and rerun the phenotype summary for the clinical table. Step 39: sample batch row=2 block=3 gene=ALB metric=5851 residuals=0.33 sample_count=184 batch_…",
+        "truncated": true,
+        "score": 0.5292,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 77,
+        "role": "assistant",
+        "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=36042 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+        "truncated": false,
+        "score": 0.0764,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 78,
+        "role": "user",
+        "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 40: sample batch row=1 block=5 gene=ARID1A metric=2987 calibration_score=0.91 rank_c…",
+        "truncated": true,
+        "score": 0.5299,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 79,
+        "role": "assistant",
+        "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=63604 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+        "truncated": false,
+        "score": 0.077,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 80,
+        "role": "user",
+        "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 41: sample batch row=1 block=8 gene=ALB metric=5376 residuals=0.33 sample_count=184 …",
+        "truncated": true,
+        "score": 0.5305,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 81,
+        "role": "assistant",
+        "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=93726 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-lat…",
+        "truncated": true,
+        "score": 0.0777,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 82,
+        "role": "user",
+        "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 42: sample batch row=2 block=8 gene=NRAS metric=7422 expected_value=0.87 p_value=0.0…",
+        "truncated": true,
+        "score": 0.5269,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 83,
+        "role": "assistant",
+        "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=53405 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-la…",
+        "truncated": true,
+        "score": 0.0783,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 84,
+        "role": "user",
+        "text": "FACT8: ALB PCA TCGA-LIHC n=371 freq=0.150 stat=2.22 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.8598,
+        "retained": true,
+        "facts": [
+          "FACT8"
+        ]
+      },
+      {
+        "i": 85,
+        "role": "assistant",
+        "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=11038 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/coh…",
+        "truncated": true,
+        "score": 0.079,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 86,
+        "role": "user",
+        "text": "Refresh the cached mutation counts after the latest genotype call update. Step 44: sample batch row=1 block=2 gene=CTNNB1 metric=5917 kernel_bandwidth=1.25 split_signature=sha256-…",
+        "truncated": true,
+        "score": 0.546,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 87,
+        "role": "assistant",
+        "text": "Manifest checksums verified; staging artifact updated to latest revision. reply=73472 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/latest.tsv",
+        "truncated": false,
+        "score": 0.0797,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 88,
+        "role": "user",
+        "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 45: sample batch row=1 block=7 gene=APOB metric=6557 covariate_shift=0.12 batch_effect=0…",
+        "truncated": true,
+        "score": 0.5354,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 89,
+        "role": "assistant",
+        "text": "Clinical covariate order matches matrix rows; no remap required. reply=80003 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+        "truncated": false,
+        "score": 0.0803,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 90,
+        "role": "user",
+        "text": "Verify the manifest checksums and report any mismatch before model training. Step 46: sample batch row=2 block=5 gene=CTNNB1 metric=6564 covariate_shift=0.12 batch_effect=0.05 uma…",
+        "truncated": true,
+        "score": 0.46,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 91,
+        "role": "assistant",
+        "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=51159 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-lat…",
+        "truncated": true,
+        "score": 0.081,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 92,
+        "role": "user",
+        "text": "Verify the manifest checksums and report any mismatch before model training. Step 47: sample batch row=2 block=3 gene=ARID1A metric=2868 kernel_bandwidth=1.25 split_signature=sha2…",
+        "truncated": true,
+        "score": 0.4701,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 93,
+        "role": "assistant",
+        "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=14187 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/l…",
+        "truncated": true,
+        "score": 0.0817,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 94,
+        "role": "user",
+        "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 48: sample batch row=2 block=8 gene=KRAS metric=3275 residuals=0.33 sample_count=184 bat…",
+        "truncated": true,
+        "score": 0.5352,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 95,
+        "role": "assistant",
+        "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=18136 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.…",
+        "truncated": true,
+        "score": 0.0824,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 96,
+        "role": "user",
+        "text": "FACT9: TERT UMAP TCGA-LIHC n=371 freq=0.150 stat=1.34 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.8639,
+        "retained": true,
+        "facts": [
+          "FACT9"
+        ]
+      },
+      {
+        "i": 97,
+        "role": "assistant",
+        "text": "Manifest checksums verified; staging artifact updated to latest revision. reply=246 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+        "truncated": false,
+        "score": 0.0831,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 98,
+        "role": "user",
+        "text": "Run the expression normalization step and write the result into the batch queue. Step 50: sample batch row=1 block=8 gene=NRAS metric=2072 calibration_score=0.91 rank_correlation=…",
+        "truncated": true,
+        "score": 0.5731,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 99,
+        "role": "assistant",
+        "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=94201 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+        "truncated": false,
+        "score": 0.0838,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 100,
+        "role": "user",
+        "text": "Refresh the cached mutation counts after the latest genotype call update. Step 51: sample batch row=1 block=2 gene=NRAS metric=4954 calibration_score=0.91 rank_correlation=0.44 ph…",
+        "truncated": true,
+        "score": 0.5418,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 101,
+        "role": "assistant",
+        "text": "Clinical covariate order matches matrix rows; no remap required. reply=45633 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+        "truncated": false,
+        "score": 0.0845,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 102,
+        "role": "user",
+        "text": "Inspect the cluster assignment drift between the source and target cohorts. Step 52: sample batch row=2 block=6 gene=AXIN1 metric=7241 conditioner=0.74 pseudocount=2 cohort_lookup…",
+        "truncated": true,
+        "score": 0.5469,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 103,
+        "role": "assistant",
+        "text": "Fold split written; seed fixed, class balance verified across all folds. reply=949 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+        "truncated": false,
+        "score": 0.0852,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 104,
+        "role": "user",
+        "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 53: sample batch row=1 block=2 gene=ALB metric=4597 calibration_score=0.91 rank_corr…",
+        "truncated": true,
+        "score": 0.5388,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 105,
+        "role": "assistant",
+        "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=49410 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026…",
+        "truncated": true,
+        "score": 0.715,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 106,
+        "role": "user",
+        "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 54: sample batch row=2 block=6 gene=BAP1 metric=7730 conditioner=0.74 pseudocount=2 coh…",
+        "truncated": true,
+        "score": 0.5777,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 107,
+        "role": "assistant",
+        "text": "Clinical covariate order matches matrix rows; no remap required. reply=58906 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+        "truncated": false,
+        "score": 0.0867,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 108,
+        "role": "user",
+        "text": "FACT10: CTNNB1 TransDANN TCGA-LIHC n=371 freq=0.510 stat=0.12 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.8682,
+        "retained": true,
+        "facts": [
+          "FACT10"
+        ]
+      },
+      {
+        "i": 109,
+        "role": "assistant",
+        "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=29515 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/la…",
+        "truncated": true,
+        "score": 0.0874,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 110,
+        "role": "user",
+        "text": "Verify the manifest checksums and report any mismatch before model training. Step 56: sample batch row=1 block=3 gene=AXIN1 metric=6683 covariate_shift=0.12 batch_effect=0.05 umap…",
+        "truncated": true,
+        "score": 0.4671,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 111,
+        "role": "assistant",
+        "text": "Fold split written; seed fixed, class balance verified across all folds. reply=91027 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+        "truncated": false,
+        "score": 0.0881,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 112,
+        "role": "user",
+        "text": "Refresh the cached mutation counts after the latest genotype call update. Step 57: sample batch row=2 block=2 gene=PIK3CA metric=3959 kernel_bandwidth=1.25 split_signature=sha256-…",
+        "truncated": true,
+        "score": 0.5552,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 113,
+        "role": "assistant",
+        "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=31561 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+        "truncated": false,
+        "score": 0.0889,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 114,
+        "role": "user",
+        "text": "Refresh the cached mutation counts after the latest genotype call update. Step 58: sample batch row=1 block=1 gene=RB1 metric=3851 calibration_score=0.91 rank_correlation=0.44 phe…",
+        "truncated": true,
+        "score": 0.5469,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 115,
+        "role": "assistant",
+        "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=1980 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/f…",
+        "truncated": true,
+        "score": 0.0896,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 116,
+        "role": "user",
+        "text": "Run the expression normalization step and write the result into the batch queue. Step 59: sample batch row=1 block=8 gene=APOB metric=5976 kernel_bandwidth=1.25 split_signature=sh…",
+        "truncated": true,
+        "score": 0.5866,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 117,
+        "role": "assistant",
+        "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=48015 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026…",
+        "truncated": true,
+        "score": 0.7195,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 118,
+        "role": "user",
+        "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 60: sample batch row=2 block=5 gene=TERT metric=7775 expected_value=0.87 p_value=0.021 …",
+        "truncated": true,
+        "score": 0.5754,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 119,
+        "role": "assistant",
+        "text": "Fold split written; seed fixed, class balance verified across all folds. reply=49284 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+        "truncated": false,
+        "score": 0.0912,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 120,
+        "role": "user",
+        "text": "FACT11: NRAS UMAP TCGA-LIHC n=371 freq=0.550 stat=0.70 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.8727,
+        "retained": true,
+        "facts": [
+          "FACT11"
+        ]
+      },
+      {
+        "i": 121,
+        "role": "assistant",
+        "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=27040 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/la…",
+        "truncated": true,
+        "score": 0.0919,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 122,
+        "role": "user",
+        "text": "Verify the manifest checksums and report any mismatch before model training. Step 62: sample batch row=2 block=2 gene=AXIN1 metric=4185 covariate_shift=0.12 batch_effect=0.05 umap…",
+        "truncated": true,
+        "score": 0.4717,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 123,
+        "role": "assistant",
+        "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=50011 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+        "truncated": false,
+        "score": 0.0927,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 124,
+        "role": "user",
+        "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 63: sample batch row=2 block=3 gene=ARID1A metric=1365 conditioner=0.74 pseudocount=…",
+        "truncated": true,
+        "score": 0.5507,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 125,
+        "role": "assistant",
+        "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=83803 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.…",
+        "truncated": true,
+        "score": 0.0935,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 126,
+        "role": "user",
+        "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 64: sample batch row=2 block=1 gene=KRAS metric=9095 kernel_bandwidth=1.25 split_sig…",
+        "truncated": true,
+        "score": 0.556,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 127,
+        "role": "assistant",
+        "text": "Manifest checksums verified; staging artifact updated to latest revision. reply=4912 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+        "truncated": false,
+        "score": 0.0943,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 128,
+        "role": "user",
+        "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 65: sample batch row=2 block=7 gene=CTNNB1 metric=1156 learning_rate=0.0003 optimizer=a…",
+        "truncated": true,
+        "score": 0.5777,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 129,
+        "role": "assistant",
+        "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=21187 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+        "truncated": false,
+        "score": 0.0951,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 130,
+        "role": "user",
+        "text": "Verify the manifest checksums and report any mismatch before model training. Step 66: sample batch row=2 block=7 gene=AXIN1 metric=5833 imputation_iterations=12 qc_threshold=0.8 g…",
+        "truncated": true,
+        "score": 0.4749,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 131,
+        "role": "assistant",
+        "text": "Manifest checksums verified; staging artifact updated to latest revision. reply=30107 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+        "truncated": false,
+        "score": 0.0959,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 132,
+        "role": "user",
+        "text": "FACT12: ALB PCA TCGA-LIHC n=371 freq=0.610 stat=2.16 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.8775,
+        "retained": true,
+        "facts": [
+          "FACT12"
+        ]
+      },
+      {
+        "i": 133,
+        "role": "assistant",
+        "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=24466 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/coh…",
+        "truncated": true,
+        "score": 0.0967,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 134,
+        "role": "user",
+        "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 68: sample batch row=2 block=4 gene=PIK3CA metric=5315 kernel_bandwidth=1.25 split_signa…",
+        "truncated": true,
+        "score": 0.5592,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 135,
+        "role": "assistant",
+        "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=58881 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+        "truncated": false,
+        "score": 0.0975,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 136,
+        "role": "user",
+        "text": "Verify the manifest checksums and report any mismatch before model training. Step 69: sample batch row=2 block=5 gene=AXIN1 metric=9672 expected_value=0.87 p_value=0.021 fold=3 re…",
+        "truncated": true,
+        "score": 0.4684,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 137,
+        "role": "assistant",
+        "text": "Clinical covariate order matches matrix rows; no remap required. reply=76933 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+        "truncated": false,
+        "score": 0.0984,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 138,
+        "role": "user",
+        "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 70: sample batch row=2 block=7 gene=AXIN1 metric=1673 calibration_score=0.91 rank_correl…",
+        "truncated": true,
+        "score": 0.552,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 139,
+        "role": "assistant",
+        "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=34216 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+        "truncated": false,
+        "score": 0.0992,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 140,
+        "role": "user",
+        "text": "Inspect the cluster assignment drift between the source and target cohorts. Step 71: sample batch row=2 block=1 gene=NRAS metric=2199 conditioner=0.74 pseudocount=2 cohort_lookup=…",
+        "truncated": true,
+        "score": 0.5617,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 141,
+        "role": "assistant",
+        "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=59042 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+        "truncated": false,
+        "score": 0.1,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 142,
+        "role": "user",
+        "text": "Verify the manifest checksums and report any mismatch before model training. Step 72: sample batch row=1 block=7 gene=RB1 metric=6578 expected_value=0.87 p_value=0.021 fold=3 refe…",
+        "truncated": true,
+        "score": 0.4709,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 143,
+        "role": "assistant",
+        "text": "Fold split written; seed fixed, class balance verified across all folds. reply=97947 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+        "truncated": false,
+        "score": 0.1009,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 144,
+        "role": "user",
+        "text": "FACT13: APOB UMAP TCGA-LIHC n=371 freq=0.770 stat=2.03 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.8825,
+        "retained": true,
+        "facts": [
+          "FACT13"
+        ]
+      },
+      {
+        "i": 145,
+        "role": "assistant",
+        "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=95377 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/l…",
+        "truncated": true,
+        "score": 0.1017,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 146,
+        "role": "user",
+        "text": "Run the expression normalization step and write the result into the batch queue. Step 74: sample batch row=1 block=8 gene=KRAS metric=2456 residuals=0.33 sample_count=184 batch_ve…",
+        "truncated": true,
+        "score": 0.5918,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 147,
+        "role": "assistant",
+        "text": "Fold split written; seed fixed, class balance verified across all folds. reply=44993 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+        "truncated": false,
+        "score": 0.1026,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 148,
+        "role": "user",
+        "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 75: sample batch row=1 block=4 gene=TP53 metric=4284 calibration_score=0.91 rank_cor…",
+        "truncated": true,
+        "score": 0.5562,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 149,
+        "role": "assistant",
+        "text": "Manifest checksums verified; staging artifact updated to latest revision. reply=75210 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+        "truncated": false,
+        "score": 0.1035,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 150,
+        "role": "user",
+        "text": "Refresh the cached mutation counts after the latest genotype call update. Step 76: sample batch row=2 block=5 gene=ALB metric=6873 residuals=0.33 sample_count=184 batch_version=9 …",
+        "truncated": true,
+        "score": 0.5615,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 151,
+        "role": "assistant",
+        "text": "Clinical covariate order matches matrix rows; no remap required. reply=1157 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+        "truncated": false,
+        "score": 0.1044,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 152,
+        "role": "user",
+        "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 77: sample batch row=1 block=8 gene=NRAS metric=7759 kernel_bandwidth=1.25 split_signat…",
+        "truncated": true,
+        "score": 0.5996,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 153,
+        "role": "assistant",
+        "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=5515 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+        "truncated": false,
+        "score": 0.1052,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 154,
+        "role": "user",
+        "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 78: sample batch row=2 block=2 gene=AXIN1 metric=5116 learning_rate=0.0003 optimizer…",
+        "truncated": true,
+        "score": 0.5524,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 155,
+        "role": "assistant",
+        "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=75607 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-la…",
+        "truncated": true,
+        "score": 0.1061,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 156,
+        "role": "user",
+        "text": "FACT14: KRAS LOOCV TCGA-LIHC n=371 freq=0.840 stat=2.91 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.8877,
+        "retained": true,
+        "facts": [
+          "FACT14"
+        ]
+      },
+      {
+        "i": 157,
+        "role": "assistant",
+        "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=86516 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-la…",
+        "truncated": true,
+        "score": 0.107,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 158,
+        "role": "user",
+        "text": "Run the expression normalization step and write the result into the batch queue. Step 80: sample batch row=2 block=8 gene=TP53 metric=4920 imputation_iterations=12 qc_threshold=0.…",
+        "truncated": true,
+        "score": 0.5989,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 159,
+        "role": "assistant",
+        "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=83386 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026…",
+        "truncated": true,
+        "score": 0.1079,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 160,
+        "role": "user",
+        "text": "Trim low-confidence records and rerun the phenotype summary for the clinical table. Step 81: sample batch row=2 block=8 gene=ARID1A metric=6754 expected_value=0.87 p_value=0.021 f…",
+        "truncated": true,
+        "score": 0.5573,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 161,
+        "role": "assistant",
+        "text": "Manifest checksums verified; staging artifact updated to latest revision. reply=42216 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+        "truncated": false,
+        "score": 0.1088,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 162,
+        "role": "user",
+        "text": "Verify the manifest checksums and report any mismatch before model training. Step 82: sample batch row=1 block=2 gene=CTNNB1 metric=2692 imputation_iterations=12 qc_threshold=0.8 …",
+        "truncated": true,
+        "score": 0.4887,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 163,
+        "role": "assistant",
+        "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=55298 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.…",
+        "truncated": true,
+        "score": 0.1098,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 164,
+        "role": "user",
+        "text": "Trim low-confidence records and rerun the phenotype summary for the clinical table. Step 83: sample batch row=2 block=6 gene=ARID1A metric=4828 imputation_iterations=12 qc_thresho…",
+        "truncated": true,
+        "score": 0.5656,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 165,
+        "role": "assistant",
+        "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=81317 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/co…",
+        "truncated": true,
+        "score": 0.1107,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 166,
+        "role": "user",
+        "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 84: sample batch row=2 block=7 gene=NRAS metric=5336 kernel_bandwidth=1.25 split_signat…",
+        "truncated": true,
+        "score": 0.606,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 167,
+        "role": "assistant",
+        "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=24574 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-lat…",
+        "truncated": true,
+        "score": 0.1116,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 168,
+        "role": "user",
+        "text": "FACT15: KRAS CoxPH TCGA-LIHC n=371 freq=0.320 stat=1.71 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.8933,
+        "retained": true,
+        "facts": [
+          "FACT15"
+        ]
+      },
+      {
+        "i": 169,
+        "role": "assistant",
+        "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=47796 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/co…",
+        "truncated": true,
+        "score": 0.7417,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 170,
+        "role": "user",
+        "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 86: sample batch row=1 block=5 gene=CTNNB1 metric=9671 covariate_shift=0.12 batch_effec…",
+        "truncated": true,
+        "score": 0.6027,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 171,
+        "role": "assistant",
+        "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=57794 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.…",
+        "truncated": true,
+        "score": 0.1135,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 172,
+        "role": "user",
+        "text": "Run the expression normalization step and write the result into the batch queue. Step 87: sample batch row=2 block=2 gene=RB1 metric=1054 learning_rate=0.0003 optimizer=adam epoch…",
+        "truncated": true,
+        "score": 0.5987,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 173,
+        "role": "assistant",
+        "text": "Fold split written; seed fixed, class balance verified across all folds. reply=45988 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+        "truncated": false,
+        "score": 0.1145,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 174,
+        "role": "user",
+        "text": "Run the expression normalization step and write the result into the batch queue. Step 88: sample batch row=2 block=8 gene=PIK3CA metric=2425 learning_rate=0.0003 optimizer=adam ep…",
+        "truncated": true,
+        "score": 0.5996,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 175,
+        "role": "assistant",
+        "text": "Clinical covariate order matches matrix rows; no remap required. reply=72135 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+        "truncated": false,
+        "score": 0.1155,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 176,
+        "role": "user",
+        "text": "Refresh the cached mutation counts after the latest genotype call update. Step 89: sample batch row=1 block=3 gene=NRAS metric=2957 conditioner=0.74 pseudocount=2 cohort_lookup=/r…",
+        "truncated": true,
+        "score": 0.578,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 177,
+        "role": "assistant",
+        "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=49732 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/co…",
+        "truncated": true,
+        "score": 0.1165,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 178,
+        "role": "user",
+        "text": "Run the expression normalization step and write the result into the batch queue. Step 90: sample batch row=2 block=4 gene=APOB metric=5427 learning_rate=0.0003 optimizer=adam epoc…",
+        "truncated": true,
+        "score": 0.6016,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 179,
+        "role": "assistant",
+        "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=60902 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.…",
+        "truncated": true,
+        "score": 0.1174,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 180,
+        "role": "user",
+        "text": "FACT16: BAP1 CoxPH TCGA-LIHC n=371 freq=0.790 stat=1.82 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.8991,
+        "retained": true,
+        "facts": [
+          "FACT16"
+        ]
+      },
+      {
+        "i": 181,
+        "role": "assistant",
+        "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=24979 covariate_shift=0.12 batch_effect=0.05 umap_components=2 pca_variance=0.67",
+        "truncated": false,
+        "score": 0.1184,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 182,
+        "role": "user",
+        "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 92: sample batch row=2 block=1 gene=ALB metric=6766 calibration_score=0.91 rank_corr…",
+        "truncated": true,
+        "score": 0.5721,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 183,
+        "role": "assistant",
+        "text": "Clinical covariate order matches matrix rows; no remap required. reply=17511 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+        "truncated": false,
+        "score": 0.1194,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 184,
+        "role": "user",
+        "text": "Verify the manifest checksums and report any mismatch before model training. Step 93: sample batch row=1 block=2 gene=AXIN1 metric=1295 imputation_iterations=12 qc_threshold=0.8 g…",
+        "truncated": true,
+        "score": 0.4993,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 185,
+        "role": "assistant",
+        "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=76372 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-lat…",
+        "truncated": true,
+        "score": 0.1204,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 186,
+        "role": "user",
+        "text": "Refresh the cached mutation counts after the latest genotype call update. Step 94: sample batch row=1 block=2 gene=PIK3CA metric=1982 conditioner=0.74 pseudocount=2 cohort_lookup=…",
+        "truncated": true,
+        "score": 0.583,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 187,
+        "role": "assistant",
+        "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=8709 expected_value=0.87 p_value=0.021 fold=3 reference_path=/staging/artifacts/survival/la…",
+        "truncated": true,
+        "score": 0.1215,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 188,
+        "role": "user",
+        "text": "Refresh the cached mutation counts after the latest genotype call update. Step 95: sample batch row=2 block=4 gene=PIK3CA metric=6302 calibration_score=0.91 rank_correlation=0.44 …",
+        "truncated": true,
+        "score": 0.5796,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 189,
+        "role": "assistant",
+        "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=18876 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+        "truncated": false,
+        "score": 0.757,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 190,
+        "role": "user",
+        "text": "Verify the manifest checksums and report any mismatch before model training. Step 96: sample batch row=2 block=5 gene=KRAS metric=2047 conditioner=0.74 pseudocount=2 cohort_lookup…",
+        "truncated": true,
+        "score": 0.5055,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 191,
+        "role": "assistant",
+        "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=57201 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+        "truncated": false,
+        "score": 0.1235,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 192,
+        "role": "user",
+        "text": "FACT17: BAP1 CoxPH TCGA-LIHC n=371 freq=0.140 stat=2.40 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.9052,
+        "retained": true,
+        "facts": [
+          "FACT17"
+        ]
+      },
+      {
+        "i": 193,
+        "role": "assistant",
+        "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=89465 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+        "truncated": false,
+        "score": 0.7591,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 194,
+        "role": "user",
+        "text": "Verify the manifest checksums and report any mismatch before model training. Step 98: sample batch row=1 block=3 gene=TERT metric=3103 learning_rate=0.0003 optimizer=adam epochs=5…",
+        "truncated": true,
+        "score": 0.4927,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 195,
+        "role": "assistant",
+        "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=15646 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+        "truncated": false,
+        "score": 0.7601,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 196,
+        "role": "user",
+        "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 99: sample batch row=1 block=2 gene=NRAS metric=9553 expected_value=0.87 p_value=0.021 f…",
+        "truncated": true,
+        "score": 0.5751,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 197,
+        "role": "assistant",
+        "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=92526 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+        "truncated": false,
+        "score": 0.1267,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 198,
+        "role": "user",
+        "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 100: sample batch row=2 block=3 gene=TP53 metric=3681 conditioner=0.74 pseudocount=2 co…",
+        "truncated": true,
+        "score": 0.6186,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 199,
+        "role": "assistant",
+        "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=61472 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/f…",
+        "truncated": true,
+        "score": 0.1278,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 200,
+        "role": "user",
+        "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 101: sample batch row=1 block=1 gene=APOB metric=6920 calibration_score=0.91 rank_corre…",
+        "truncated": true,
+        "score": 0.6163,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 201,
+        "role": "assistant",
+        "text": "Manifest checksums verified; staging artifact updated to latest revision. reply=50213 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+        "truncated": false,
+        "score": 0.1289,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 202,
+        "role": "user",
+        "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 102: sample batch row=1 block=5 gene=BAP1 metric=7001 residuals=0.33 sample_count=184 ba…",
+        "truncated": true,
+        "score": 0.5826,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 203,
+        "role": "assistant",
+        "text": "Clinical covariate order matches matrix rows; no remap required. reply=98451 conditioner=0.74 pseudocount=2 cohort_lookup=/raw/clinical/samples.csv",
+        "truncated": false,
+        "score": 0.13,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 204,
+        "role": "user",
+        "text": "FACT18: PIK3CA UMAP TCGA-LIHC n=371 freq=0.780 stat=2.07 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.9117,
+        "retained": true,
+        "facts": [
+          "FACT18"
+        ]
+      },
+      {
+        "i": 205,
+        "role": "assistant",
+        "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=14694 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+        "truncated": false,
+        "score": 0.1311,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 206,
+        "role": "user",
+        "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 104: sample batch row=1 block=1 gene=TP53 metric=1680 conditioner=0.74 pseudocount=2…",
+        "truncated": true,
+        "score": 0.5892,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 207,
+        "role": "assistant",
+        "text": "Manifest checksums verified; staging artifact updated to latest revision. reply=44470 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+        "truncated": false,
+        "score": 0.1322,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 208,
+        "role": "user",
+        "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 105: sample batch row=2 block=2 gene=PIK3CA metric=6499 conditioner=0.74 pseudocount=2 c…",
+        "truncated": true,
+        "score": 0.5903,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 209,
+        "role": "assistant",
+        "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=8492 residuals=0.33 sample_count=184 batch_version=9 mutation_matrix=refs/heads/feature/cohort",
+        "truncated": false,
+        "score": 0.1333,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 210,
+        "role": "user",
+        "text": "Run the expression normalization step and write the result into the batch queue. Step 106: sample batch row=1 block=7 gene=TERT metric=8571 imputation_iterations=12 qc_threshold=0…",
+        "truncated": true,
+        "score": 0.6252,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 211,
+        "role": "assistant",
+        "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=12424 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+        "truncated": false,
+        "score": 0.1344,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 212,
+        "role": "user",
+        "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 107: sample batch row=2 block=7 gene=KRAS metric=2107 calibration_score=0.91 rank_correl…",
+        "truncated": true,
+        "score": 0.5882,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 213,
+        "role": "assistant",
+        "text": "Mutation counts refreshed; index table rebuilt and cache invalidated. reply=64153 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+        "truncated": false,
+        "score": 0.1356,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 214,
+        "role": "user",
+        "text": "Recompute the survival fold split and store the fold file under the staging directory. Step 108: sample batch row=1 block=1 gene=NRAS metric=4000 conditioner=0.74 pseudocount=2 co…",
+        "truncated": true,
+        "score": 0.6275,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 215,
+        "role": "assistant",
+        "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=14485 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026…",
+        "truncated": true,
+        "score": 0.1367,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 216,
+        "role": "user",
+        "text": "FACT19: KRAS Concordance TCGA-LIHC n=371 freq=0.570 stat=2.72 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.9184,
+        "retained": true,
+        "facts": [
+          "FACT19"
+        ]
+      },
+      {
+        "i": 217,
+        "role": "assistant",
+        "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=40610 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-la…",
+        "truncated": true,
+        "score": 0.1379,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 218,
+        "role": "user",
+        "text": "Trim low-confidence records and rerun the phenotype summary for the clinical table. Step 110: sample batch row=2 block=1 gene=ARID1A metric=7832 calibration_score=0.91 rank_correl…",
+        "truncated": true,
+        "score": 0.5916,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 219,
+        "role": "assistant",
+        "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=66120 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/…",
+        "truncated": true,
+        "score": 0.139,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 220,
+        "role": "user",
+        "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 111: sample batch row=2 block=3 gene=TP53 metric=9609 imputation_iterations=12 qc_thresh…",
+        "truncated": true,
+        "score": 0.595,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 221,
+        "role": "assistant",
+        "text": "Manifest checksums verified; staging artifact updated to latest revision. reply=84414 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+        "truncated": false,
+        "score": 0.1402,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 222,
+        "role": "user",
+        "text": "Verify the manifest checksums and report any mismatch before model training. Step 112: sample batch row=2 block=1 gene=APOB metric=8067 residuals=0.33 sample_count=184 batch_versi…",
+        "truncated": true,
+        "score": 0.5171,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 223,
+        "role": "assistant",
+        "text": "Fold split written; seed fixed, class balance verified across all folds. reply=87642 learning_rate=0.0003 optimizer=adam epochs=50 seed=7 checkpoint=/staging/checkpoints/fold-2.pt",
+        "truncated": false,
+        "score": 0.1414,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 224,
+        "role": "user",
+        "text": "Refresh the cached mutation counts after the latest genotype call update. Step 113: sample batch row=1 block=6 gene=TP53 metric=7086 imputation_iterations=12 qc_threshold=0.8 gdc_…",
+        "truncated": true,
+        "score": 0.6018,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 225,
+        "role": "assistant",
+        "text": "QC table read; 3 anomalies logged, matched pairs resolved, manifest checksum OK. reply=90507 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+        "truncated": false,
+        "score": 0.1426,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 226,
+        "role": "user",
+        "text": "Refresh the cached mutation counts after the latest genotype call update. Step 114: sample batch row=1 block=3 gene=APOB metric=4754 residuals=0.33 sample_count=184 batch_version=…",
+        "truncated": true,
+        "score": 0.6008,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 227,
+        "role": "assistant",
+        "text": "Low-confidence records removed; phenotype summary regenerated with stable counts. reply=82318 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026…",
+        "truncated": true,
+        "score": 0.1438,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 228,
+        "role": "user",
+        "text": "FACT20: APOB Wasserstein TCGA-LIHC n=371 freq=0.680 stat=3.50 Record this exact value as a checkpoint.",
+        "truncated": false,
+        "score": 0.9256,
+        "retained": true,
+        "facts": [
+          "FACT20"
+        ]
+      },
+      {
+        "i": 229,
+        "role": "assistant",
+        "text": "Normalization completed and written; column order preserved, 2 warnings ignored. reply=18356 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+        "truncated": false,
+        "score": 0.145,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 230,
+        "role": "user",
+        "text": "Verify the manifest checksums and report any mismatch before model training. Step 116: sample batch row=2 block=2 gene=ALB metric=3579 residuals=0.33 sample_count=184 batch_versio…",
+        "truncated": true,
+        "score": 0.522,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 231,
+        "role": "assistant",
+        "text": "Fold split written; seed fixed, class balance verified across all folds. reply=86102 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+        "truncated": false,
+        "score": 0.1463,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 232,
+        "role": "user",
+        "text": "Trim low-confidence records and rerun the phenotype summary for the clinical table. Step 117: sample batch row=2 block=3 gene=TP53 metric=3219 imputation_iterations=12 qc_threshol…",
+        "truncated": true,
+        "score": 0.6023,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 233,
+        "role": "assistant",
+        "text": "Fold split written; seed fixed, class balance verified across all folds. reply=76936 calibration_score=0.91 rank_correlation=0.44 phenotype_table=/raw/clinical/pheno-2026.tsv",
+        "truncated": false,
+        "score": 0.1475,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 234,
+        "role": "user",
+        "text": "Inspect the intermediate QC table and reconcile sample annotations before the next stage. Step 118: sample batch row=1 block=7 gene=BAP1 metric=5362 expected_value=0.87 p_value=0.…",
+        "truncated": true,
+        "score": 0.597,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 235,
+        "role": "assistant",
+        "text": "Clinical covariate order matches matrix rows; no remap required. reply=42416 imputation_iterations=12 qc_threshold=0.8 gdc_manifest=/staging/manifests/manifest-latest.tsv",
+        "truncated": false,
+        "score": 0.1487,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 236,
+        "role": "user",
+        "text": "Check whether the clinical covariates are aligned with the mutation matrix row order. Step 119: sample batch row=1 block=1 gene=ARID1A metric=7210 conditioner=0.74 pseudocount=2 c…",
+        "truncated": true,
+        "score": 0.607,
+        "retained": false,
+        "facts": []
+      },
+      {
+        "i": 237,
+        "role": "assistant",
+        "text": "Cluster drift detected in 1 subgroup; source/target distance recorded for review. reply=87913 kernel_bandwidth=1.25 split_signature=sha256-9f3c source=target_distribution_note",
+        "truncated": false,
+        "score": 0.79,
+        "retained": false,
+        "facts": []
+      }
+    ],
+    "note": "Candidates are exactly the messages the engine handed to pickRetained. Scores are the shipped EbbinghausPageRankPolicy's own output on that input (BM25 similarity + position decay; the PageRank term is present in code but weighted 0). 'retained' is what the policy actually kept within the budget."
+  }
+}

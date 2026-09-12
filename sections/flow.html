@@ -1,0 +1,770 @@
+<style>
+  /* ------------------------------------------------------------------
+     Scoped to .xh-flow. Every rule and every custom property is prefixed
+     so this fragment cannot leak into, or be broken by, the host page.
+     ------------------------------------------------------------------ */
+  .xh-flow {
+    --xh-bg: #0d1117;
+    --xh-panel: #161b22;
+    --xh-panel-2: #0b0f14;
+    --xh-line: #262d36;
+    --xh-fg: #e6edf3;
+    --xh-dim: #8b949e;
+    --xh-accent: #3fb950;
+    --xh-accent-dim: #2ea043;
+    --xh-warn: #d29922;
+    --xh-warn-soft: rgba(210, 153, 34, .55);
+    --xh-accent-soft: rgba(63, 185, 80, .55);
+    --xh-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    background: var(--xh-bg, #0d1117);
+    color: var(--xh-fg, #e6edf3);
+    border: 1px solid var(--xh-line, #262d36);
+    border-radius: 12px;
+    padding: 20px 20px 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    outline: none;
+    box-sizing: border-box;
+  }
+  .xh-flow *, .xh-flow *::before, .xh-flow *::after { box-sizing: border-box; }
+  .xh-flow p, .xh-flow h3, .xh-flow h4, .xh-flow ul, .xh-flow li, .xh-flow ol {
+    margin: 0; padding: 0; font: inherit; color: inherit; list-style: none;
+  }
+  .xh-flow code {
+    font-family: var(--xh-mono, monospace); font-size: .92em;
+    background: var(--xh-panel-2, #0b0f14);
+    border: 1px solid var(--xh-line, #262d36);
+    border-radius: 4px; padding: 0 4px; color: #c9d1d9;
+  }
+  .xh-flow b, .xh-flow strong { font-weight: 600; color: var(--xh-fg, #e6edf3); }
+  .xh-flow button {
+    font: inherit; color: inherit; background: none; border: 0;
+    cursor: pointer; text-align: left;
+  }
+  .xh-flow button:focus-visible { outline: 2px solid var(--xh-accent, #3fb950); outline-offset: 2px; }
+
+  /* ---- head ------------------------------------------------------- */
+  .xh-flow__kicker {
+    font: 600 11px/1.5 var(--xh-mono, monospace);
+    letter-spacing: .12em; text-transform: uppercase; color: var(--xh-accent, #3fb950);
+  }
+  .xh-flow__title { font-size: 21px; font-weight: 650; letter-spacing: -.01em; margin-top: 6px !important; }
+  .xh-flow__lede { color: var(--xh-dim, #8b949e); margin-top: 8px !important; max-width: 86ch; }
+  .xh-flow__prov {
+    margin-top: 10px !important; font-size: 12.5px; color: var(--xh-dim, #8b949e);
+    border-left: 2px solid var(--xh-line, #262d36); padding-left: 10px;
+  }
+  .xh-flow__prov code { font-size: 12px; }
+
+  /* ---- stepper ---------------------------------------------------- */
+  /* Sticky so the step pills stay reachable while a long transcript panel
+     (step 1 lists all 81 messages) is being scrolled. Degrades to static if
+     an ancestor sets overflow, which is harmless. */
+  .xh-flow__stepper { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+  .xh-flow--stepper .xh-flow__stepper {
+    position: sticky; top: 0; z-index: 3;
+    background: var(--xh-panel, #161b22);
+    padding: 8px 0 9px; border-bottom: 1px solid var(--xh-line, #262d36);
+  }
+  .xh-flow__stepper button {
+    border: 1px solid var(--xh-line, #262d36); border-radius: 999px;
+    padding: 4px 11px; font-size: 12.5px; color: var(--xh-dim, #8b949e);
+    background: var(--xh-panel, #161b22); white-space: nowrap;
+    transition: color .15s ease, border-color .15s ease, background-color .15s ease;
+  }
+  .xh-flow__stepper button:hover { color: var(--xh-fg, #e6edf3); border-color: #3d4753; }
+  .xh-flow__stepper button[aria-current="true"] {
+    color: #7ee0a0; border-color: var(--xh-accent-dim, #2ea043);
+    background: rgba(46, 160, 67, .12);
+  }
+  .xh-flow__stepper .xh-flow__sn { font-family: var(--xh-mono, monospace); opacity: .8; margin-right: 5px; }
+
+  /* ---- step panels ------------------------------------------------ */
+  .xh-flow__steps { margin-top: 16px; }
+  .xh-flow__step {
+    border: 1px solid var(--xh-line, #262d36); border-radius: 10px;
+    background: var(--xh-panel, #161b22); padding: 16px;
+    margin-bottom: 14px;
+  }
+  .xh-flow--stepper .xh-flow__step { display: none; }
+  .xh-flow--stepper .xh-flow__step[data-active="1"] { display: block; }
+  .xh-flow__stephead { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
+  .xh-flow__num {
+    font: 600 12px/1.6 var(--xh-mono, monospace); color: #0d1117;
+    background: var(--xh-accent, #3fb950); border-radius: 5px; padding: 1px 7px;
+    flex: none;
+  }
+  .xh-flow__steptitle { font-size: 16.5px; font-weight: 650; }
+  .xh-flow__steptag {
+    font: 500 11.5px/1.6 var(--xh-mono, monospace); color: var(--xh-dim, #8b949e);
+    border: 1px solid var(--xh-line, #262d36); border-radius: 999px; padding: 0 8px;
+  }
+  .xh-flow__cap { color: var(--xh-dim, #8b949e); font-size: 13px; margin-top: 10px !important; }
+  .xh-flow__cap b { color: var(--xh-fg, #e6edf3); }
+  .xh-flow__stat { color: var(--xh-dim, #8b949e); font-size: 12.5px; margin-top: 6px !important; }
+
+  /* key numbers strip */
+  .xh-flow__kv { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .xh-flow__kv > div {
+    background: var(--xh-panel-2, #0b0f14); border: 1px solid var(--xh-line, #262d36);
+    border-radius: 8px; padding: 6px 10px; flex: 1 1 96px; min-width: 96px;
+  }
+  .xh-flow__kv dt { font: 500 10.5px/1.5 var(--xh-mono, monospace); letter-spacing: .06em;
+    text-transform: uppercase; color: var(--xh-dim, #8b949e); }
+  .xh-flow__kv dd { font: 600 15px/1.4 var(--xh-mono, monospace); color: var(--xh-fg, #e6edf3); }
+  .xh-flow__kv dd span { font-size: 11.5px; font-weight: 400; color: var(--xh-dim, #8b949e); margin-left: 3px; }
+  .xh-flow__kv dd.is-accent { color: #7ee0a0; }
+  .xh-flow__kv dd.is-warn { color: #e3b341; }
+
+  /* legend */
+  .xh-flow__legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; font-size: 12.5px;
+    color: var(--xh-dim, #8b949e); }
+  .xh-flow__legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .xh-flow__dot { width: 10px; height: 10px; border-radius: 3px; border: 1px solid var(--xh-line, #262d36);
+    background: var(--xh-bg, #0d1117); flex: none; }
+  .xh-flow__dot.cand { border-color: var(--xh-warn-soft, rgba(210,153,34,.55)); background: rgba(210, 153, 34, .18); }
+  .xh-flow__dot.keep { border-color: var(--xh-accent-soft, rgba(63,185,80,.55)); background: rgba(63, 185, 80, .2); }
+  .xh-flow__dot.req { border-color: var(--xh-accent, #3fb950); background: rgba(63, 185, 80, .35); }
+
+  /* ---- transcript chips ------------------------------------------- */
+  .xh-flow__grid { display: grid; gap: 6px; margin-top: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(214px, 1fr)); }
+  .xh-flow__msg {
+    border: 1px solid var(--xh-line, #262d36); border-radius: 7px;
+    background: var(--xh-bg, #0d1117); padding: 6px 8px; font-size: 12px; line-height: 1.45;
+    transition: border-color .15s ease, background-color .15s ease;
+  }
+  .xh-flow__msg--cand { border-color: var(--xh-warn-soft, rgba(210,153,34,.55)); background: rgba(210, 153, 34, .07); }
+  .xh-flow__msg--keep { border-color: var(--xh-accent-soft, rgba(63,185,80,.55)); background: rgba(63, 185, 80, .08); }
+  .xh-flow__msg--tail { border-color: #1f2733; }
+  .xh-flow__msg--tail .xh-flow__mpre { color: #7c8697; }
+  .xh-flow__msg--req { border-color: #7ee0a0; box-shadow: 0 0 0 1px rgba(63, 185, 80, .35); }
+  .xh-flow__mtop { display: flex; align-items: center; gap: 6px; font-family: var(--xh-mono, monospace);
+    font-size: 10.5px; color: var(--xh-dim, #8b949e); }
+  .xh-flow__midx { color: #a5b0c0; }
+  .xh-flow__role { border: 1px solid var(--xh-line, #262d36); border-radius: 4px; padding: 0 4px; }
+  .xh-flow__role.u { color: #79c0ff; border-color: rgba(121, 192, 255, .35); }
+  .xh-flow__role.a { color: #d2a8ff; border-color: rgba(210, 168, 255, .35); }
+  .xh-flow__mtok { margin-left: auto; }
+  .xh-flow__mtag { font-family: var(--xh-mono, monospace); font-size: 10px; letter-spacing: .02em; }
+  .xh-flow__mtag.cand { color: #e3b341; }
+  .xh-flow__mtag.keep { color: #7ee0a0; }
+  .xh-flow__mtag.tail { color: #6e7681; }
+  .xh-flow__mtag.req { color: #7ee0a0; }
+  .xh-flow__mpre { color: #a9b4c0; margin-top: 4px; word-break: break-word;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .xh-flow__msg--req .xh-flow__mpre { color: var(--xh-fg, #e6edf3); }
+
+  /* ---- candidate scorecards --------------------------------------- */
+  .xh-flow__cards { display: grid; gap: 8px; margin-top: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(238px, 1fr)); }
+  .xh-flow__card {
+    border: 1px solid var(--xh-line, #262d36); border-radius: 8px;
+    background: var(--xh-bg, #0d1117); padding: 8px 10px;
+  }
+  .xh-flow__card--keep { border-color: var(--xh-accent-soft, rgba(63,185,80,.55)); }
+  .xh-flow__card--over { border-color: rgba(210, 153, 34, .4); }
+  .xh-flow__chead { display: flex; align-items: center; gap: 7px;
+    font-family: var(--xh-mono, monospace); font-size: 11px; color: var(--xh-dim, #8b949e); }
+  .xh-flow__crank { color: var(--xh-fg, #e6edf3); font-weight: 600; }
+  .xh-flow__cscore { margin-left: auto; font-weight: 600; font-size: 13px; color: var(--xh-fg, #e6edf3); }
+  .xh-flow__term { display: grid; grid-template-columns: 92px 1fr 48px; align-items: center;
+    gap: 6px; margin-top: 5px; font-family: var(--xh-mono, monospace); font-size: 10.5px;
+    color: var(--xh-dim, #8b949e); white-space: nowrap; }
+  .xh-flow__bar { height: 6px; border-radius: 3px; background: #1b222c; overflow: hidden; }
+  .xh-flow__bar i { display: block; height: 100%; background: #58a6ff; border-radius: 3px;
+    transition: width .25s ease; }
+  .xh-flow__bar i.w { background: var(--xh-accent, #3fb950); }
+  .xh-flow__bar i.r { background: #8b949e; }
+  .xh-flow__tval { text-align: right; color: #c9d1d9; }
+  .xh-flow__cfoot { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 7px;
+    font-family: var(--xh-mono, monospace); font-size: 10.5px; color: var(--xh-dim, #8b949e); }
+  .xh-flow__verdict { border-radius: 4px; padding: 0 5px; }
+  .xh-flow__verdict.keep { color: #7ee0a0; background: rgba(63, 185, 80, .13); }
+  .xh-flow__verdict.drop { color: #e3b341; background: rgba(210, 153, 34, .12); }
+  .xh-flow__cpv { color: #8b949e; margin-top: 4px; font-size: 11.5px; line-height: 1.45;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .xh-flow__more { margin-top: 10px; font-size: 12.5px; color: var(--xh-dim, #8b949e); }
+
+  /* ---- budget bar -------------------------------------------------- */
+  .xh-flow__budget { margin-top: 14px; }
+  .xh-flow__track { display: flex; height: 26px; border: 1px solid var(--xh-line, #262d36);
+    border-radius: 6px; overflow: hidden; background: var(--xh-panel-2, #0b0f14); }
+  .xh-flow__seg { height: 100%; border-right: 1px solid var(--xh-bg, #0d1117); background: #2ea043;
+    transition: width .25s ease; }
+  .xh-flow__seg.kept { background: var(--xh-accent, #3fb950); }
+  .xh-flow__seg.no { background: #e3b341; }
+  .xh-flow__rest { flex: 1 1 auto; background: repeating-linear-gradient(135deg,
+    #141a22, #141a22 6px, #10151c 6px, #10151c 12px); }
+  .xh-flow__scale { display: flex; justify-content: space-between; margin-top: 4px;
+    font-family: var(--xh-mono, monospace); font-size: 10.5px; color: var(--xh-dim, #8b949e); }
+  .xh-flow__walk { margin-top: 12px; border-top: 1px solid var(--xh-line, #262d36); }
+  .xh-flow__row { display: grid; grid-template-columns: 34px 52px 46px 58px 1fr; align-items: center;
+    gap: 6px; padding: 5px 0; border-bottom: 1px solid #1c232c;
+    font-family: var(--xh-mono, monospace); font-size: 11px; color: var(--xh-dim, #8b949e); }
+  .xh-flow__row.is-keep { color: #a9d7b4; }
+  .xh-flow__row.is-drop { color: #8b949e; }
+  .xh-flow__rnum { color: #a5b0c0; }
+  .xh-flow__rbar { height: 6px; border-radius: 3px; background: #1b222c; overflow: hidden; }
+  .xh-flow__rbar i { display: block; height: 100%; background: #2ea043; }
+  .xh-flow__rbar i.drop { background: #4b5563; }
+  .xh-flow__head-row { color: #6e7681; border-bottom: 1px solid var(--xh-line, #262d36);
+    text-transform: uppercase; letter-spacing: .05em; font-size: 10px; }
+
+  /* ---- arms -------------------------------------------------------- */
+  .xh-flow__arms { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .xh-flow__arm { border: 1px solid var(--xh-line, #262d36); border-radius: 9px;
+    background: var(--xh-panel-2, #0b0f14); padding: 10px; min-width: 0; }
+  .xh-flow__arm--hippo { border-color: var(--xh-accent-soft, rgba(63,185,80,.55)); }
+  .xh-flow__armhead { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .xh-flow__armname { font-family: var(--xh-mono, monospace); font-size: 12.5px; font-weight: 600; }
+  .xh-flow__arm--up .xh-flow__armname { color: #8b949e; }
+  .xh-flow__arm--hippo .xh-flow__armname { color: #7ee0a0; }
+  .xh-flow__armtok { margin-left: auto; font-family: var(--xh-mono, monospace); font-size: 12.5px;
+    color: var(--xh-fg, #e6edf3); }
+  .xh-flow__armsub { color: var(--xh-dim, #8b949e); font-size: 11.5px; margin-top: 4px !important; }
+  .xh-flow__ctx { margin-top: 8px; max-height: 430px; overflow-y: auto; padding-right: 2px; }
+  .xh-flow__cmsg { display: grid; grid-template-columns: 62px 1fr; gap: 7px; padding: 5px 6px;
+    border-radius: 6px; border: 1px solid transparent; font-size: 11.5px; line-height: 1.45; }
+  .xh-flow__cmsg + .xh-flow__cmsg { margin-top: 3px; }
+  .xh-flow__ckind { font-family: var(--xh-mono, monospace); font-size: 10px; color: #6e7681;
+    padding-top: 1px; word-break: break-word; }
+  .xh-flow__ctext { color: #8b949e; display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden; word-break: break-word; }
+  .xh-flow__cmsg.k-summary { background: #141a22; border-color: #202833; }
+  .xh-flow__cmsg.k-summary .xh-flow__ckind { color: #8b949e; }
+  .xh-flow__cmsg.k-summary .xh-flow__ctext { color: #b6c2cf; -webkit-line-clamp: 4; }
+  .xh-flow__cmsg.k-boundary { background: transparent; opacity: .72; }
+  .xh-flow__cmsg.k-boundary .xh-flow__ctext { font-family: var(--xh-mono, monospace); font-size: 10.5px; }
+  .xh-flow__cmsg.k-retained-original { background: rgba(63, 185, 80, .1);
+    border-color: var(--xh-accent-soft, rgba(63,185,80,.55)); }
+  .xh-flow__cmsg.k-retained-original .xh-flow__ckind { color: #7ee0a0; }
+  .xh-flow__cmsg.k-retained-original .xh-flow__ctext { color: var(--xh-fg, #e6edf3); -webkit-line-clamp: 4; }
+  .xh-flow__cmsg.k-kept-verbatim { background: #0f141b; border-color: #1b232d; }
+  .xh-flow__factstrip { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .xh-flow__fact { font-family: var(--xh-mono, monospace); font-size: 11px; border-radius: 999px;
+    padding: 1px 8px; border: 1px solid var(--xh-line, #262d36); color: #8b949e; }
+  .xh-flow__fact.yes { color: #7ee0a0; border-color: var(--xh-accent-soft, rgba(63,185,80,.55));
+    background: rgba(63, 185, 80, .1); }
+
+  /* ---- nav + foot --------------------------------------------------- */
+  .xh-flow__nav { display: none; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+  .xh-flow--stepper .xh-flow__nav { display: flex; }
+  .xh-flow__nav button {
+    border: 1px solid var(--xh-line, #262d36); border-radius: 8px; padding: 6px 13px;
+    background: var(--xh-panel, #161b22); font-size: 13px; color: var(--xh-fg, #e6edf3);
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .xh-flow__nav button:hover:not([disabled]) { border-color: var(--xh-accent-dim, #2ea043); color: #7ee0a0; }
+  .xh-flow__nav button[disabled] { opacity: .4; cursor: default; }
+  .xh-flow__count { font-family: var(--xh-mono, monospace); font-size: 12px; color: var(--xh-dim, #8b949e); }
+  .xh-flow__hint { font-size: 12px; color: #6e7681; }
+  .xh-flow__foot { margin-top: 14px !important; padding-top: 12px; border-top: 1px solid var(--xh-line, #262d36);
+    font-size: 12.5px; color: var(--xh-dim, #8b949e); }
+  .xh-flow__foot b { color: var(--xh-fg, #e6edf3); }
+  .xh-flow__err { display: none; margin-top: 12px; font-size: 12.5px; color: #e3b341;
+    border: 1px solid rgba(210, 153, 34, .35); background: rgba(210, 153, 34, .07);
+    border-radius: 8px; padding: 8px 10px; }
+  .xh-flow--failed .xh-flow__err { display: block; }
+  /* The static summary is the no-JS / fetch-failed fallback. Once the live
+     render is in place it would only duplicate the same numbers. */
+  .xh-flow--stepper .xh-flow__static { display: none; }
+  .xh-flow__static { margin-top: 10px; }
+  .xh-flow__static ul { margin-top: 6px !important; }
+  .xh-flow__static li { font-size: 13px; color: #a9b4c0; padding-left: 14px; position: relative; }
+  .xh-flow__static li + li { margin-top: 4px; }
+  .xh-flow__static li::before { content: "·"; position: absolute; left: 3px; color: #6e7681; }
+  .xh-flow__static .xh-flow__slabel { font-family: var(--xh-mono, monospace); font-size: 10.5px;
+    text-transform: uppercase; letter-spacing: .07em; color: #6e7681; }
+
+  @media (max-width: 720px) {
+    .xh-flow { padding: 16px 13px 13px; border-radius: 10px; }
+    .xh-flow__title { font-size: 18.5px; }
+    .xh-flow__arms { grid-template-columns: 1fr; }
+    .xh-flow__grid { grid-template-columns: 1fr; }
+    .xh-flow__cards { grid-template-columns: 1fr; }
+    .xh-flow__row { grid-template-columns: 30px 44px 1fr; }
+    /* tokens and the bar are redundant on a phone: the result cell already
+       carries "cumulative / budget". Hiding both keeps header and rows at the
+       same three columns instead of letting the header wrap into a new row. */
+    .xh-flow__row .xh-flow__rbar,
+    .xh-flow__row > span:nth-child(3),
+    .xh-flow__row > span:nth-child(4) { display: none; }
+    .xh-flow__cmsg { grid-template-columns: 1fr; gap: 1px; }
+    .xh-flow__cmsg .xh-flow__ckind { color: #7c8697; }
+    .xh-flow__term { grid-template-columns: 88px 1fr 42px; }
+    /* 81 messages stacked on a phone is a long list; keep each chip shallow. */
+    .xh-flow__msg { padding: 5px 7px; }
+    .xh-flow__mpre { -webkit-line-clamp: 2; }
+    .xh-flow__ctx { max-height: 360px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .xh-flow *, .xh-flow *::before, .xh-flow *::after {
+      transition: none !important; animation: none !important; scroll-behavior: auto !important;
+    }
+  }
+</style>
+<section class="xh-flow" id="xh-flow" tabindex="0" role="group" aria-label="一次压缩的逐步演示：上游与 Hippo 的差异">
+  <div class="xh-flow__kicker">real engine run · offline replay · seed 20260911</div>
+  <div class="xh-flow__title">一次压缩，逐步走：Hippo 到底多做了什么</div>
+  <p class="xh-flow__lede">40 轮合成对话共 81 条消息（含 8 条注入的精确事实），跑一次真实的压缩。上游把「摘要桶」里的消息全部换成摘要文本；Hippo 在换之前先给桶里每条消息打一个分，把分数最高、且能塞进硬预算的几条<b>原样留在上下文里</b>。下面五步就是这一次压缩的逐步回放。</p>
+  <p class="xh-flow__prov">页面上的每个数字都来自 <code>sections/flow.json</code>——它由 <code>benchmarks/demo/exportFlow.ts</code> 调用本仓库真实的 <code>CompactionEngine</code> 与 <code>EbbinghausPageRankPolicy</code> 生成，用假模型出摘要（固定字符串），不联网、不用 API key、不调真 LLM。同一 seed 重跑两次输出逐字节一致。<b>这不是一次实时模型调用</b>，是一次可离线复现的固定种子回放。</p>
+
+  <div class="xh-flow__stepper" role="tablist" aria-label="步骤"></div>
+
+  <div class="xh-flow__steps">
+    <!-- STEP 1 -->
+    <article class="xh-flow__step" id="xh-step-1" data-step="1">
+      <div class="xh-flow__stephead">
+        <span class="xh-flow__num">1</span><span class="xh-flow__steptitle">压缩前</span>
+        <span class="xh-flow__steptag">81 条消息 · 4200 tokens</span>
+      </div>
+      <p class="xh-flow__cap">进上下文前先看原样：40 个 user/assistant 来回，加最后那条待回答的请求（第 81 条）。最后一条请求是打分用的查询 <code>q</code>。</p>
+      <div class="xh-flow__live" data-live="1"></div>
+      <div class="xh-flow__static">
+        <div class="xh-flow__slabel">静态摘要（JS 未运行 / flow.json 未加载）</div>
+        <ul>
+          <li>81 条消息 = 40 组 user/assistant 对话 + 1 条待回答的请求；压缩前共 4200 tokens。</li>
+          <li>其中 8 条 user 消息带注入事实（FACT1…FACT8），分别在第 1、7、15、23、31、37、45、53 条。</li>
+          <li>第 81 条 <code>Answer the TCGA-LIHC n/frequency/statistic questions…</code> 是这次压缩要服务的请求，也是打分用的查询。</li>
+          <li>此时还没有任何消息被摘要，也没有任何消息被逐字保留。</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- STEP 2 -->
+    <article class="xh-flow__step" id="xh-step-2" data-step="2">
+      <div class="xh-flow__stephead">
+        <span class="xh-flow__num">2</span><span class="xh-flow__steptitle">进入摘要桶的候选</span>
+        <span class="xh-flow__steptag">60 条候选 · 尾部 21 条不动</span>
+      </div>
+      <p class="xh-flow__cap">压缩先把对话切成「尾部」和「前缀」：尾部按 token 预算逐字保留，前缀整体进摘要桶——<b>桶里的消息原话就没了</b>。这次尾部 = 最后 21 条（第 61–81 条，含待回答的请求），不参与打分；剩下 <b>60 条</b>是候选，也就是这张图里被标黄的那些。</p>
+      <div class="xh-flow__live" data-live="2"></div>
+      <div class="xh-flow__static">
+        <div class="xh-flow__slabel">静态摘要</div>
+        <ul>
+          <li>尾部预算 = <code>floor(4200 × 0.18) = 756</code> tokens，实际取到最后 21 条逐字保留，不参与打分。</li>
+          <li>前缀 60 条进入摘要桶，成为候选——上游在这里就把它们全部换成摘要文本。</li>
+          <li>8 条 FACT 消息全部落在候选里（第 1…53 条），所以上游压缩后一条原文都留不下。</li>
+          <li>待回答的请求在尾部，因此不会被摘要掉。</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- STEP 3 -->
+    <article class="xh-flow__step" id="xh-step-3" data-step="3">
+      <div class="xh-flow__stephead">
+        <span class="xh-flow__num">3</span><span class="xh-flow__steptitle">打分：本地算，不花第二次模型调用</span>
+        <span class="xh-flow__steptag">60 条候选 · 权重 0.85 / 0.15 / 0.00</span>
+      </div>
+      <p class="xh-flow__cap">Hippo 给每条候选单独打分：<code>S(m) = 0.85·sim(q,m) + 0.15·position_decay(m) + 0.00·idf_pagerank(m)</code>。<code>sim</code> 是查询与消息文本的 BM25 词面相似度，<code>position_decay</code> 是按「越新越靠前」的指数衰减，<code>idf_pagerank</code> 是实体图中心度（本版权重为 0，只作显示）。<b>三项都在进程内算完：没有第二次 LLM 调用，没有网络。</b>下面按分数从高到低排。</p>
+      <div class="xh-flow__live" data-live="3"></div>
+      <div class="xh-flow__static">
+        <div class="xh-flow__slabel">静态摘要</div>
+        <ul>
+          <li>公式：<code>S = 0.85·sim + 0.15·position_decay + 0.00·idf_pagerank</code>，查询是最后那条请求。</li>
+          <li>分数最高的 8 条恰好就是 8 条 FACT 消息：0.8986 / 0.8817 / 0.8669 / 0.8571 / 0.8455 / 0.8353 / 0.8264 / 0.8205。</li>
+          <li>其余 52 条候选最高只有 0.7164，最低 0.0581——差距主要来自 <code>sim</code>（FACT 消息 sim≈0.9004，噪声消息约 0.67 及以下）。</li>
+          <li>全部计算在本地完成：BM25 词频统计 + 指数位置衰减 + 实体图 PageRank，不调用模型。</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- STEP 4 -->
+    <article class="xh-flow__step" id="xh-step-4" data-step="4">
+      <div class="xh-flow__stephead">
+        <span class="xh-flow__num">4</span><span class="xh-flow__steptitle">预算截断</span>
+        <span class="xh-flow__steptag">硬预算 256 tokens</span>
+      </div>
+      <p class="xh-flow__cap">逐字保留是有硬预算的：<code>max(256, floor(756 × 0.2)) = 256</code> tokens。按分数从高到低往下取，取到装不下为止。<b>注意实现细节：装不下的一条会被跳过，然后继续往下试更小的消息</b>——不是一撞到上限就停。这次 6 条刚好用掉 226/256，第 7、8 名（就是 FACT1、FACT2）无论放哪都超预算，于是留在摘要桶里。</p>
+      <div class="xh-flow__live" data-live="4"></div>
+      <div class="xh-flow__static">
+        <div class="xh-flow__slabel">静态摘要</div>
+        <ul>
+          <li>预算 <code>max(256, floor(756 × 0.2)) = 256</code> tokens（756 是尾部预算，0.2 是保留比例，256 是下限）。</li>
+          <li>按分数顺序取：36 + 37 + 40 + 38 + 38 + 37 = <b>226</b> tokens，共 6 条，落在上限 256 以内。</li>
+          <li>第 7 条（FACT1，37 tokens）会让累计到 263，第 8 条（FACT2，39 tokens）会到 265，都超过 256，所以跳过。</li>
+          <li>60 条候选里 6 条被逐字保留，其余 54 条留在摘要桶里（跳过而非截断，剩余 30 tokens 装不下任何一条）。</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- STEP 5 -->
+    <article class="xh-flow__step" id="xh-step-5" data-step="5">
+      <div class="xh-flow__stephead">
+        <span class="xh-flow__num">5</span><span class="xh-flow__steptitle">结果：两栏对比</span>
+        <span class="xh-flow__steptag">上游 1253 tokens · Hippo 1479 tokens</span>
+      </div>
+      <p class="xh-flow__cap">左边是上游压缩后的上下文，右边是 Hippo 的。两栏的摘要文本完全一样（同一次假模型输出），差别只在右栏多了 6 条<b>逐字保留的原文</b>——就是 FACT3…FACT8。上游那条请求现在只能问摘要里的东西，Hippo 还能查到原文。</p>
+      <div class="xh-flow__live" data-live="5"></div>
+      <div class="xh-flow__static">
+        <div class="xh-flow__slabel">静态摘要</div>
+        <ul>
+          <li>上游压缩后 1253 tokens，0/8 条 FACT 原文存活；Hippo 压缩后 1479 tokens（多出的 226 正好是保留的原文），6/8 条 FACT 存活。</li>
+          <li>存活的是第 15、23、31、37、45、53 条消息，即 FACT3…FACT8；FACT1、FACT2 因为排在第 7、8 名、装不进 256 token 预算而只留在摘要里。</li>
+          <li>两栏的摘要文本相同（都是固定的假模型输出），差别只是右栏多了 6 条原文块。</li>
+          <li>Hippo 侧的边界标记里写着 <code>messagesSummarized="54"</code>：被逐字保留的 6 条是<b>从摘要桶里拿掉</b>的，改为原样回放，送去写摘要的是剩下的 54 条——与上一步的截断结果一致（上游侧没有保留机制，标记里是完整的 60）。</li>
+        </ul>
+      </div>
+    </article>
+  </div>
+
+  <div class="xh-flow__nav">
+    <button type="button" data-nav="prev">← 上一步</button>
+    <span class="xh-flow__count" data-count>1 / 5</span>
+    <button type="button" data-nav="next">下一步 →</button>
+    <span class="xh-flow__hint">或按 ← → 方向键</span>
+  </div>
+  <div class="xh-flow__err" data-err>未能加载 <code>sections/flow.json</code>，下面显示的是随页面带出的静态摘要（数字与真实运行一致，只是不逐条展开）。</div>
+  <p class="xh-flow__foot" data-foot>真实引擎运行 · 固定 seed 20260911 · 假模型摘要（无网络 / 无 API key）· 数据文件 <code>sections/flow.json</code>（71.9 KB，重跑逐字节一致）。</p>
+</section>
+<script>
+(function () {
+  "use strict";
+  var root = document.getElementById("xh-flow");
+  if (!root) return;
+  var live = {
+    1: root.querySelector('[data-live="1"]'),
+    2: root.querySelector('[data-live="2"]'),
+    3: root.querySelector('[data-live="3"]'),
+    4: root.querySelector('[data-live="4"]'),
+    5: root.querySelector('[data-live="5"]')
+  };
+  var stepper = root.querySelector(".xh-flow__stepper");
+  var countEl = root.querySelector("[data-count]");
+  var prevBtn = root.querySelector('[data-nav="prev"]');
+  var nextBtn = root.querySelector('[data-nav="next"]');
+  var foot = root.querySelector("[data-foot]");
+  var STEPS = 5;
+  var current = 1;
+  var data = null;
+
+  // ---- tiny DOM helpers (textContent only: no HTML injection) --------
+  function el(tag, cls, text) {
+    var node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text !== undefined && text !== null) node.textContent = String(text);
+    return node;
+  }
+  function add(parent, tag, cls, text) {
+    var node = el(tag, cls, text);
+    parent.appendChild(node);
+    return node;
+  }
+  function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+  function fmt(n) { return String(n); }
+
+  function kv(parent, label, value, suffix, tone) {
+    var box = add(parent, "div", null);
+    add(box, "dt", null, label);
+    var dd = add(box, "dd", tone ? "is-" + tone : null, fmt(value));
+    if (suffix) add(dd, "span", null, suffix);
+    return box;
+  }
+
+  function msgChip(row, mode, requestIndex) {
+    var cls = "xh-flow__msg";
+    // Step 2 deliberately shows the whole candidate set the same way: which of
+    // these get pulled back out verbatim is what steps 3-4 work out.
+    var isCandidate = row.bucket === "candidate" || row.bucket === "retained";
+    if (row.i === requestIndex) cls += " xh-flow__msg--req";
+    else if (mode === "bucket" && isCandidate) cls += " xh-flow__msg--cand";
+    else if (mode === "bucket" && row.bucket === "tail") cls += " xh-flow__msg--tail";
+    var chip = el("div", cls);
+    var top = add(chip, "div", "xh-flow__mtop");
+    add(top, "span", "xh-flow__midx", "#" + row.i);
+    add(top, "span", "xh-flow__role " + (row.role === "user" ? "u" : "a"), row.role);
+    if (row.fact !== undefined) add(top, "span", "xh-flow__mtag", "FACT" + (row.fact + 1));
+    add(top, "span", "xh-flow__mtok", row.tokens + " tok");
+    if (mode === "bucket") {
+      var tag = row.i === requestIndex ? "待回答的请求"
+        : isCandidate ? "将进摘要"
+        : "尾部留原文";
+      add(top, "span", "xh-flow__mtag " + (row.i === requestIndex ? "req"
+        : isCandidate ? "cand" : "tail"), "· " + tag);
+    }
+    add(chip, "div", "xh-flow__mpre", row.preview);
+    return chip;
+  }
+
+  function legend(parent, items) {
+    var box = add(parent, "div", "xh-flow__legend");
+    items.forEach(function (item) {
+      var wrap = add(box, "span");
+      add(wrap, "span", "xh-flow__dot " + item.cls);
+      add(wrap, "span", null, item.label);
+    });
+    return box;
+  }
+
+  function chipGrid(parent, mode) {
+    var grid = add(parent, "div", "xh-flow__grid");
+    data.transcript.forEach(function (row) { grid.appendChild(msgChip(row, mode, data.budget.queryIndex)); });
+    return grid;
+  }
+
+  // ---- step 1 -------------------------------------------------------
+  function render1() {
+    var node = live[1]; clear(node);
+    var strip = add(node, "div", "xh-flow__kv");
+    kv(strip, "消息总数", data.transcript.length);
+    kv(strip, "压缩前 tokens", data.budget.preTokens, null, "warn");
+    kv(strip, "注入事实", data.facts.length);
+    kv(strip, "查询 = 第 N 条", data.budget.queryIndex);
+    legend(node, [
+      { cls: "req", label: "待回答的请求（打分用的查询 q）" },
+      { cls: "", label: "普通消息" }
+    ]);
+    chipGrid(node, "plain");
+    add(node, "p", "xh-flow__stat", "第 " + data.budget.queryIndex + " 条就是这次压缩要服务的请求；它在尾部，压缩不会动它。");
+  }
+
+  // ---- step 2 -------------------------------------------------------
+  function render2() {
+    var node = live[2]; clear(node);
+    var tailStart = data.budget.tailStartIndex;
+    var strip = add(node, "div", "xh-flow__kv");
+    kv(strip, "候选（进摘要桶）", data.budget.candidateCount, "条", "warn");
+    kv(strip, "尾部逐字保留", data.budget.tailMessages, "条");
+    kv(strip, "桶内 FACT 原文", data.facts.length, "/ " + data.facts.length);
+    kv(strip, "尾部起点", "#" + tailStart);
+    legend(node, [
+      { cls: "cand", label: "候选：" + data.budget.candidateCount + " 条进摘要桶，原话被摘要替换" },
+      { cls: "", label: "尾部：逐字保留，不参与打分" },
+      { cls: "req", label: "待回答的请求" }
+    ]);
+    chipGrid(node, "bucket");
+    add(node, "p", "xh-flow__stat", "尾部 = 第 " + tailStart + "–" + (data.transcript.length - 1)
+      + " 条（" + data.budget.tailMessages + " 条）；其余 " + data.budget.candidateCount
+      + " 条是候选。到这一步为止，上游和 Hippo 走的是同一条路——"
+      + "「哪些候选值得留下原文」是 Hippo 在第 3、4 步才决定的。");
+  }
+
+  // ---- step 3 -------------------------------------------------------
+  function render3() {
+    var node = live[3]; clear(node);
+    var weights = data.meta.weights;
+    var strip = add(node, "div", "xh-flow__kv");
+    kv(strip, "候选数", data.budget.candidateCount);
+    kv(strip, "wSim / wTime / wRank", weights.wSim + " / " + weights.wTime + " / " + weights.wRank);
+    kv(strip, "最高分", Math.max.apply(null, data.candidates.map(function (c) { return c.score; })).toFixed(4), null, "accent");
+    kv(strip, "最低分", Math.min.apply(null, data.candidates.map(function (c) { return c.score; })).toFixed(4));
+    add(node, "p", "xh-flow__stat", "查询 q =「" + data.budget.queryHint
+      + "」· 词面相似度用 BM25，位置衰减与实体中心度都是本地计算。");
+
+    var cards = add(node, "div", "xh-flow__cards");
+    var byScore = data.candidates.slice().sort(function (a, b) { return a.rank1 - b.rank1; });
+    byScore.slice(0, 12).forEach(function (c) {
+      var card = el("div", "xh-flow__card " + (c.selected ? "xh-flow__card--keep" : "xh-flow__card--over"));
+      var head = add(card, "div", "xh-flow__chead");
+      add(head, "span", "xh-flow__crank", "#" + c.rank1);
+      add(head, "span", null, "msg #" + c.i);
+      add(head, "span", null, c.role);
+      add(head, "span", "xh-flow__cscore", c.score.toFixed(4));
+      function term(label, value, cls) {
+        var row = add(card, "div", "xh-flow__term");
+        add(row, "span", null, label);
+        var bar = add(row, "span", "xh-flow__bar");
+        var fill = add(bar, "i", cls || null);
+        fill.style.width = Math.max(0, Math.min(100, value * 100)).toFixed(1) + "%";
+        add(row, "span", "xh-flow__tval", value.toFixed(4));
+      }
+      term("sim ×" + weights.wSim, c.sim, "w");
+      term("decay ×" + weights.wTime, c.decay, null);
+      term("pagerank ×" + weights.wRank, c.rank, "r");
+      var foot0 = add(card, "div", "xh-flow__cfoot");
+      add(foot0, "span", null, c.tokens + " tok");
+      if (c.fact !== undefined) add(foot0, "span", null, "FACT" + (c.fact + 1));
+      add(foot0, "span", "xh-flow__verdict " + (c.selected ? "keep" : "drop"),
+        c.selected ? "预算内保留" : "超出预算");
+      add(card, "div", "xh-flow__cpv", c.preview);
+      cards.appendChild(card);
+    });
+    add(node, "p", "xh-flow__more", "按分数从高到低只画了前 12 名（共 " + data.candidates.length
+      + " 条，全部在 flow.json 的 candidates 里）。前缀「#n」是分数名次，"
+      + "分数最高的 8 名正是 8 条 FACT 消息——它们的 sim 几乎一样（≈0.9004），靠 position_decay 分出先后。");
+  }
+
+  // ---- step 4 -------------------------------------------------------
+  function render4() {
+    var node = live[4]; clear(node);
+    var budget = data.budget.retentionBudgetTokens;
+    var used = data.budget.retainedTokens;
+    var strip = add(node, "div", "xh-flow__kv");
+    kv(strip, "硬预算", budget, "tok", "warn");
+    kv(strip, "已用（保留原文）", used, "tok", "accent");
+    kv(strip, "保留条数", data.budget.retainedCount, "条", "accent");
+    kv(strip, "留在摘要桶", data.budget.droppedCount, "条");
+    add(node, "p", "xh-flow__stat", "tail token 预算 " + data.budget.tailTokenBudget
+      + " → 保留预算 " + data.budget.retentionBudgetFormula.replace(/^.*=\s*/, "")
+      + "；表格按分数顺序，第 1 步到最后一步。");
+
+    var wrap = add(node, "div", "xh-flow__budget");
+    var track = add(wrap, "div", "xh-flow__track");
+    data.selection.filter(function (s) { return s.fits; }).forEach(function (s) {
+      var seg = add(track, "div", "xh-flow__seg kept");
+      seg.style.width = (s.tokens / budget * 100).toFixed(2) + "%";
+      seg.title = "#" + s.c + " · " + s.tokens + " tok";
+    });
+    add(track, "div", "xh-flow__rest");
+    var scale = add(wrap, "div", "xh-flow__scale");
+    add(scale, "span", null, "0 tok");
+    add(scale, "span", null, "保留 " + used + " / " + budget + "（余 " + (budget - used) + "）");
+    add(scale, "span", null, "上限 " + budget);
+
+    var walk = add(node, "div", "xh-flow__walk");
+    var head = add(walk, "div", "xh-flow__row xh-flow__head-row");
+    ["名次", "msg", "tokens", "累计", "结果"].forEach(function (t) { add(head, "span", null, t); });
+    data.selection.slice(0, 10).forEach(function (s, index) {
+      var candidate = data.candidates[s.c];
+      var row = add(walk, "div", "xh-flow__row " + (s.fits ? "is-keep" : "is-drop"));
+      add(row, "span", "xh-flow__rnum", "#" + (index + 1));
+      add(row, "span", null, "#" + s.i);
+      add(row, "span", null, s.tokens);
+      var bar = add(row, "span", "xh-flow__rbar");
+      var fill = add(bar, "i", s.fits ? null : "drop");
+      fill.style.width = Math.max(2, Math.min(100, s.cumulativeTokens / budget * 100)).toFixed(1) + "%";
+      add(row, "span", null, s.cumulativeTokens + " / " + budget
+        + (s.fits ? " 保留原文" : " 跳过（" + (s.skipReason || "超预算") + "）")
+        + (candidate && candidate.fact !== undefined ? " · FACT" + (candidate.fact + 1) : ""));
+    });
+    var rest = data.selection.length - 10;
+    add(node, "p", "xh-flow__more", "还有 " + rest + " 条没画：累计停在 " + used
+      + " tokens，它们全部是 over-budget 跳过（表里也只列了前 10 条）。");
+  }
+
+  // ---- step 5 -------------------------------------------------------
+  function render5() {
+    var node = live[5]; clear(node);
+    var up = data.arms.upstream, hp = data.arms.hippo;
+    var upFacts = data.facts.filter(function (f) { return f.inUpstream; }).length;
+    var hpFacts = data.facts.filter(function (f) { return f.inHippo; }).length;
+    var strip = add(node, "div", "xh-flow__kv");
+    kv(strip, "上游压缩后", up.postTokens, "tok");
+    kv(strip, "Hippo 压缩后", hp.postTokens, "tok", "accent");
+    kv(strip, "上游 FACT 存活", upFacts, "/ " + data.facts.length, upFacts ? null : "warn");
+    kv(strip, "Hippo FACT 存活", hpFacts, "/ " + data.facts.length, "accent");
+
+    var arms = add(node, "div", "xh-flow__arms");
+    function armPanel(arm, name, cls, sub, factCount) {
+      var panel = el("div", "xh-flow__arm " + cls);
+      var head = add(panel, "div", "xh-flow__armhead");
+      add(head, "span", "xh-flow__armname", name);
+      add(head, "span", "xh-flow__armtok", arm.postTokens + " tok");
+      add(panel, "p", "xh-flow__armsub", sub + " · FACT 原文存活 " + factCount + "/" + data.facts.length);
+      var ctx = add(panel, "div", "xh-flow__ctx");
+      arm.context.forEach(function (m) {
+        var row = add(ctx, "div", "xh-flow__cmsg k-" + m.kind);
+        add(row, "span", "xh-flow__ckind", m.kind === "retained-original" ? "原文·保留"
+          : m.kind === "summary" ? "摘要" : m.kind === "boundary" ? "边界" : "尾部");
+        add(row, "span", "xh-flow__ctext", m.preview);
+      });
+      arms.appendChild(panel);
+    }
+    armPanel(up, "upstream", "xh-flow__arm--up",
+      "摘要桶整体换成摘要文本，桶里的原话不再出现（列表可滚动）", upFacts);
+    armPanel(hp, "hippo", "xh-flow__arm--hippo",
+      "同样的摘要 + " + data.budget.retainedCount + " 条原文逐字保留（" + data.budget.retainedTokens
+      + " tok，列表可滚动）", hpFacts);
+
+    var fs = add(node, "div", "xh-flow__factstrip");
+    data.facts.forEach(function (f) {
+      var pill = add(fs, "span", "xh-flow__fact" + (f.inHippo ? " yes" : null),
+        f.marker + " " + (f.inHippo ? "原文存活" : "只在摘要里"));
+    });
+    add(node, "p", "xh-flow__cap", "两栏的摘要文本完全一样（同一次假模型输出），差别只在右栏那 "
+      + data.budget.retainedCount + " 条绿色原文块。被逐字保留的 " + data.budget.retainedCount
+      + " 条已经从摘要桶里拿掉、改为原样回放，所以 Hippo 侧边界标记里的 messagesSummarized=\""
+      + data.budget.engineReportedSummarized + "\" = " + data.budget.candidateCount + " − "
+      + data.budget.retainedCount + "，" + data.budget.droppedCount
+      + " 条留在桶里写摘要——两边对得上。");
+  }
+
+  var RENDER = { 1: render1, 2: render2, 3: render3, 4: render4, 5: render5 };
+  var TITLES = { 1: "压缩前", 2: "进入摘要桶的候选", 3: "打分", 4: "预算截断", 5: "结果" };
+
+  function goto(step) {
+    current = Math.max(1, Math.min(STEPS, step));
+    for (var s = 1; s <= STEPS; s += 1) {
+      var panel = document.getElementById("xh-step-" + s);
+      if (panel) panel.setAttribute("data-active", s === current ? "1" : "0");
+    }
+    var buttons = stepper.querySelectorAll("button");
+    for (var b = 0; b < buttons.length; b += 1) {
+      buttons[b].setAttribute("aria-current", String(b + 1 === current));
+    }
+    if (countEl) countEl.textContent = current + " / " + STEPS;
+    if (prevBtn) prevBtn.disabled = current === 1;
+    if (nextBtn) nextBtn.disabled = current === STEPS;
+    if (RENDER[current] && data) {
+      try { RENDER[current](); } catch (error) { /* keep the static fallback readable */ }
+    }
+  }
+
+  function buildStepper() {
+    if (!stepper) return;
+    clear(stepper);
+    for (var s = 1; s <= STEPS; s += 1) {
+      (function (step) {
+        var button = el("button", null);
+        button.type = "button";
+        button.setAttribute("role", "tab");
+        add(button, "span", "xh-flow__sn", String(step));
+        add(button, "span", null, TITLES[step]);
+        button.addEventListener("click", function () {
+          goto(step);
+          root.focus({ preventScroll: true });
+        });
+        stepper.appendChild(button);
+      })(s);
+    }
+  }
+
+  function enableStepping() {
+    root.classList.add("xh-flow--stepper");
+    buildStepper();
+    goto(1);
+  }
+
+  if (prevBtn) prevBtn.addEventListener("click", function () { goto(current - 1); root.focus({ preventScroll: true }); });
+  if (nextBtn) nextBtn.addEventListener("click", function () { goto(current + 1); root.focus({ preventScroll: true }); });
+
+  var hovering = false;
+  root.addEventListener("mouseenter", function () { hovering = true; });
+  root.addEventListener("mouseleave", function () { hovering = false; });
+  document.addEventListener("keydown", function (event) {
+    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return;
+    var target = event.target;
+    if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) return;
+    var engaged = hovering || root.contains(document.activeElement);
+    if (!engaged) return;
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") { event.preventDefault(); goto(current + 1); }
+    else if (event.key === "ArrowLeft" || event.key === "ArrowUp") { event.preventDefault(); goto(current - 1); }
+    else if (event.key === "Home") { event.preventDefault(); goto(1); }
+    else if (event.key === "End") { event.preventDefault(); goto(STEPS); }
+  });
+
+  fetch("./sections/flow.json")
+    .then(function (response) {
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      return response.json();
+    })
+    .then(function (json) {
+      if (!json || !json.transcript || !json.budget) throw new Error("unexpected flow.json shape");
+      data = json;
+      enableStepping();
+      if (foot) {
+        foot.textContent = "真实引擎运行 · 固定 seed " + json.meta.seed + " · "
+          + json.meta.numPairs + " 轮对话 / " + json.transcript.length + " 条消息 · 假模型摘要（无网络 / 无 API key）"
+          + " · 语义后端 " + json.meta.semanticBackend + " · 数据文件 sections/flow.json。";
+      }
+    })
+    .catch(function () {
+      // Static fallback stays: all five steps are already in the markup.
+      root.classList.add("xh-flow--failed");
+    });
+})();
+</script>

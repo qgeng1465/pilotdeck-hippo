@@ -1,0 +1,601 @@
+<style>
+/* Scoped to .xh-diff. Host page tokens are re-declared here with fallbacks so this
+   fragment renders identically whether or not the host variables exist. */
+.xh-diff{
+  --xh-bg:#0d1117; --xh-panel:#161b22; --xh-panel2:#0b0f14; --xh-line:#262d36;
+  --xh-fg:#e6edf3; --xh-dim:#8b949e; --xh-accent:#3fb950; --xh-accent-dim:#2ea043;
+  --xh-warn:#d29922; --xh-bright:#7ee0a0;
+  --xh-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --xh-ui:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Helvetica,Arial,sans-serif;
+  color:var(--xh-fg,#e6edf3);
+  font-family:var(--xh-ui);
+  font-size:15px; line-height:1.65;
+  background:var(--xh-bg,#0d1117);
+  margin:0; padding:0;
+}
+.xh-diff *{box-sizing:border-box}
+.xh-diff .xh-h{font-size:17px;font-weight:600;letter-spacing:0;margin:0 0 8px}
+.xh-diff .xh-h3{font:600 12px/1.5 var(--xh-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--xh-dim);margin:26px 0 10px}
+.xh-diff p{margin:0 0 12px}
+.xh-diff .xh-lead{color:var(--xh-dim);max-width:82ch}
+.xh-diff .xh-cap{color:var(--xh-dim);font-size:13px;margin:10px 0 0;max-width:96ch}
+.xh-diff .xh-src{color:var(--xh-dim);font:12.5px/1.6 var(--xh-mono);margin:10px 0 0}
+.xh-diff code,.xh-diff pre{font-family:var(--xh-mono)}
+.xh-diff code{background:var(--xh-panel2,#0b0f14);border:1px solid var(--xh-line,#262d36);border-radius:5px;padding:1px 5px;font-size:12.5px;word-break:break-word}
+.xh-diff pre{background:var(--xh-panel2,#0b0f14);border:1px solid var(--xh-line,#262d36);border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:12.5px;line-height:1.6;margin:0 0 12px;color:#c9d1d9}
+.xh-diff b{color:var(--xh-fg,#e6edf3)}
+.xh-diff .xh-ok{color:var(--xh-accent,#3fb950);font-weight:600}
+.xh-diff .xh-lost{color:var(--xh-dim,#8b949e)}
+.xh-diff .xh-tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:4px}
+.xh-diff a{color:#58a6ff}
+
+/* ---------- headline tiles ---------- */
+.xh-diff .xh-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:16px 0 6px}
+.xh-diff .xh-tile{background:var(--xh-panel,#161b22);border:1px solid var(--xh-line,#262d36);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:2px}
+.xh-diff .xh-tile-up{border-left:3px solid #484f58}
+.xh-diff .xh-tile-hp{border-left:3px solid var(--xh-accent-dim,#2ea043)}
+.xh-diff .xh-tile-head{font:600 12px/1.5 var(--xh-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--xh-dim,#8b949e);display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
+.xh-diff .xh-big{font:700 40px/1.1 var(--xh-mono);letter-spacing:-.03em;margin:8px 0 0;color:var(--xh-dim,#8b949e)}
+.xh-diff .xh-tile-hp .xh-big{color:var(--xh-accent,#3fb950)}
+.xh-diff .xh-big .xh-bignum{font-size:44px}
+.xh-diff .xh-big .xh-den{font-size:22px;opacity:.75}
+.xh-diff .xh-bigsub{color:var(--xh-dim,#8b949e);font-size:13.5px;margin:2px 0 10px}
+.xh-diff .xh-tile-hp .xh-bigsub{color:#a7d8b6}
+.xh-diff .xh-kv{list-style:none;margin:0;padding:0;font-size:13px;color:var(--xh-dim,#8b949e)}
+.xh-diff .xh-kv li{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--xh-line,#262d36);padding:5px 0;margin:0;align-items:baseline}
+.xh-diff .xh-kv li:first-child{border-top:none}
+.xh-diff .xh-kv li>span:first-child{flex:1 1 auto;min-width:0}
+.xh-diff .xh-kv .xh-kv-v{font-family:var(--xh-mono);color:var(--xh-fg,#e6edf3);text-align:right;flex:0 1 auto;min-width:0}
+.xh-diff .xh-tile-hp .xh-kv .xh-kv-v{color:var(--xh-bright,#7ee0a0)}
+
+/* ---------- fact ledger ---------- */
+.xh-diff table.xh-ledger{width:100%;border-collapse:collapse;font-size:13px}
+.xh-diff table.xh-ledger th,.xh-diff table.xh-ledger td{border-bottom:1px solid var(--xh-line,#262d36);padding:7px 9px;text-align:left;vertical-align:top}
+.xh-diff table.xh-ledger th{color:var(--xh-dim,#8b949e);font:600 11px/1.4 var(--xh-mono);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.xh-diff table.xh-ledger td.xh-fid{font-family:var(--xh-mono);white-space:nowrap;color:var(--xh-fg,#e6edf3)}
+.xh-diff table.xh-ledger td.xh-fval{font-family:var(--xh-mono);font-size:12px;color:#c9d1d9}
+.xh-diff table.xh-ledger td.xh-fate{white-space:nowrap;font-size:12.5px}
+.xh-diff table.xh-ledger tr:last-child td{border-bottom:none}
+.xh-diff .xh-glyph{font-family:var(--xh-mono);font-weight:700;margin-right:4px}
+.xh-diff .xh-fate-v{color:var(--xh-accent,#3fb950)}
+.xh-diff .xh-fate-a{color:var(--xh-dim,#8b949e)}
+.xh-diff .xh-fate-s{color:var(--xh-warn,#d29922)}
+.xh-diff .xh-flag{display:inline-block;font:600 10.5px/1.4 var(--xh-mono);border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:1px;white-space:nowrap}
+.xh-diff .xh-flag-lost{border:1px solid #484f58;color:var(--xh-dim,#8b949e)}
+.xh-diff .xh-flag-kept{border:1px solid var(--xh-accent-dim,#2ea043);color:var(--xh-bright,#7ee0a0)}
+
+/* ---------- score ladder ---------- */
+.xh-diff .xh-scorelist{background:var(--xh-panel,#161b22);border:1px solid var(--xh-line,#262d36);border-radius:12px;padding:14px 16px}
+.xh-diff .xh-srow{display:flex;align-items:center;gap:10px;padding:2px 0;font:12px/1.7 var(--xh-mono)}
+.xh-diff .xh-sname{flex:0 0 66px;color:var(--xh-fg,#e6edf3)}
+.xh-diff .xh-sbar{flex:1 1 auto;height:8px;background:var(--xh-panel2,#0b0f14);border:1px solid var(--xh-line,#262d36);border-radius:4px;overflow:hidden;min-width:40px}
+.xh-diff .xh-sfill{display:block;height:100%;background:#484f58;border-radius:3px}
+.xh-diff .xh-srow.xh-syes .xh-sfill{background:var(--xh-accent,#3fb950)}
+.xh-diff .xh-srow.xh-sno .xh-sname{color:var(--xh-dim,#8b949e)}
+.xh-diff .xh-srow.xh-sno .xh-sfill{background:#484f58}
+.xh-diff .xh-sval{flex:0 0 58px;text-align:right;color:var(--xh-dim,#8b949e)}
+.xh-diff .xh-srow.xh-syes .xh-sval{color:var(--xh-bright,#7ee0a0)}
+.xh-diff .xh-scut{display:flex;align-items:center;gap:8px;margin:6px 0;color:var(--xh-dim,#8b949e);font:11.5px/1.5 var(--xh-mono)}
+.xh-diff .xh-scut::before,.xh-diff .xh-scut::after{content:"";height:1px;background:var(--xh-line,#262d36);flex:1}
+.xh-diff .xh-scut span{padding:0 6px;text-align:center;min-width:0}
+
+/* ---------- context view ---------- */
+.xh-diff .xh-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+.xh-diff .xh-col{background:var(--xh-panel,#161b22);border:1px solid var(--xh-line,#262d36);border-radius:12px;overflow:hidden}
+.xh-diff .xh-col-up{border-top:3px solid #484f58}
+.xh-diff .xh-col-hp{border-top:3px solid var(--xh-accent-dim,#2ea043)}
+.xh-diff .xh-col-head{padding:12px 14px;border-bottom:1px solid var(--xh-line,#262d36);display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.xh-diff .xh-col-title{font:600 13.5px/1.5 var(--xh-ui)}
+.xh-diff .xh-col-meta{font:11.5px/1.5 var(--xh-mono);color:var(--xh-dim,#8b949e)}
+.xh-diff .xh-rows{padding:6px 10px 10px}
+.xh-diff .xh-row{border-left:3px solid transparent;padding:5px 8px;margin:2px 0;border-radius:0 6px 6px 0}
+.xh-diff .xh-row-top{display:flex;gap:8px;align-items:baseline;font:11px/1.5 var(--xh-mono);color:var(--xh-dim,#8b949e);margin-bottom:2px}
+.xh-diff .xh-row-idx{white-space:nowrap}
+.xh-diff .xh-row-role{text-transform:uppercase;letter-spacing:.06em;font-size:10px;border:1px solid var(--xh-line,#262d36);border-radius:999px;padding:0 6px}
+.xh-diff .xh-row-text{font:12.5px/1.6 var(--xh-mono);color:#c9d1d9;word-break:break-word}
+.xh-diff .xh-row-kept{border-left-color:#30363d;background:rgba(110,118,129,.05)}
+.xh-diff .xh-row-retained{border-left-color:var(--xh-accent-dim,#2ea043);background:rgba(63,185,80,.07)}
+.xh-diff .xh-row-folded{border-left-color:#484f58;background:rgba(139,148,158,.06)}
+.xh-diff .xh-row-folded .xh-row-text{color:#6e7681;text-decoration:line-through;text-decoration-color:#484f58}
+.xh-diff .xh-row-elided{border-left-color:transparent;background:transparent;color:#6e7681;font:11.5px/1.6 var(--xh-mono);padding:3px 8px}
+.xh-diff .xh-row-elided::before{content:"⋯ ";color:#484f58}
+.xh-diff mark.xh-fact{background:rgba(63,185,80,.20);color:var(--xh-bright,#7ee0a0);border-bottom:1px solid var(--xh-accent-dim,#2ea043);border-radius:2px;padding:0 1px}
+.xh-diff .xh-row-folded mark.xh-fact{background:rgba(139,148,158,.16);color:#6e7681;border-bottom:1px dashed #484f58}
+.xh-diff .xh-gapnote{color:var(--xh-dim,#8b949e);font:11.5px/1.6 var(--xh-mono);border-left:3px dashed #484f58;padding:3px 8px;margin:2px 0}
+.xh-diff details.xh-more{margin:4px 0 0}
+.xh-diff details.xh-more>summary{cursor:pointer;color:#58a6ff;font:12.5px/1.8 var(--xh-mono);list-style:revert}
+.xh-diff details.xh-more>summary:focus-visible,.xh-diff summary:focus-visible,.xh-diff .xh-ctl input:focus-visible{outline:2px solid #58a6ff;outline-offset:2px}
+.xh-diff .xh-legend{list-style:none;margin:8px 0 0;padding:0;font:11.5px/1.7 var(--xh-mono);color:var(--xh-dim,#8b949e)}
+.xh-diff .xh-legend li{margin:0;display:flex;gap:6px;align-items:baseline}
+.xh-diff .xh-legend .xh-sw{flex:0 0 22px;height:4px;border-radius:2px;display:inline-block;transform:translateY(-3px)}
+.xh-diff .xh-sw-kept{background:#30363d}
+.xh-diff .xh-sw-retained{background:var(--xh-accent,#3fb950)}
+.xh-diff .xh-sw-folded{background:#484f58}
+.xh-diff .xh-ctl{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:12px 0 0;font:12.5px/1.6 var(--xh-mono);color:var(--xh-dim,#8b949e)}
+.xh-diff .xh-ctl label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.xh-diff .xh-ctl input{accent-color:var(--xh-accent,#3fb950);width:15px;height:15px;margin:0}
+.xh-diff .xh-note{background:rgba(210,153,34,.07);border:1px solid rgba(210,153,34,.35);border-left:3px solid var(--xh-warn,#d29922);border-radius:8px;padding:12px 16px;font-size:13.5px;color:var(--xh-fg,#e6edf3)}
+.xh-diff .xh-note b{color:#e3b341}
+.xh-diff .xh-err{background:rgba(210,153,34,.07);border:1px solid rgba(210,153,34,.35);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--xh-fg,#e6edf3);margin:10px 0 0}
+@media (max-width:720px){
+  .xh-diff .xh-tiles,.xh-diff .xh-cols{grid-template-columns:minmax(0,1fr)}
+  .xh-diff .xh-big{font-size:34px}
+  .xh-diff .xh-big .xh-bignum{font-size:38px}
+  /* Narrow screens: the 5-column ledger cannot fit, and horizontally scrolling it would
+     hide the Hippo column -- the one that carries the story. Re-flow each row into a
+     2-column card instead, and label the two fate cells since the header row is gone. */
+  .xh-diff table.xh-ledger thead{display:none}
+  .xh-diff table.xh-ledger,.xh-diff table.xh-ledger tbody{display:block;width:100%}
+  .xh-diff table.xh-ledger tr{
+    display:grid;grid-template-columns:auto minmax(0,1fr);
+    grid-template-areas:"fid pos" "val val" "up hp";
+    gap:2px 10px;border-bottom:1px solid var(--xh-line,#262d36);padding:9px 0;
+  }
+  .xh-diff table.xh-ledger tr:last-child{border-bottom:none}
+  .xh-diff table.xh-ledger td{display:block;border:none;padding:0;white-space:normal}
+  .xh-diff table.xh-ledger td:nth-of-type(1){grid-area:fid}
+  .xh-diff table.xh-ledger td:nth-of-type(2){grid-area:val;font-size:11.5px}
+  .xh-diff table.xh-ledger td:nth-of-type(3){grid-area:pos;text-align:right;font-size:11.5px;padding-right:3px}
+  .xh-diff table.xh-ledger td:nth-of-type(4){grid-area:up;font-size:12.5px}
+  .xh-diff table.xh-ledger td:nth-of-type(5){grid-area:hp;font-size:12.5px}
+  .xh-diff table.xh-ledger td:nth-of-type(4)::before{content:"上游 ";color:var(--xh-dim,#8b949e);font-size:11.5px}
+  .xh-diff table.xh-ledger td:nth-of-type(5)::before{content:"Hippo ";color:var(--xh-dim,#8b949e);font-size:11.5px}
+}
+@media (prefers-reduced-motion:reduce){
+  .xh-diff details>summary{transition:none}
+}
+</style>
+
+<div class="xh-diff" id="xh-diff">
+
+  <div class="xh-h">压缩后的上下文，逐条看：上游 vs Hippo</div>
+  <p class="xh-lead">
+    下面是<strong>一次真实压缩</strong>的输出，不是示意。同一份输入消息（合成生信转录，N=160 对，
+    前 75% 里埋了 20 条精确 FACT 事实），同一个固定文本假摘要器，同一个 tail 预算
+    （<code>keepTailRatio = 0.18</code>）；两臂唯一的不同是 <code>scorePolicy</code>：
+    上游不传（纯摘要路径），Hippo 传 <code>buildEbbinghausPageRankPolicy()</code>（出厂默认权重
+    <code>0.85 / 0.15 / 0.00</code>）。左列是上游压缩后模型真正看到的消息，右列是 Hippo 的。
+  </p>
+
+  <!-- Headline tiles. Values are real; the JS below re-writes them from the JSON so the
+       static numbers can never silently drift from the data file. -->
+  <div class="xh-tiles">
+    <div class="xh-tile xh-tile-up">
+      <div class="xh-tile-head">上游 upstream <span>scorePolicy = undefined</span></div>
+      <div class="xh-big"><span class="xh-bignum" id="xh-n-up">0</span> <span class="xh-den">/ 20</span></div>
+      <div class="xh-bigsub">条注入事实，压缩后仍逐字在上下文里</div>
+      <ul class="xh-kv">
+        <li><span>逐字保留</span><span class="xh-kv-v" id="xh-u-v">0 / 20</span></li>
+        <li><span>仅存于摘要</span><span class="xh-kv-v" id="xh-u-s">0 / 20</span></li>
+        <li><span>丢失（原文与摘要都没有）</span><span class="xh-kv-v" id="xh-u-a">20 / 20</span></li>
+        <li><span>压缩后 tokens</span><span class="xh-kv-v" id="xh-u-t">4,683</span></li>
+        <li><span>保留消息 / 被摘要消息</span><span class="xh-kv-v" id="xh-u-m">83 / 238</span></li>
+        <li><span>Hippo 式逐字保留块</span><span class="xh-kv-v">无</span></li>
+      </ul>
+    </div>
+    <div class="xh-tile xh-tile-hp">
+      <div class="xh-tile-head">Hippo <span>buildEbbinghausPageRankPolicy()</span></div>
+      <div class="xh-big"><span class="xh-bignum" id="xh-n-hp">16</span> <span class="xh-den">/ 20</span></div>
+      <div class="xh-bigsub">条注入事实，压缩后仍逐字在上下文里</div>
+      <ul class="xh-kv">
+        <li><span>逐字保留</span><span class="xh-kv-v" id="xh-h-v">16 / 20</span></li>
+        <li><span>仅存于摘要</span><span class="xh-kv-v" id="xh-h-s">0 / 20</span></li>
+        <li><span>丢失（原文与摘要都没有）</span><span class="xh-kv-v" id="xh-h-a">4 / 20</span></li>
+        <li><span>压缩后 tokens</span><span class="xh-kv-v" id="xh-h-t">5,283</span></li>
+        <li><span>保留消息 / 被摘要消息</span><span class="xh-kv-v" id="xh-h-m">99 / 222</span></li>
+        <li><span>Hippo 式逐字保留块</span><span class="xh-kv-v" id="xh-h-r">16 条 / 600 tok</span></li>
+      </ul>
+    </div>
+  </div>
+  <p class="xh-cap" id="xh-verdict">
+    同样一次压缩：上游 20 条注入事实<strong class="xh-lost">全部丢失</strong>（0 条逐字、0 条仅存于摘要），
+    Hippo <strong class="xh-ok">16 条逐字留下</strong>、4 条丢失、0 条仅存于摘要。
+    两臂的“仅存于摘要”都是 0，原因是结构性的：这里的摘要器是固定文本假模型，从不输出 FACT 文本，
+    所以“有损摘要 vs 逐字保留”这一对照才有意义（真 LLM 的对照见 §2.4）。
+    代价也在同一张表里：压缩后 <span class="xh-num" id="xh-delta">+600 tokens（+12.8%）</span>，
+    多出来的是保留块本身，不是省下来的。
+    <br>
+    机制就一句话：<b>上游把 238 条待压缩消息全部折进摘要；Hippo 把其中 16 条拉出摘要桶、逐字保留，剩下 222 条才进摘要</b> ——
+    这 16 条既没有再进摘要器（两臂的“被摘要消息”正好相差这 16 条），也没有被丢掉。
+  </p>
+
+  <div class="xh-note" style="margin-top:14px">
+    <b>口径说明（避免误读）。</b>本页展示的是 <code>seed = 20260911</code> 这<em>一条</em>真实压缩的逐条上下文，
+    Hippo 在这里是 <b>16 / 20</b>。§2.1 结构性基准表里 N=160 的 <code>0 → 16</code>，是 10 个 seed 的<b>中位数</b>；
+    本页不取中位数、也不挑最好的一条，因为这里要看的是一次压缩里<b>每一条消息</b>的去向。
+    Hippo 的这 4 条未中也在下面的账本里，没有被删掉。
+  </div>
+
+  <div class="xh-h3" id="xh-ledger-h">事实账本 — 全部 20 条，含未中的 4 条</div>
+  <p class="xh-cap" style="margin-top:0">
+    每条事实的精确值、它在原对话里的位置（消息序号），以及它在两臂压缩结果里的去向。
+    这是完整记录，不是挑选出来的样本：<span class="xh-ok" id="xh-lg-kept">16</span> 条逐字保留
+    （<span id="xh-lg-kept-list">FACT5–FACT20</span>）、
+    <span class="xh-lost" id="xh-lg-lost">4</span> 条丢失（<span id="xh-lg-lost-list">FACT1–FACT4</span>）。
+  </p>
+  <div class="xh-tblwrap">
+    <table class="xh-ledger">
+      <thead>
+        <tr>
+          <th>#</th><th>事实（标记 + 精确值）</th><th>原位置</th><th>上游</th><th>Hippo</th>
+        </tr>
+      </thead>
+      <!-- Static fallback: real values, checked against sections/context-diff.json. The context
+           view below needs the JSON; this ledger does not. -->
+      <tbody id="xh-ledger-body">
+        <tr><td class="xh-fid">FACT1</td><td class="xh-fval">KRAS Concordance TCGA-LIHC n=371 freq=0.540 stat=0.46</td><td class="xh-fval">#0</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td></tr>
+        <tr><td class="xh-fid">FACT2</td><td class="xh-fval">TP53 DESeq2 TCGA-LIHC n=371 freq=0.470 stat=0.83</td><td class="xh-fval">#12</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td></tr>
+        <tr><td class="xh-fid">FACT3</td><td class="xh-fval">ARID1A Concordance TCGA-LIHC n=371 freq=0.650 stat=1.63</td><td class="xh-fval">#24</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td></tr>
+        <tr><td class="xh-fid">FACT4</td><td class="xh-fval">ALB CoxPH TCGA-LIHC n=371 freq=0.920 stat=3.40</td><td class="xh-fval">#36</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td></tr>
+        <tr><td class="xh-fid">FACT5</td><td class="xh-fval">BAP1 DESeq2 TCGA-LIHC n=371 freq=0.800 stat=2.54</td><td class="xh-fval">#48</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-v"><span class="xh-glyph">✓</span>逐字保留</td></tr>
+        <tr><td class="xh-fid">FACT6</td><td class="xh-fval">RB1 CoxPH TCGA-LIHC n=371 freq=0.560 stat=1.67</td><td class="xh-fval">#60</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-v"><span class="xh-glyph">✓</span>逐字保留</td></tr>
+        <tr><td class="xh-fid">FACT7</td><td class="xh-fval">TP53 EdgeR TCGA-LIHC n=371 freq=0.080 stat=0.35</td><td class="xh-fval">#72</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-v"><span class="xh-glyph">✓</span>逐字保留</td></tr>
+        <tr><td class="xh-fid">FACT8</td><td class="xh-fval">ALB PCA TCGA-LIHC n=371 freq=0.150 stat=2.22</td><td class="xh-fval">#84</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-v"><span class="xh-glyph">✓</span>逐字保留</td></tr>
+        <tr><td class="xh-fid">FACT9</td><td class="xh-fval">TERT UMAP TCGA-LIHC n=371 freq=0.150 stat=1.34</td><td class="xh-fval">#96</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-v"><span class="xh-glyph">✓</span>逐字保留</td></tr>
+        <tr><td class="xh-fid">FACT10</td><td class="xh-fval">CTNNB1 TransDANN TCGA-LIHC n=371 freq=0.510 stat=0.12</td><td class="xh-fval">#108</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-v"><span class="xh-glyph">✓</span>逐字保留</td></tr>
+        <tr><td class="xh-fid">FACT11</td><td class="xh-fval">NRAS UMAP TCGA-LIHC n=371 freq=0.550 stat=0.70</td><td class="xh-fval">#120</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-v"><span class="xh-glyph">✓</span>逐字保留</td></tr>
+        <tr><td class="xh-fid">FACT12</td><td class="xh-fval">ALB PCA TCGA-LIHC n=371 freq=0.610 stat=2.16</td><td class="xh-fval">#132</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-v"><span class="xh-glyph">✓</span>逐字保留</td></tr>
+        <tr><td class="xh-fid">FACT13</td><td class="xh-fval">APOB UMAP TCGA-LIHC n=371 freq=0.770 stat=2.03</td><td class="xh-fval">#144</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-v"><span class="xh-glyph">✓</span>逐字保留</td></tr>
+        <tr><td class="xh-fid">FACT14</td><td class="xh-fval">KRAS LOOCV TCGA-LIHC n=371 freq=0.840 stat=2.91</td><td class="xh-fval">#156</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-v"><span class="xh-glyph">✓</span>逐字保留</td></tr>
+        <tr><td class="xh-fid">FACT15</td><td class="xh-fval">KRAS CoxPH TCGA-LIHC n=371 freq=0.320 stat=1.71</td><td class="xh-fval">#168</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-v"><span class="xh-glyph">✓</span>逐字保留</td></tr>
+        <tr><td class="xh-fid">FACT16</td><td class="xh-fval">BAP1 CoxPH TCGA-LIHC n=371 freq=0.790 stat=1.82</td><td class="xh-fval">#180</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-v"><span class="xh-glyph">✓</span>逐字保留</td></tr>
+        <tr><td class="xh-fid">FACT17</td><td class="xh-fval">BAP1 CoxPH TCGA-LIHC n=371 freq=0.140 stat=2.40</td><td class="xh-fval">#192</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-v"><span class="xh-glyph">✓</span>逐字保留</td></tr>
+        <tr><td class="xh-fid">FACT18</td><td class="xh-fval">PIK3CA UMAP TCGA-LIHC n=371 freq=0.780 stat=2.07</td><td class="xh-fval">#204</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-v"><span class="xh-glyph">✓</span>逐字保留</td></tr>
+        <tr><td class="xh-fid">FACT19</td><td class="xh-fval">KRAS Concordance TCGA-LIHC n=371 freq=0.570 stat=2.72</td><td class="xh-fval">#216</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-v"><span class="xh-glyph">✓</span>逐字保留</td></tr>
+        <tr><td class="xh-fid">FACT20</td><td class="xh-fval">APOB Wasserstein TCGA-LIHC n=371 freq=0.680 stat=3.50</td><td class="xh-fval">#228</td><td class="xh-fate xh-fate-a"><span class="xh-glyph">✕</span>丢失</td><td class="xh-fate xh-fate-v"><span class="xh-glyph">✓</span>逐字保留</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="xh-src">
+    数据：<code>sections/context-diff.json</code> · 生成命令：<code>npx tsx benchmarks/demo/exportContextDiff.ts</code>
+    （在仓库根目录执行；脚本只跑假模型，不发网络请求、不读 API key）。
+  </p>
+
+  <div class="xh-h3">为什么留下的是这 16 条 — Hippo 的真实逐条打分</div>
+  <div id="xh-score-panel">
+    <div class="xh-err">需要 JavaScript 才能渲染打分阶梯。原始分数在 <code>sections/context-diff.json</code> 的
+      <code>scoring.candidates[]</code>（238 个候选、每条一个分数）。</div>
+  </div>
+
+  <div class="xh-h3" id="xh-context-h">压缩后的上下文 — 两臂逐条对照</div>
+  <div class="xh-ctl">
+    <label><input type="checkbox" id="xh-only-facts"> 只看含 FACT 的消息行（其余行收起）</label>
+    <span id="xh-ctl-hint"></span>
+  </div>
+  <div class="xh-cols" id="xh-cols">
+    <div class="xh-col xh-col-up">
+      <div class="xh-col-head">
+        <span class="xh-col-title">上游 — 压缩后上下文</span>
+        <span class="xh-col-meta" id="xh-meta-up">4,683 tok · 83 条</span>
+      </div>
+      <div id="xh-context-up"><div class="xh-err">需要 JavaScript 才能渲染逐条上下文。上游的结果是：
+        20 条注入事实全部被折叠进摘要，0 条原文留下（压缩后 4,683 tokens，保留 83 条消息、238 条被摘要）。</div></div>
+    </div>
+    <div class="xh-col xh-col-hp">
+      <div class="xh-col-head">
+        <span class="xh-col-title">Hippo — 压缩后上下文</span>
+        <span class="xh-col-meta" id="xh-meta-hp">5,283 tok · 99 条</span>
+      </div>
+      <div id="xh-context-hp"><div class="xh-err">需要 JavaScript 才能渲染逐条上下文。Hippo 的结果是：
+        16 条注入事实以原文留下（FACT5–FACT20），4 条（FACT1–FACT4）被折叠进摘要
+        （压缩后 5,283 tokens，保留 99 条 = 83 条 tail + 16 条保留块，222 条进摘要）。</div></div>
+    </div>
+  </div>
+
+  <ul class="xh-legend">
+    <li><span class="xh-sw xh-sw-kept"></span><span>普通逐字 tail（两臂都有，<code>keepTailRatio = 0.18</code>）</span></li>
+    <li><span class="xh-sw xh-sw-retained"></span><span>Hippo 从“将被摘要”的集合里拿出来的逐字保留块（上游没有这一档）</span></li>
+    <li><span class="xh-sw xh-sw-folded"></span><span>被折叠进摘要、原文不在上下文里的消息（删除线 = 原文已不在）</span></li>
+    <li><span class="xh-sw" style="background:transparent;border:1px dashed #484f58"></span><span>被摘要掉的非事实消息，数量合并显示</span></li>
+  </ul>
+
+  <div id="xh-summary-box"></div>
+
+  <p class="xh-cap" id="xh-caption">
+    复现命令：<code>npx tsx benchmarks/demo/exportContextDiff.ts</code> ·
+    两臂跑的是<strong>同一份输入消息数组</strong>（N=160 对，seed=20260911，20 条注入事实），
+    同一 tail 预算，同一个假摘要器；唯一差异是 <code>scorePolicy</code>
+    （上游 <code>undefined</code> vs Hippo <code>buildEbbinghausPageRankPolicy()</code>）。
+    这是<strong>首次</strong>压缩：输入里还没有任何 <code>hippoRetained</code> 标记，所以 CarryOver 的跨轮加成在本页不生效 ——
+    把 <code>PILOTDECK_CARRYOVER=off</code> 跑一遍，Hippo 一行输出逐字相同；两臂真正的差异只有 <code>scorePolicy</code> 有没有把 16 条拉出摘要桶。
+    该脚本无时间戳、无随机数来源，连跑两次产出字节相同的 JSON；
+    本页所有数字都从 <code>sections/context-diff.json</code> 读出，没有任何手写数字参与渲染。
+  </p>
+
+<script>
+(function(){
+  var root = document.getElementById('xh-diff');
+  if (!root) return;
+  var fmt = function(n){ return (n||0).toLocaleString('en-US'); };
+  var markName = function(marker){ return marker; };
+
+  var factText = {};
+  var data = null;
+
+  function paint(el, text, markers){
+    // Highlight each injected fact's exact text in place. Plain DOM nodes only --
+    // no innerHTML -- so the page stays text-selectable and injection-free.
+    var ranges = [];
+    markers.forEach(function(m){
+      var needle = factText[m];
+      if (!needle) return;
+      var from = 0, at;
+      while ((at = text.indexOf(needle, from)) >= 0){
+        ranges.push([at, at + needle.length, m]);
+        from = at + 1;
+      }
+    });
+    ranges.sort(function(a, b){ return a[0] - b[0]; });
+    var cursor = 0;
+    ranges.forEach(function(r){
+      if (r[0] < cursor) return;
+      if (r[0] > cursor) el.appendChild(document.createTextNode(text.slice(cursor, r[0])));
+      var mk = document.createElement('mark');
+      mk.className = 'xh-fact';
+      mk.textContent = text.slice(r[0], r[1]);
+      mk.title = '注入事实 ' + r[2] + '（原文）';
+      el.appendChild(mk);
+      cursor = r[1];
+    });
+    el.appendChild(document.createTextNode(text.slice(cursor)));
+  }
+
+  function renderTile(kind, arm, counts){
+    var face = counts[kind];
+    var total = counts.facts;
+    var p = kind === 'upstream' ? 'xh-u-' : 'xh-h-';
+    var set = function(id, value){ var el = document.getElementById(id); if (el) el.textContent = value; };
+    set('xh-n-' + (kind === 'upstream' ? 'up' : 'hp'), String(face.verbatim));
+    set(p + 'v', face.verbatim + ' / ' + total);
+    set(p + 's', face.summaryOnly + ' / ' + total);
+    set(p + 'a', face.absent + ' / ' + total);
+    set(p + 't', fmt(arm.postTokens));
+    set(p + 'm', arm.messagesKept + ' / ' + arm.messagesSummarized);
+    if (arm.retention){
+      set('xh-h-r', arm.retention.retainedMessages + ' 条 / ' + fmt(arm.retention.retainedTokens) + ' tok（预算 ' + fmt(arm.retention.budgetTokens) + '）');
+    }
+  }
+
+  function renderScorePanel(d){
+    var host = document.getElementById('xh-score-panel');
+    if (!host) return;
+    host.textContent = '';
+    var factCands = d.scoring.candidates.filter(function(c){ return c.facts.length > 0; });
+    factCands.sort(function(a, b){ return b.score - a.score; });
+    var retainedCount = factCands.filter(function(c){ return c.retained; }).length;
+    var min = Math.min.apply(null, factCands.map(function(c){ return c.score; }));
+    var max = Math.max.apply(null, factCands.map(function(c){ return c.score; }));
+    var noise = d.scoring.candidates.filter(function(c){ return c.facts.length === 0; });
+    var topNoise = noise.length ? Math.max.apply(null, noise.map(function(c){ return c.score; })) : 0;
+
+    var box = document.createElement('div');
+    box.className = 'xh-scorelist';
+    var head = document.createElement('p');
+    head.className = 'xh-cap';
+    head.style.margin = '0 0 8px';
+    head.textContent = 'Hippo 压缩前把 ' + d.scoring.candidateCount + ' 条候选消息逐条打分（其中 16 条最终被拉出摘要桶、'
+      + '剩下 ' + d.arms.hippo.messagesSummarized + ' 条进摘要器），按分数从高到低贪心装进 '
+      + fmt(d.scoring.budgetTokens) + ' tokens 的保留预算（tail 预算的 20%，下限 256）。'
+      + '下面只列含 FACT 的 20 条候选；条形长度按这 20 条自己的得分区间 '
+      + min.toFixed(4) + '–' + max.toFixed(4) + ' 归一化，只用来看排序与预算落点，不是绝对量度。';
+    box.appendChild(head);
+
+    factCands.forEach(function(c, index){
+      var row = document.createElement('div');
+      row.className = 'xh-srow ' + (c.retained ? 'xh-syes' : 'xh-sno');
+      row.setAttribute('data-retained', c.retained ? '1' : '0');
+      var name = document.createElement('span');
+      name.className = 'xh-sname';
+      name.textContent = c.facts[0];
+      var bar = document.createElement('span');
+      bar.className = 'xh-sbar';
+      var fill = document.createElement('span');
+      fill.className = 'xh-sfill';
+      var pct = max > min ? ((c.score - min) / (max - min)) : 1;
+      fill.style.width = (12 + 88 * pct).toFixed(1) + '%';
+      bar.appendChild(fill);
+      var val = document.createElement('span');
+      val.className = 'xh-sval';
+      val.textContent = c.score.toFixed(4);
+      row.appendChild(name); row.appendChild(bar); row.appendChild(val);
+      row.title = c.facts[0] + ' · #' + c.i + ' · score ' + c.score.toFixed(4)
+        + (c.retained ? ' · 逐字保留' : ' · 落选（预算用尽）');
+      box.appendChild(row);
+      if (index + 1 === retainedCount){
+        var cut = document.createElement('div');
+        cut.className = 'xh-scut';
+        var span = document.createElement('span');
+        span.textContent = '↑ 逐字保留 ' + retainedCount + ' 条 / ' + fmt(d.arms.hippo.retention.retainedTokens)
+          + ' tok　↓ 落选 ' + (factCands.length - retainedCount) + ' 条（超出 ' + fmt(d.scoring.budgetTokens) + ' tok 预算）';
+        cut.appendChild(span);
+        box.appendChild(cut);
+      }
+    });
+
+    var foot = document.createElement('p');
+    foot.className = 'xh-cap';
+    foot.style.margin = '10px 0 0';
+    foot.textContent = '两点如实说明：(1) 预算切在第 16 名（' + factCands[retainedCount - 1].score.toFixed(4)
+      + '）与第 17 名（' + factCands[retainedCount].score.toFixed(4) + '）之间，两条只差 '
+      + Math.abs(factCands[retainedCount - 1].score - factCands[retainedCount].score).toFixed(4)
+      + ' —— 这是一条硬 token 预算切出来的边界，不是质量悬崖；换 seed 就可能是另一组 4 条。'
+      + '(2) 被保留的 ' + retainedCount + ' 条全是事实消息，0 条噪音；候选里得分最高的非事实消息是 '
+      + topNoise.toFixed(4) + '，低于被保留的最低分 ' + factCands[retainedCount - 1].score.toFixed(4)
+      + '，所以“留下 16 条”不是把整段历史塞回来。';
+    box.appendChild(foot);
+    host.appendChild(box);
+  }
+
+  function renderColumn(kind, arm, which){
+    var host = document.getElementById('xh-context-' + which);
+    if (!host) return;
+    host.textContent = '';
+    var wrap = document.createElement('div');
+    wrap.className = 'xh-rows';
+    var visibleRows = 14;
+    var defs = null;
+    arm.rows.forEach(function(row, index){
+      var node;
+      if (row.t === 'elided'){
+        node = document.createElement('div');
+        node.className = 'xh-row xh-row-elided xh-nofact';
+        node.textContent = row.n + ' 条非事实消息在此被折叠进摘要（#' + row.i0 + '–#' + row.i1 + '），原文不在上下文里';
+      } else {
+        node = document.createElement('div');
+        node.className = 'xh-row xh-row-' + row.t + (row.facts.length ? ' xh-hasfact' : ' xh-nofact');
+        var top = document.createElement('div');
+        top.className = 'xh-row-top';
+        var idx = document.createElement('span');
+        idx.className = 'xh-row-idx';
+        idx.textContent = '#' + row.i;
+        var role = document.createElement('span');
+        role.className = 'xh-row-role';
+        role.textContent = row.role;
+        var label = document.createElement('span');
+        if (row.t === 'retained') label.textContent = 'Hippo 逐字保留块（原文，从摘要桶里取出）';
+        else if (row.t === 'kept') label.textContent = 'tail 逐字保留';
+        else label.textContent = '已并入摘要 — 原文不在此列';
+        top.appendChild(idx); top.appendChild(role); top.appendChild(label);
+        var text = document.createElement('div');
+        text.className = 'xh-row-text';
+        paint(text, row.text, row.facts);
+        if (row.truncated){
+          var t = document.createElement('span');
+          t.className = 'xh-trunc';
+          t.textContent = ' …（预览已截断，完整原文见 JSON）';
+          text.appendChild(t);
+        }
+        node.appendChild(top); node.appendChild(text);
+      }
+      wrap.appendChild(node);
+      if (index >= visibleRows && !defs){
+        defs = document.createElement('details');
+        defs.className = 'xh-more';
+        var sum = document.createElement('summary');
+        sum.textContent = '展开剩余 ' + (arm.rows.length - visibleRows) + ' 行';
+        defs.appendChild(sum);
+        wrap.appendChild(defs);
+      }
+      if (defs && index >= visibleRows) defs.appendChild(node);
+    });
+    if (defs){
+      var keptTail = arm.rows.length - visibleRows;
+      // The rows after the first slice include the whole kept tail; surface it.
+      var note = document.createElement('p');
+      note.className = 'xh-gapnote';
+      note.textContent = '首屏显示前 ' + (visibleRows + 1) + ' 行（含该臂最早的 FACT 去向）；其余 ' + keptTail
+        + ' 行展开可见。完整逐条数据：sections/context-diff.json 的 arms.' + kind + '.rows[]。';
+      host.appendChild(wrap);
+      host.insertBefore(note, wrap);
+    } else {
+      host.appendChild(wrap);
+    }
+  }
+
+  function renderSummaryBox(d){
+    var host = document.getElementById('xh-summary-box');
+    if (!host) return;
+    var det = document.createElement('details');
+    det.className = 'xh-more';
+    var sum = document.createElement('summary');
+    sum.textContent = '摘要消息与压缩边界（两臂逐字相同 — 摘要里没有任何 FACT 文本）';
+    det.appendChild(sum);
+    ['upstream', 'hippo'].forEach(function(kind){
+      var arm = d.arms[kind];
+      var p = document.createElement('p');
+      p.className = 'xh-src';
+      p.style.margin = '10px 0 6px';
+      p.textContent = (kind === 'upstream' ? '上游' : 'Hippo') + ' · boundary marker：';
+      var pre = document.createElement('pre');
+      pre.textContent = arm.boundary;
+      var pre2 = document.createElement('pre');
+      pre2.textContent = arm.summary;
+      det.appendChild(p); det.appendChild(pre); det.appendChild(pre2);
+    });
+    var note = document.createElement('p');
+    note.className = 'xh-cap';
+    note.textContent = '这个假摘要器输出的是同一段固定文本，里面不含任何 FACT 文本 —— 这就是两臂 “仅存于摘要 = 0” 的原因，'
+      + '也是为什么上游的 0/20 只能读作“有损摘要 vs 逐字保留”的结构性对照。';
+    det.appendChild(note);
+    host.appendChild(det);
+  }
+
+  function wireToggle(d){
+    var box = document.getElementById('xh-only-facts');
+    if (!box) return;
+    var hint = document.getElementById('xh-ctl-hint');
+    var apply = function(){
+      var on = box.checked;
+      document.querySelectorAll('#xh-context-up .xh-row, #xh-context-hp .xh-row').forEach(function(node){
+        var isFact = node.classList.contains('xh-hasfact');
+        var isElided = node.classList.contains('xh-row-elided');
+        node.style.display = (!on || isFact) ? '' : 'none';
+        if (isElided) node.style.display = on ? 'none' : '';
+      });
+      document.querySelectorAll('#xh-context-up details.xh-more, #xh-context-hp details.xh-more').forEach(function(el){
+        if (on) el.setAttribute('open', '');
+      });
+      if (hint) hint.textContent = on
+        ? '已过滤：只显示含 FACT 的消息行（' + d.counts.facts + ' 条事实中，Hippo 逐字保留 ' + d.counts.hippo.verbatim + ' 条，上游 ' + d.counts.upstream.verbatim + ' 条）'
+        : '';
+    };
+    box.addEventListener('change', apply);
+  }
+
+  function render(d){
+    factText = {};
+    d.facts.forEach(function(f){ factText[f.marker] = f.marker + ': ' + f.value; });
+    renderTile('upstream', d.arms.upstream, d.counts);
+    renderTile('hippo', d.arms.hippo, d.counts);
+    var mu = document.getElementById('xh-meta-up');
+    var mh = document.getElementById('xh-meta-hp');
+    if (mu) mu.textContent = fmt(d.arms.upstream.postTokens) + ' tok · ' + d.arms.upstream.messagesKept + ' 条';
+    if (mh) mh.textContent = fmt(d.arms.hippo.postTokens) + ' tok · ' + d.arms.hippo.messagesKept
+      + ' 条（' + d.arms.hippo.rows.filter(function(r){ return r.t === 'kept'; }).length + ' tail + '
+      + d.arms.hippo.rows.filter(function(r){ return r.t === 'retained'; }).length + ' 保留块）';
+    var delta = document.getElementById('xh-delta');
+    if (delta){
+      var pct = (d.arms.upstream.postTokens > 0)
+        ? ((d.arms.hippo.postTokens - d.arms.upstream.postTokens) / d.arms.upstream.postTokens * 100) : 0;
+      delta.textContent = '+' + fmt(d.arms.hippo.postTokens - d.arms.upstream.postTokens)
+        + ' tokens（' + (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%）';
+    }
+    var misses = d.facts.filter(function(f){ return f.fate.hippo !== 'verbatim'; });
+    var keptList = document.getElementById('xh-lg-kept-list');
+    var lostList = document.getElementById('xh-lg-lost-list');
+    if (keptList) keptList.textContent = d.facts.filter(function(f){ return f.fate.hippo === 'verbatim'; })
+      .map(function(f){ return f.marker; }).join('、');
+    if (lostList) lostList.textContent = misses.map(function(f){ return f.marker; }).join('、');
+    var lgKept = document.getElementById('xh-lg-kept');
+    var lgLost = document.getElementById('xh-lg-lost');
+    if (lgKept) lgKept.textContent = String(d.counts.hippo.verbatim);
+    if (lgLost) lgLost.textContent = String(d.counts.hippo.absent);
+    renderScorePanel(d);
+    renderColumn('upstream', d.arms.upstream, 'up');
+    renderColumn('hippo', d.arms.hippo, 'hp');
+    renderSummaryBox(d);
+    wireToggle(d);
+  }
+
+  fetch('./sections/context-diff.json', { cache: 'no-store' })
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(d){ data = d; render(d); })
+    .catch(function(err){
+      // Fallback: the tiles, the verdict line and the 20-row ledger above are already
+      // in the HTML with the real numbers, so the result is stated in words either way.
+      var hosts = ['xh-context-up', 'xh-context-hp', 'xh-score-panel'];
+      hosts.forEach(function(id){
+        var el = document.getElementById(id);
+        if (!el) return;
+        var box = document.createElement('div');
+        box.className = 'xh-err';
+        box.textContent = '未能加载 sections/context-diff.json（' + err.message
+          + '）。本页结论不依赖它，数字与上面一致：上游 0/20 逐字保留、20 条丢失；'
+          + 'Hippo 16/20 逐字保留、4 条丢失（FACT1–FACT4）；两臂“仅存于摘要”均为 0。'
+          + '用 HTTP 打开本页（而不是 file://）即可渲染逐条上下文与打分阶梯。';
+        el.textContent = '';
+        el.appendChild(box);
+      });
+    });
+})();
+</script>

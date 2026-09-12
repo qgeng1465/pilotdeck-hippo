@@ -2,14 +2,12 @@
   "project": "PilotDeck-Hippo",
   "date": "2026-09-12",
   "what_this_is": "Evidence captured from a real run of the built UI. Nothing here is mocked.",
-
   "build": {
     "branch": "fix/retention-replayable",
     "base_commit": "79e56b4",
-    "bundle_served": "ui/dist/assets/index-QLi8o1Kk.js",
-    "server": "http://127.0.0.1:3001 (production build)"
+    "bundle_served": "ui/dist (vite production build)",
+    "server": "http://127.0.0.1:3001"
   },
-
   "defect_1": {
     "where": "src/context/compaction/retention/EbbinghausPageRankPolicy.ts (pickRetained)",
     "what": "The policy could select a message carrying no visible text -- an assistant turn whose only block is `thinking`. It was charged against the retention budget and replayed as an empty assistant message, so it was reported as kept while delivering nothing.",
@@ -19,7 +17,6 @@
       "tests/context/hippo-retention.spec.ts :: pickRetained never keeps a candidate with no visible content"
     ]
   },
-
   "defect_2": {
     "where": "ui/src/components/chat-v2/ (processGrouping.ts, ProcessTrace.tsx, MessageRowV2.tsx)",
     "what": "The rendered v2 chat pane folds the compaction boundary into a synthetic process row and drops the boundary from detailMessages, so the boundary's retention summary was lost before any component could draw it. The v1 pane rendered it; v2 never did.",
@@ -29,7 +26,6 @@
       "ui/src/components/chat-v2/processGrouping.test.ts :: reports no retention summary when the boundary carried none"
     ]
   },
-
   "live_proof": {
     "method": "Playwright (headless chromium) drives the real server. A fresh chat receives large tool-style payloads until auto-compaction fires.",
     "compaction_fired_at_turn": 3,
@@ -40,7 +36,6 @@
     "screenshot": "media/badge-live.png",
     "video": "media/pilotdeck-compaction.webm"
   },
-
   "raw_boundary_record": {
     "note": "Verbatim boundary event emitted by the engine during the recorded session.",
     "session": "web:s_dd461fd5-e359-4168-a669-cdcf416fae66",
@@ -60,27 +55,28 @@
     "retainedMessages": 1,
     "retainedTokens": 507,
     "retentionBudgetTokens": 1612,
-    "retentionWeights": { "wSim": 0.85, "wTime": 0.15, "wRank": 0 },
+    "retentionWeights": {
+      "wSim": 0.85,
+      "wTime": 0.15,
+      "wRank": 0
+    },
     "retainedChars": 1275
   },
-
   "test_runs": {
     "ui_processGrouping": "24 passed",
     "ui_chat_v2_suite": "13 files, 112 tests passed",
     "root_repo_suite": "exit code 0"
   },
-
   "honest_limits": [
     "The recording is a scripted Playwright session, not a human typing by hand.",
     "Compaction was made to fire early by lowering agent.maxContextTokens for the recording; the value was restored afterwards.",
     "The retention policy itself (ebbinghaus-pagerank) is the project's existing policy, unchanged by this work."
   ],
-
   "reproduce": {
-    "node_prefix": "/home/qiushuogeng/.local/lib/nodejs/node-v22.23.2-linux-x64/bin",
     "start_gateway": "node dist/src/cli/pilotdeck.js server",
     "start_ui": "cd ui && node server/webRuntimeSupervisor.js start-built",
     "ui_test": "cd ui && npx vitest run src/components/chat-v2/processGrouping.test.ts",
-    "root_test": "npm test"
+    "root_test": "npm test",
+    "node": ">=22"
   }
 }

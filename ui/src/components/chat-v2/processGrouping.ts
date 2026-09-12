@@ -584,6 +584,10 @@ function createSyntheticProcessSummary(
   const counts = collectProcessCounts(detailMessages);
   const startedAt = messages[segmentStartIndex]?.timestamp ?? messages[turn.start]?.timestamp;
   const endedAt = messages[segmentEndIndex]?.timestamp ?? host?.timestamp;
+  // The compact boundary is folded into this row and dropped from
+  // `detailMessages`, so its retention summary has to be carried across here or
+  // it is lost before the row that represents it is ever rendered.
+  const compactBoundary = detailMessages.find((candidate) => candidate.isCompactBoundary);
 
   return {
     id: `process-summary-${attachmentId}`,
@@ -603,6 +607,7 @@ function createSyntheticProcessSummary(
     commandCount: counts.commandCount,
     subagentCount: counts.subagentCount,
     compactCount: counts.compactCount,
+    compactRetention: compactBoundary?.compactRetention,
     thinkingCount: counts.thinkingCount,
     otherToolCount: counts.otherToolCount,
     keySteps: [],

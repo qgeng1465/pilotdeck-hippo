@@ -37,6 +37,8 @@ type ProcessTraceProps = {
   status?: string;
   metrics?: ProcessTraceMetric[];
   steps?: ProcessTraceStep[];
+  /** Optional trailing pill rendered next to the label (e.g. retention summary). */
+  badge?: ReactNode;
   children?: ReactNode;
   defaultExpanded?: boolean;
   expanded?: boolean;
@@ -230,6 +232,7 @@ export function ProcessTrace({
   status = 'completed',
   metrics = [],
   steps = [],
+  badge,
   children,
   defaultExpanded = false,
   expanded: controlledExpanded,
@@ -280,6 +283,7 @@ export function ProcessTrace({
           strokeWidth={1.8}
         />
         <span className="min-w-0 truncate tabular-nums">{label}</span>
+        {badge ? <span className="shrink-0">{badge}</span> : null}
         {visibleCollapsedDetail ? (
           <span className="min-w-0 shrink truncate text-neutral-400/75 dark:text-neutral-500/75">
             {visibleCollapsedDetail}

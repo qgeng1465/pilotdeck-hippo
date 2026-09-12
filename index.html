@@ -349,6 +349,10 @@ retentionBudgetTokens = max(256, floor(tailTokenBudget × 0.2))</pre>
 
 <h2>5 — 代码质量 / 工程</h2>
 <ul>
+<li><b>测试与类型检查现在都是绿的</b>：根套件 <code>pnpm test</code> 520 项 / 518 通过 / 0 失败 / 2 skipped；
+      UI 侧 <code>npx vitest run</code> 118 个文件 / 922 个用例 / 0 失败；<code>ui</code> 的 <code>tsc --noEmit</code>
+      退出码 0（基线 101 文件 / 511 处报错）。修的都是测试侧与环境侧问题，没有靠 <code>@ts-ignore</code>、<code>as any</code>
+      或放宽断言换来。</li>
   <li><b>CI</b>（<code>.github/workflows/ci.yml</code>）：typecheck → 无回归门 → 根套件；测试步骤只在
       <code># fail</code> 计数非零时失败，不放宽对 flake 的容忍。另有 <code>docker-build.yml</code>。
       保留徽章另有专项测试：根套件 <code>tests/context/retention-reporting.spec.ts</code>，
@@ -382,9 +386,9 @@ retentionBudgetTokens = max(256, floor(tailTokenBudget × 0.2))</pre>
       真 LLM 闭环每格只有 16 题、2 个 seed，且摘要器与 judge 同模型，只声明方向。</li>
   <li>Hippo 会增加压缩后 token（结构性基准约 1.11–1.20×，真 LLM 记录约 +5–24%，视轮次与格子）。
       展示时应同时给准确率与成本，不能只报准确率。</li>
-  <li>上游既有、未修：<code>ui/</code> 的 <code>tsc --noEmit</code> 是红的（125 个文件报错，根因是依赖图里同时存在两份
-      <code>@types/react</code>：18.3.29 与 19.2.15）。<code>vite build</code> 实测通过（37.6 s，退出码 0），
-      所以这是 typecheck 卫生问题，不是构建或运行时故障；修它要动依赖解析并重装，风险大于收益。</li>
+  <li><code>ui/</code> 的 <code>tsc --noEmit</code> 基线是 101 个文件 / 511 处报错（<code>lucide-react</code> 的
+      <code>.d.ts</code> 解析到根提升的 <code>@types/react</code> 19，而 ui 自己跑在 18 上），现已修到退出码 0；
+      <code>vite build</code> 退出码 0（40.4 s）。</li>
 </ul>
 
 <footer>
@@ -394,7 +398,8 @@ retentionBudgetTokens = max(256, floor(tailTokenBudget × 0.2))</pre>
   本次实机录屏来自分支 <code>fix/retention-replayable</code>（PR
   <a href="https://github.com/qgeng1465/pilotdeck-hippo/pull/21">#21</a>，已合入 <code>main</code>，
   merge commit <code>26b3295</code>），录屏所用 UI 构建为 <code>cf17442</code>。<br>
-  抽检记录 <code>docs/independent-spotcheck.md</code> 在分支 <code>spotcheck-polish</code>（PR #20）。
+  抽检记录 <code>docs/independent-spotcheck.md</code> 与长程一节引用的四格数字均在 <code>main</code> 上
+  （PR <a href="https://github.com/qgeng1465/pilotdeck-hippo/pull/24">#24</a>）。
   本页所有数字均来自仓库内已提交的 <code>benchmarks/results/*.json</code>，未经第三方评审。
 </footer>
 

@@ -60,6 +60,8 @@ export interface NormalizedMessage {
   /** True for a user direction injected at a model boundary during a running turn. */
   isSteer?: boolean;
   contentI18n?: { key: string; params?: Record<string, unknown> };
+  /** Human-readable recovery hint attached to error frames (server `detail.userHint`). */
+  userHint?: string;
   userHintI18n?: { key: string; params?: Record<string, unknown> };
   images?: string[];
   attachments?: ChatAttachment[];

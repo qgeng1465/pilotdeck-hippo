@@ -67,7 +67,10 @@ export class SmoothTextStream {
   private targetContent = '';
   private renderedContent = '';
   private frame: FrameHandle | null = null;
-  private fallbackTimer: ReturnType<typeof setTimeout> | null = null;
+  // Always created via window.setTimeout, which returns a DOM number handle.
+  // (ReturnType<typeof setTimeout> resolves to Node's Timeout under the ambient
+  // Node types, which a window.setTimeout handle is not assignable to.)
+  private fallbackTimer: number | null = null;
   private lastChunkAtMs: number | null = null;
   private lastFrameAtMs: number | null = null;
   private averageCharsPerSecond = DEFAULT_AVERAGE_CHARS_PER_SECOND;

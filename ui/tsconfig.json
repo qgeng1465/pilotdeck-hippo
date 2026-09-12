@@ -6,6 +6,19 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "moduleResolution": "Bundler",
+    // The monorepo root hoists @types/react@19 for the React 19 packages under
+    // ../src, while this ui app runs React 18. A React 18 package with no
+    // @types/react peer dependency (e.g. lucide-react) resolves its types by
+    // walking up past ui/node_modules onto the root-hoisted 19 types, which
+    // makes every lucide icon fail the JSX component check. Pin module
+    // resolution to the React 18 types this app actually runs against (the same
+    // ui/node_modules copy aliased at runtime by ui/vite.config.js and the root
+    // vitest config).
+    "baseUrl": ".",
+    "paths": {
+      "react": ["./node_modules/@types/react"],
+      "react/*": ["./node_modules/@types/react/*"]
+    },
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,

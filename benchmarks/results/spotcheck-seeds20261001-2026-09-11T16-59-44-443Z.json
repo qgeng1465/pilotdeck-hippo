@@ -1,0 +1,836 @@
+{
+  "protocol": "benchmarks/holdout.ts",
+  "timestamp": "2026-09-11T16-59-44-443Z",
+  "holdoutSeedBase": 20261001,
+  "seenSeedMax": 20260920,
+  "seeds": [
+    20261001,
+    20261002,
+    20261003,
+    20261004,
+    20261005,
+    20261006,
+    20261007,
+    20261008,
+    20261009,
+    20261010
+  ],
+  "numPairs": [
+    80,
+    160
+  ],
+  "factsPerCase": 20,
+  "metric": "facts retained in post-compaction context (recall proxy; not answer quality)",
+  "variants": [
+    {
+      "key": "upstream (no retention)"
+    },
+    {
+      "key": "old default 0.4/0.35/0.25",
+      "weights": {
+        "wSim": 0.4,
+        "wTime": 0.35,
+        "wRank": 0.25
+      },
+      "idfCorrection": true
+    },
+    {
+      "key": "shipped default",
+      "weights": {
+        "wSim": 0.85,
+        "wTime": 0.15,
+        "wRank": 0
+      },
+      "idfCorrection": true
+    },
+    {
+      "key": "previous default 0.7/0.15/0.15",
+      "weights": {
+        "wSim": 0.7,
+        "wTime": 0.15,
+        "wRank": 0.15
+      },
+      "idfCorrection": true
+    },
+    {
+      "key": "sim only",
+      "weights": {
+        "wSim": 1,
+        "wTime": 0,
+        "wRank": 0
+      }
+    },
+    {
+      "key": "rank only (raw)",
+      "weights": {
+        "wSim": 0,
+        "wTime": 0,
+        "wRank": 1
+      },
+      "idfCorrection": false
+    },
+    {
+      "key": "rank only (+idf)",
+      "weights": {
+        "wSim": 0,
+        "wTime": 0,
+        "wRank": 1
+      },
+      "idfCorrection": true
+    }
+  ],
+  "rows": [
+    {
+      "lang": "en",
+      "numPairs": 80,
+      "variant": "upstream (no retention)",
+      "n": 10,
+      "mean": 0,
+      "sd": 0,
+      "min": 0,
+      "max": 0,
+      "postTokensMean": 2367,
+      "wallMsMean": 98.7
+    },
+    {
+      "lang": "en",
+      "numPairs": 80,
+      "variant": "old default 0.4/0.35/0.25",
+      "n": 10,
+      "mean": 7,
+      "sd": 1.33,
+      "min": 5,
+      "max": 9,
+      "postTokensMean": 2649,
+      "wallMsMean": 42.9
+    },
+    {
+      "lang": "en",
+      "numPairs": 80,
+      "variant": "shipped default",
+      "n": 10,
+      "mean": 9.2,
+      "sd": 0.42,
+      "min": 9,
+      "max": 10,
+      "postTokensMean": 2640,
+      "wallMsMean": 41
+    },
+    {
+      "lang": "en",
+      "numPairs": 80,
+      "variant": "previous default 0.7/0.15/0.15",
+      "n": 10,
+      "mean": 9.3,
+      "sd": 0.48,
+      "min": 9,
+      "max": 10,
+      "postTokensMean": 2643,
+      "wallMsMean": 41.9
+    },
+    {
+      "lang": "en",
+      "numPairs": 80,
+      "variant": "sim only",
+      "n": 10,
+      "mean": 7.2,
+      "sd": 0.42,
+      "min": 7,
+      "max": 8,
+      "postTokensMean": 2639,
+      "wallMsMean": 44
+    },
+    {
+      "lang": "en",
+      "numPairs": 80,
+      "variant": "rank only (raw)",
+      "n": 10,
+      "mean": 0.3,
+      "sd": 0.67,
+      "min": 0,
+      "max": 2,
+      "postTokensMean": 2654,
+      "wallMsMean": 43.3
+    },
+    {
+      "lang": "en",
+      "numPairs": 80,
+      "variant": "rank only (+idf)",
+      "n": 10,
+      "mean": 0.2,
+      "sd": 0.63,
+      "min": 0,
+      "max": 2,
+      "postTokensMean": 2643,
+      "wallMsMean": 45.2
+    },
+    {
+      "lang": "en",
+      "numPairs": 160,
+      "variant": "upstream (no retention)",
+      "n": 10,
+      "mean": 0,
+      "sd": 0,
+      "min": 0,
+      "max": 0,
+      "postTokensMean": 4729,
+      "wallMsMean": 57.1
+    },
+    {
+      "lang": "en",
+      "numPairs": 160,
+      "variant": "old default 0.4/0.35/0.25",
+      "n": 10,
+      "mean": 10.9,
+      "sd": 1.45,
+      "min": 9,
+      "max": 13,
+      "postTokensMean": 5321,
+      "wallMsMean": 91.9
+    },
+    {
+      "lang": "en",
+      "numPairs": 160,
+      "variant": "shipped default",
+      "n": 10,
+      "mean": 18,
+      "sd": 0,
+      "min": 18,
+      "max": 18,
+      "postTokensMean": 5331,
+      "wallMsMean": 125.7
+    },
+    {
+      "lang": "en",
+      "numPairs": 160,
+      "variant": "previous default 0.7/0.15/0.15",
+      "n": 10,
+      "mean": 17.8,
+      "sd": 0.42,
+      "min": 17,
+      "max": 18,
+      "postTokensMean": 5331,
+      "wallMsMean": 88.7
+    },
+    {
+      "lang": "en",
+      "numPairs": 160,
+      "variant": "sim only",
+      "n": 10,
+      "mean": 16,
+      "sd": 0,
+      "min": 16,
+      "max": 16,
+      "postTokensMean": 5332,
+      "wallMsMean": 92.3
+    },
+    {
+      "lang": "en",
+      "numPairs": 160,
+      "variant": "rank only (raw)",
+      "n": 10,
+      "mean": 0,
+      "sd": 0,
+      "min": 0,
+      "max": 0,
+      "postTokensMean": 5327,
+      "wallMsMean": 88.7
+    },
+    {
+      "lang": "en",
+      "numPairs": 160,
+      "variant": "rank only (+idf)",
+      "n": 10,
+      "mean": 0.4,
+      "sd": 0.7,
+      "min": 0,
+      "max": 2,
+      "postTokensMean": 5332,
+      "wallMsMean": 104.2
+    },
+    {
+      "lang": "zh",
+      "numPairs": 80,
+      "variant": "upstream (no retention)",
+      "n": 10,
+      "mean": 0,
+      "sd": 0,
+      "min": 0,
+      "max": 0,
+      "postTokensMean": 2150,
+      "wallMsMean": 53.8
+    },
+    {
+      "lang": "zh",
+      "numPairs": 80,
+      "variant": "old default 0.4/0.35/0.25",
+      "n": 10,
+      "mean": 5.3,
+      "sd": 0.48,
+      "min": 5,
+      "max": 6,
+      "postTokensMean": 2393,
+      "wallMsMean": 317.4
+    },
+    {
+      "lang": "zh",
+      "numPairs": 80,
+      "variant": "shipped default",
+      "n": 10,
+      "mean": 6,
+      "sd": 0,
+      "min": 6,
+      "max": 6,
+      "postTokensMean": 2395,
+      "wallMsMean": 282.2
+    },
+    {
+      "lang": "zh",
+      "numPairs": 80,
+      "variant": "previous default 0.7/0.15/0.15",
+      "n": 10,
+      "mean": 6,
+      "sd": 0,
+      "min": 6,
+      "max": 6,
+      "postTokensMean": 2395,
+      "wallMsMean": 274.3
+    },
+    {
+      "lang": "zh",
+      "numPairs": 80,
+      "variant": "sim only",
+      "n": 10,
+      "mean": 4,
+      "sd": 0,
+      "min": 4,
+      "max": 4,
+      "postTokensMean": 2395,
+      "wallMsMean": 311.2
+    },
+    {
+      "lang": "zh",
+      "numPairs": 80,
+      "variant": "rank only (raw)",
+      "n": 10,
+      "mean": 0,
+      "sd": 0,
+      "min": 0,
+      "max": 0,
+      "postTokensMean": 2406,
+      "wallMsMean": 276.9
+    },
+    {
+      "lang": "zh",
+      "numPairs": 80,
+      "variant": "rank only (+idf)",
+      "n": 10,
+      "mean": 2.3,
+      "sd": 1.57,
+      "min": 0,
+      "max": 5,
+      "postTokensMean": 2399,
+      "wallMsMean": 310.6
+    },
+    {
+      "lang": "zh",
+      "numPairs": 160,
+      "variant": "upstream (no retention)",
+      "n": 10,
+      "mean": 0,
+      "sd": 0,
+      "min": 0,
+      "max": 0,
+      "postTokensMean": 4095,
+      "wallMsMean": 124.9
+    },
+    {
+      "lang": "zh",
+      "numPairs": 160,
+      "variant": "old default 0.4/0.35/0.25",
+      "n": 10,
+      "mean": 6,
+      "sd": 0.94,
+      "min": 5,
+      "max": 7,
+      "postTokensMean": 4613,
+      "wallMsMean": 433
+    },
+    {
+      "lang": "zh",
+      "numPairs": 160,
+      "variant": "shipped default",
+      "n": 10,
+      "mean": 10,
+      "sd": 0,
+      "min": 10,
+      "max": 10,
+      "postTokensMean": 4618,
+      "wallMsMean": 426.9
+    },
+    {
+      "lang": "zh",
+      "numPairs": 160,
+      "variant": "previous default 0.7/0.15/0.15",
+      "n": 10,
+      "mean": 9.8,
+      "sd": 0.42,
+      "min": 9,
+      "max": 10,
+      "postTokensMean": 4618,
+      "wallMsMean": 527.4
+    },
+    {
+      "lang": "zh",
+      "numPairs": 160,
+      "variant": "sim only",
+      "n": 10,
+      "mean": 8,
+      "sd": 0,
+      "min": 8,
+      "max": 8,
+      "postTokensMean": 4619,
+      "wallMsMean": 599.2
+    },
+    {
+      "lang": "zh",
+      "numPairs": 160,
+      "variant": "rank only (raw)",
+      "n": 10,
+      "mean": 0,
+      "sd": 0,
+      "min": 0,
+      "max": 0,
+      "postTokensMean": 4613,
+      "wallMsMean": 438.8
+    },
+    {
+      "lang": "zh",
+      "numPairs": 160,
+      "variant": "rank only (+idf)",
+      "n": 10,
+      "mean": 3.3,
+      "sd": 1.7,
+      "min": 1,
+      "max": 6,
+      "postTokensMean": 4614,
+      "wallMsMean": 493.1
+    }
+  ],
+  "comparisons": [
+    {
+      "lang": "en",
+      "numPairs": 80,
+      "a": "shipped default",
+      "b": "upstream (no retention)",
+      "meanDelta": 9.2,
+      "winsA": 10,
+      "ties": 0,
+      "winsB": 0,
+      "signTestP": 0.002
+    },
+    {
+      "lang": "en",
+      "numPairs": 80,
+      "a": "old default 0.4/0.35/0.25",
+      "b": "upstream (no retention)",
+      "meanDelta": 7,
+      "winsA": 10,
+      "ties": 0,
+      "winsB": 0,
+      "signTestP": 0.002
+    },
+    {
+      "lang": "en",
+      "numPairs": 80,
+      "a": "shipped default",
+      "b": "previous default 0.7/0.15/0.15",
+      "meanDelta": -0.1,
+      "winsA": 0,
+      "ties": 9,
+      "winsB": 1,
+      "signTestP": 1
+    },
+    {
+      "lang": "en",
+      "numPairs": 80,
+      "a": "shipped default",
+      "b": "old default 0.4/0.35/0.25",
+      "meanDelta": 2.2,
+      "winsA": 9,
+      "ties": 1,
+      "winsB": 0,
+      "signTestP": 0.004
+    },
+    {
+      "lang": "en",
+      "numPairs": 80,
+      "a": "rank only (+idf)",
+      "b": "rank only (raw)",
+      "meanDelta": -0.1,
+      "winsA": 0,
+      "ties": 9,
+      "winsB": 1,
+      "signTestP": 1
+    },
+    {
+      "lang": "en",
+      "numPairs": 160,
+      "a": "shipped default",
+      "b": "upstream (no retention)",
+      "meanDelta": 18,
+      "winsA": 10,
+      "ties": 0,
+      "winsB": 0,
+      "signTestP": 0.002
+    },
+    {
+      "lang": "en",
+      "numPairs": 160,
+      "a": "old default 0.4/0.35/0.25",
+      "b": "upstream (no retention)",
+      "meanDelta": 10.9,
+      "winsA": 10,
+      "ties": 0,
+      "winsB": 0,
+      "signTestP": 0.002
+    },
+    {
+      "lang": "en",
+      "numPairs": 160,
+      "a": "shipped default",
+      "b": "previous default 0.7/0.15/0.15",
+      "meanDelta": 0.2,
+      "winsA": 2,
+      "ties": 8,
+      "winsB": 0,
+      "signTestP": 0.5
+    },
+    {
+      "lang": "en",
+      "numPairs": 160,
+      "a": "shipped default",
+      "b": "old default 0.4/0.35/0.25",
+      "meanDelta": 7.1,
+      "winsA": 10,
+      "ties": 0,
+      "winsB": 0,
+      "signTestP": 0.002
+    },
+    {
+      "lang": "en",
+      "numPairs": 160,
+      "a": "rank only (+idf)",
+      "b": "rank only (raw)",
+      "meanDelta": 0.4,
+      "winsA": 3,
+      "ties": 7,
+      "winsB": 0,
+      "signTestP": 0.25
+    },
+    {
+      "lang": "zh",
+      "numPairs": 80,
+      "a": "shipped default",
+      "b": "upstream (no retention)",
+      "meanDelta": 6,
+      "winsA": 10,
+      "ties": 0,
+      "winsB": 0,
+      "signTestP": 0.002
+    },
+    {
+      "lang": "zh",
+      "numPairs": 80,
+      "a": "old default 0.4/0.35/0.25",
+      "b": "upstream (no retention)",
+      "meanDelta": 5.3,
+      "winsA": 10,
+      "ties": 0,
+      "winsB": 0,
+      "signTestP": 0.002
+    },
+    {
+      "lang": "zh",
+      "numPairs": 80,
+      "a": "shipped default",
+      "b": "previous default 0.7/0.15/0.15",
+      "meanDelta": 0,
+      "winsA": 0,
+      "ties": 10,
+      "winsB": 0,
+      "signTestP": 1
+    },
+    {
+      "lang": "zh",
+      "numPairs": 80,
+      "a": "shipped default",
+      "b": "old default 0.4/0.35/0.25",
+      "meanDelta": 0.7,
+      "winsA": 7,
+      "ties": 3,
+      "winsB": 0,
+      "signTestP": 0.016
+    },
+    {
+      "lang": "zh",
+      "numPairs": 80,
+      "a": "rank only (+idf)",
+      "b": "rank only (raw)",
+      "meanDelta": 2.3,
+      "winsA": 9,
+      "ties": 1,
+      "winsB": 0,
+      "signTestP": 0.004
+    },
+    {
+      "lang": "zh",
+      "numPairs": 160,
+      "a": "shipped default",
+      "b": "upstream (no retention)",
+      "meanDelta": 10,
+      "winsA": 10,
+      "ties": 0,
+      "winsB": 0,
+      "signTestP": 0.002
+    },
+    {
+      "lang": "zh",
+      "numPairs": 160,
+      "a": "old default 0.4/0.35/0.25",
+      "b": "upstream (no retention)",
+      "meanDelta": 6,
+      "winsA": 10,
+      "ties": 0,
+      "winsB": 0,
+      "signTestP": 0.002
+    },
+    {
+      "lang": "zh",
+      "numPairs": 160,
+      "a": "shipped default",
+      "b": "previous default 0.7/0.15/0.15",
+      "meanDelta": 0.2,
+      "winsA": 2,
+      "ties": 8,
+      "winsB": 0,
+      "signTestP": 0.5
+    },
+    {
+      "lang": "zh",
+      "numPairs": 160,
+      "a": "shipped default",
+      "b": "old default 0.4/0.35/0.25",
+      "meanDelta": 4,
+      "winsA": 10,
+      "ties": 0,
+      "winsB": 0,
+      "signTestP": 0.002
+    },
+    {
+      "lang": "zh",
+      "numPairs": 160,
+      "a": "rank only (+idf)",
+      "b": "rank only (raw)",
+      "meanDelta": 3.3,
+      "winsA": 10,
+      "ties": 0,
+      "winsB": 0,
+      "signTestP": 0.002
+    }
+  ],
+  "noQueryProbe": [
+    {
+      "lang": "en",
+      "numPairs": 80,
+      "variant": "old default 0.4/0.35/0.25",
+      "factsTotal": 0,
+      "possible": 200,
+      "mean": 0
+    },
+    {
+      "lang": "en",
+      "numPairs": 80,
+      "variant": "shipped default",
+      "factsTotal": 0,
+      "possible": 200,
+      "mean": 0
+    },
+    {
+      "lang": "en",
+      "numPairs": 80,
+      "variant": "previous default 0.7/0.15/0.15",
+      "factsTotal": 4,
+      "possible": 200,
+      "mean": 0.4
+    },
+    {
+      "lang": "en",
+      "numPairs": 80,
+      "variant": "sim only",
+      "factsTotal": 21,
+      "possible": 200,
+      "mean": 2.1
+    },
+    {
+      "lang": "en",
+      "numPairs": 80,
+      "variant": "rank only (raw)",
+      "factsTotal": 0,
+      "possible": 200,
+      "mean": 0
+    },
+    {
+      "lang": "en",
+      "numPairs": 80,
+      "variant": "rank only (+idf)",
+      "factsTotal": 2,
+      "possible": 200,
+      "mean": 0.2
+    },
+    {
+      "lang": "en",
+      "numPairs": 160,
+      "variant": "old default 0.4/0.35/0.25",
+      "factsTotal": 0,
+      "possible": 200,
+      "mean": 0
+    },
+    {
+      "lang": "en",
+      "numPairs": 160,
+      "variant": "shipped default",
+      "factsTotal": 2,
+      "possible": 200,
+      "mean": 0.2
+    },
+    {
+      "lang": "en",
+      "numPairs": 160,
+      "variant": "previous default 0.7/0.15/0.15",
+      "factsTotal": 2,
+      "possible": 200,
+      "mean": 0.2
+    },
+    {
+      "lang": "en",
+      "numPairs": 160,
+      "variant": "sim only",
+      "factsTotal": 14,
+      "possible": 200,
+      "mean": 1.4
+    },
+    {
+      "lang": "en",
+      "numPairs": 160,
+      "variant": "rank only (raw)",
+      "factsTotal": 0,
+      "possible": 200,
+      "mean": 0
+    },
+    {
+      "lang": "en",
+      "numPairs": 160,
+      "variant": "rank only (+idf)",
+      "factsTotal": 1,
+      "possible": 200,
+      "mean": 0.1
+    },
+    {
+      "lang": "zh",
+      "numPairs": 80,
+      "variant": "old default 0.4/0.35/0.25",
+      "factsTotal": 0,
+      "possible": 200,
+      "mean": 0
+    },
+    {
+      "lang": "zh",
+      "numPairs": 80,
+      "variant": "shipped default",
+      "factsTotal": 0,
+      "possible": 200,
+      "mean": 0
+    },
+    {
+      "lang": "zh",
+      "numPairs": 80,
+      "variant": "previous default 0.7/0.15/0.15",
+      "factsTotal": 0,
+      "possible": 200,
+      "mean": 0
+    },
+    {
+      "lang": "zh",
+      "numPairs": 80,
+      "variant": "sim only",
+      "factsTotal": 20,
+      "possible": 200,
+      "mean": 2
+    },
+    {
+      "lang": "zh",
+      "numPairs": 80,
+      "variant": "rank only (raw)",
+      "factsTotal": 0,
+      "possible": 200,
+      "mean": 0
+    },
+    {
+      "lang": "zh",
+      "numPairs": 80,
+      "variant": "rank only (+idf)",
+      "factsTotal": 24,
+      "possible": 200,
+      "mean": 2.4
+    },
+    {
+      "lang": "zh",
+      "numPairs": 160,
+      "variant": "old default 0.4/0.35/0.25",
+      "factsTotal": 0,
+      "possible": 200,
+      "mean": 0
+    },
+    {
+      "lang": "zh",
+      "numPairs": 160,
+      "variant": "shipped default",
+      "factsTotal": 0,
+      "possible": 200,
+      "mean": 0
+    },
+    {
+      "lang": "zh",
+      "numPairs": 160,
+      "variant": "previous default 0.7/0.15/0.15",
+      "factsTotal": 0,
+      "possible": 200,
+      "mean": 0
+    },
+    {
+      "lang": "zh",
+      "numPairs": 160,
+      "variant": "sim only",
+      "factsTotal": 10,
+      "possible": 200,
+      "mean": 1
+    },
+    {
+      "lang": "zh",
+      "numPairs": 160,
+      "variant": "rank only (raw)",
+      "factsTotal": 0,
+      "possible": 200,
+      "mean": 0
+    },
+    {
+      "lang": "zh",
+      "numPairs": 160,
+      "variant": "rank only (+idf)",
+      "factsTotal": 37,
+      "possible": 200,
+      "mean": 3.7
+    }
+  ]
+}

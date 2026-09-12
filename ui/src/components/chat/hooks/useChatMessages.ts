@@ -224,7 +224,7 @@ function convertSingleMessage(
       const subagentLink = isSubagentContainer && msg.toolId
         ? subagentLinks?.get(msg.toolId)
         : undefined;
-      const msgSubagentId = (msg as Record<string, unknown>).subagentId as string | undefined;
+      const msgSubagentId = msg.subagentId;
 
       return {
         id: msg.id,
@@ -251,9 +251,10 @@ function convertSingleMessage(
     }
 
     case 'thinking': {
-      const thinkingContent = msg.content?.trim()
-        ? msg.content
-        : msg.reasoningContent || '';
+      // `content` is the only carrier for thinking frames (the server normalizer
+      // maps `message.text` onto it); there is no `reasoningContent` on a
+      // normalized message.
+      const thinkingContent = msg.content?.trim() ? msg.content : '';
       if (thinkingContent.trim()) {
         return {
           id: msg.id,

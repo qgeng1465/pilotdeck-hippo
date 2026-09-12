@@ -1,5 +1,6 @@
 import path from 'path'
 import { defineConfig, loadEnv } from 'vite'
+import { configDefaults } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { fileURLToPath } from 'url'
 import { getConnectableHost, normalizeLoopbackHost } from './shared/networkHosts.js'
@@ -89,6 +90,15 @@ export default defineConfig(({ mode }) => {
     },
     test: {
       environment: 'jsdom',
+      // e2e/ holds Playwright specs; vitest cannot run them (there is no
+      // Playwright runner here) and collecting them fails the suite outright.
+      exclude: [...configDefaults.exclude, 'e2e/**'],
+      // The server/route suites stand up a real Express server and fetch it over
+      // a loopback socket. When the full jsdom suite runs with file parallelism
+      // on a busy machine those round-trips can exceed vitest's 5s default and
+      // time out even though the route returns correctly; a genuinely hung
+      // route still fails here, just after the larger budget.
+      testTimeout: 20000,
       server: {
         deps: {
           inline: ['react', 'react-dom']

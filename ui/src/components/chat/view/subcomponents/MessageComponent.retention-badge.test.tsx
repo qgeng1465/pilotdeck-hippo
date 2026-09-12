@@ -31,7 +31,9 @@ function makeI18n(language: 'en' | 'zh-CN'): I18n {
     keySeparator: '.',
     nsSeparator: ':',
     interpolation: { escapeValue: false },
-    initImmediate: false,
+    // i18next v24 renamed `initImmediate` to `initAsync`; without this the
+    // init resolves on a microtask and the render below sees empty resources.
+    initAsync: false,
     react: { useSuspense: false },
   });
   return instance;

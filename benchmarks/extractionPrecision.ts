@@ -18,7 +18,8 @@
  *   precision = retained fact-messages / messages the score kept
  *   baseline  = fact-messages / messages summarizeable (random-retention odds)
  *
- *   pnpm benchmark:extraction   (seeds via PILOTDECK_EVAL_SEEDS)
+ *   pnpm benchmark:extraction   (seeds via PILOTDECK_EVAL_SEEDS; seed base via
+ *                                 PILOTDECK_EVAL_SEED_BASE, default 20260921)
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -31,7 +32,10 @@ import {
 } from "./syntheticTranscript.js";
 
 const SEEDS = Number(process.env.PILOTDECK_EVAL_SEEDS ?? 3);
-const SEED_BASE = 20260921; // held-out seeds, never used for tuning
+// Held-out seeds, never used for tuning. `PILOTDECK_EVAL_SEED_BASE` lets a
+// reviewer re-run on any fresh seed base of their own to check the precision
+// claim is not an artifact of this particular range.
+const SEED_BASE = Number(process.env.PILOTDECK_EVAL_SEED_BASE ?? "20260921");
 const SIZES = [40, 80, 160] as const;
 const LANGS = ["en", "zh"] as const;
 

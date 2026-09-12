@@ -118,6 +118,28 @@ export function isRealUserRequestMessage(message: CanonicalMessage): boolean {
 }
 
 /**
+ * True only for a message the runtime injected as bookkeeping rather than text
+ * a participant produced: compact/snip boundary markers, the compaction
+ * continuation sentinel, hook and memory context, and anything stamped
+ * `metadata.synthetic`. These are the same messages
+ * {@link isRealUserRequestMessage} refuses to read user intent out of, and
+ * they are equally not conversation that can be replayed verbatim -- retaining
+ * one replays a marker *in place of* a turn the budget was meant to preserve.
+ *
+ * Deliberately narrower than "not a real user request": tool results also fail
+ * that test but do carry content, so they stay eligible.
+ */
+export function isSyntheticPseudoMessage(message: CanonicalMessage): boolean {
+  if (message.metadata?.synthetic === true) return true;
+  return message.content.some((block) => {
+    if (block.type !== "text") return false;
+    const text = block.text.trim();
+    return text === CONTINUATION_TEXT
+      || INTERNAL_USER_TEXT_PREFIXES.some((prefix) => text.startsWith(prefix));
+  });
+}
+
+/**
  * If the last message is role=assistant, append a sentinel user message so
  * providers that reject assistant-message prefill (e.g. Amazon Bedrock) do
  * not return 400.  No-op when messages is empty or already ends with user.

@@ -204,3 +204,50 @@ test("pickRetained never keeps a candidate with no visible content", async () =>
     "the thinking-only turn must not be retained",
   );
 });
+
+// --- regression: a synthetic boundary marker is not a conversation turn ---
+// The snipping pass leaves a `<snip-boundary .../>` marker in the transcript.
+// It is user-role with a non-empty text block, so it cleared every existing
+// eligibility check -- and because it is short and sits late in the history it
+// outranks real turns on the recency term. In a live `retention: hippo` session
+// the whole 1612-token budget went to a 26-token marker instead of conversation.
+
+test("pickRetained never keeps a synthetic boundary marker as conversation", async () => {
+  const question = "what is the backup rotation period";
+  const questionMessage: CanonicalMessage = {
+    role: "user",
+    content: [{ type: "text", text: `Question: ${question}?` }],
+  };
+  const answerMessage: CanonicalMessage = {
+    role: "assistant",
+    content: [{ type: "text", text: "The rotation period is 19 days." }],
+  };
+  // The marker is made the *strongest* candidate on purpose: it is the last
+  // message (so recency is maximal) and carries the query verbatim, exactly the
+  // trick the thinking-only case above uses. Before the fix it was retained
+  // first; the real answer must be what survives.
+  const boundaryMessage: CanonicalMessage = {
+    role: "user",
+    content: [{
+      type: "text",
+      text: `<snip-boundary turnsSnipped="2" headTurns="2" tailTurns="4" /> ${question}`,
+    }],
+  };
+
+  const policy = buildEbbinghausPageRankPolicy();
+  const retained = await policy.pickRetained({
+    candidates: [questionMessage, answerMessage, boundaryMessage],
+    retentionBudgetTokens: 10_000,
+    estimateTokens: (msgs) => new TokenBudgetManager().estimateMessagesTokens(msgs),
+    queryHint: question,
+  });
+
+  assert.ok(
+    retained.includes(answerMessage),
+    "the real answer is available and must be retained",
+  );
+  assert.ok(
+    !retained.includes(boundaryMessage),
+    "a synthetic boundary marker must not be retained as conversation",
+  );
+});

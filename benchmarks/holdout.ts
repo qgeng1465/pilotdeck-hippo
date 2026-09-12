@@ -28,8 +28,12 @@ import {
 // Metric is "bytes retained": how many of the 20 injected FACT markers survive
 // into the post-compaction context. It measures retention/recall of the
 // context, NOT answer quality — see benchmarks/realLlmEval.ts for that.
+//
+// `PILOTDECK_HOLDOUT_SEED_BASE` lets a reviewer re-run the whole comparison on
+// any fresh seed base of their own choosing (e.g. to check the result isn't an
+// artifact of this particular seed range). Default stays 20260921.
 
-const HOLDOUT_SEED_BASE = 20260921;
+const HOLDOUT_SEED_BASE = Number(process.env.PILOTDECK_HOLDOUT_SEED_BASE ?? "20260921");
 const SEEDS = 10;
 const NUM_PAIRS = [80, 160] as const;
 

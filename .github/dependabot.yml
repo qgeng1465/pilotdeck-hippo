@@ -1,4 +1,8 @@
 version: 2
+# Version updates are intentionally disabled for this fork: `open-pull-requests-limit: 0`
+# stops Dependabot from opening (and re-opening, and emailing about) version-bump PRs.
+# Security updates are a separate setting on the repository itself and are unaffected
+# by this file. Stale version bumps are handled manually when we next sync upstream.
 updates:
   - package-ecosystem: "npm"
     directories:
@@ -11,6 +15,7 @@ updates:
       day: "monday"
       time: "09:00"
       timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 0
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -19,6 +24,7 @@ updates:
       day: "monday"
       time: "09:00"
       timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 0
 
   - package-ecosystem: "docker"
     directory: "/"
@@ -27,3 +33,4 @@ updates:
       day: "monday"
       time: "09:00"
       timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 0

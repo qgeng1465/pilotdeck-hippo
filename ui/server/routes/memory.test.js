@@ -1,3 +1,7 @@
+// @vitest-environment node
+// These suites build their own Express app and stub their stores; they do not
+// need a DOM, and under jsdom the sqlite-backed memory module fails to load and
+// the localhost request helper hangs instead of resolving.
 import express from 'express';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 

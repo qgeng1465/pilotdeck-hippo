@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PilotDeck-Hippo — 长上下文压缩里的选择性记忆</title>
+<meta name="description" content="PilotDeck-Hippo：给上游 PilotDeck 的上下文压缩引擎加一个可开关的逐字保留块。机制、可复核的基准数字、实机录屏与已知限制。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="PilotDeck-Hippo — 长上下文压缩里的选择性记忆">
+<meta property="og:description" content="压缩前按相关性挑出少量消息逐字保留，使压缩后仍能复述早期的精确事实。附可复核的基准数字与实机录屏。">
+<meta property="og:url" content="https://qgeng1465.github.io/pilotdeck-hippo/">
+<meta property="og:image" content="https://qgeng1465.github.io/pilotdeck-hippo/media/badge-live.png">
+<meta name="twitter:card" content="summary_large_image">
 <style>
   :root {
     --bg: #0d1117; --panel: #161b22; --line: #262d36;
@@ -194,7 +201,7 @@ retentionBudgetTokens = max(256, floor(tailTokenBudget × 0.2))</pre>
   不是在把整段历史一股脑塞回来。召回受 token 预算限制（实测用掉预算的 88–99%），所以是 4–16 条而不是 20 条。
 </p>
 
-<h3>2.4 真 LLM 闭环（摘要器与评审员均为 DeepSeek-V4-Flash）</h3>
+<h3 id="s24">2.4 真 LLM 闭环（摘要器与评审员均为 DeepSeek-V4-Flash）</h3>
 <div class="tblwrap">
 <table>
   <thead>
@@ -222,7 +229,45 @@ retentionBudgetTokens = max(256, floor(tailTokenBudget × 0.2))</pre>
   每格只有 16 题、2 个 seed，且摘要器与 judge 同模型，因此这里只声明方向，不换算成"提升 X 点"。
 </p>
 
-<h3>2.5 测试计数</h3>
+<h3>2.5 长程任务：同一个任务跨多次压缩</h3>
+<p>
+  压缩不是一次性的。上下文逼近预算上限就自动触发一次压缩，所以开得久的任务会跨过多次压缩边界。上游的路径是
+  <b>逐次重写摘要</b>——老的摘要在下一轮被再摘要一次，低频细节每一轮都会再掉一些；Hippo 在每次压缩前把得分最高的
+  一小段原文钉住、不让它进入有损路径，所以任务跑得越久，两侧的差别越集中在「早期那些精确细节还在不在」。
+</p>
+<div class="tblwrap">
+<table>
+  <thead>
+    <tr><th>场景（同一个仍在进行的任务）</th><th class="n">上游</th><th class="n">Hippo</th><th>来源</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>预算吃紧（摘要上限 1,500 tok）</td>
+      <td class="n">10/16</td><td class="n"><b>16/16</b></td>
+      <td class="src"><code>real-llm-topic-switch-2026-09-11T12-45-03-182Z.json</code></td>
+    </tr>
+    <tr>
+      <td>预算宽裕（8,000 tok）</td>
+      <td class="n">16/16</td><td class="n">16/16</td>
+      <td class="src"><code>real-llm-topic-switch-2026-09-11T12-29-27-528Z.json</code></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p class="src">
+  逐格数字与口径见 <a href="#s24">2.4</a>（同一批 JSON）。两行合起来才是完整的口径：
+  <b>保留的价值在摘要器扛不住预算时显现</b>；预算宽裕时上游的摘要本身就装得下这些细节，两侧测不出差异。
+</p>
+<p class="cap">
+  <b>边界（如实说明）。</b>如果问的是<b>被放弃的旧话题</b>，Hippo 一样答不出来：保留是按<b>当前请求</b>的相关性打分的，
+  在压缩发生的那一刻不可能预知你几轮之后要问什么。这条不是推断——我们在真机 UI 上把同一段对话跑了两遍
+  （唯一差别是 <code>agent.compaction.retention</code> 开关），四轮无关话题之后回头问第一轮里的一个编号，
+  <b>两侧都没答出来</b>；这与 README §4.6/§4.7 记录的「旧话题优势在措辞去相关后归零」一致。
+  所以本节主张的只有上面第一行：同一个仍在进行的任务，跨多次压缩之后早期精确细节仍可逐字复述。
+  那段录屏因此没有作为证据放上来——它测不出差别，放上来只是充数。
+</p>
+
+<h3 id="s25">2.6 测试计数</h3>
 <div class="tblwrap">
 <table>
   <thead>

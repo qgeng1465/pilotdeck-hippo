@@ -8,9 +8,11 @@
 
 > **语言：** [中文](README.md) · [English](README.en.md) · **在线 Demo：** <https://qgeng1465.github.io/pilotdeck-hippo/>
 
-> **提交前待办**见 [§6](#6-fresh-code-与来源说明队长提交前确认)。方向三的交付：公开 GitHub 仓库（本仓库）、在线 Demo（[qgeng1465.github.io/pilotdeck-hippo](https://qgeng1465.github.io/pilotdeck-hippo/)，展示 2026-09-12 修掉的两个保留/渲染缺陷的实机运行）、海报。
+**是什么。** 给上游 PilotDeck 的上下文压缩引擎加一个可开关的"逐字保留块"：压缩前对即将被摘要掉的消息逐条打分，按一个固定 token 预算挑出少量高分消息，把**原文**与摘要一起放回上下文，使压缩后仍能逐字复述早期的精确事实（基因名、频率数字、文件路径、检查点）。改动集中在 `src/context/compaction/`；**引擎层**不传 `scorePolicy` 时走上游路径、输出逐字节一致，**App 层**本 fork 默认开启，`agent.compaction.retention: off` 一行关回上游。
 
-导航：[核心思路](#核心思路) · [核心作用（真实数据）](#核心作用它到底解决什么) · [评测协议与结果](#4-评测协议与结果) · [快速运行](#3-快速运行源码) · [已知限制](#5-兼容性测试与已知限制) · [上游缺陷修复](#51-顺带修掉的三个上游缺陷) · [提交清单](#7-方向三提交清单) · [赛事 token 指南（附录 B）](#附录b赛事版指南比赛-token-配置与首次使用)
+**结果。** 在从未参与调参的 10 个 seed 上，20 条注入事实的逐字保留从 0 条提升到 **17.9/20**（EN N=160）、**10.0/20**（ZH N=160），N=80 两格为 9.4 / 6.0，四个格子均 10 胜 0 平 0 负（符号检验 p=0.002）；代价是压缩后 token 多付 **1.11–1.20×**。换成真摘要器（DeepSeek-V4-Flash）后这条优势变成条件句：摘要预算宽裕时测不出差异，预算吃紧时当前话题答题 **10/16 → 16/16**（[§4.7](#47-真摘要器下的话题切换46-第一条边界的补充测量)）。最快复现：`corepack pnpm install --frozen-lockfile` 后 `corepack pnpm benchmark:demo`（约 2 秒；EN N=160：上游 0/20 → Hippo 18/20）。
+
+导航：[核心思路](#核心思路) · [1 分钟速览](#评委-1-分钟速览) · [核心作用（真实数据）](#核心作用它到底解决什么) · [评测协议与结果](#4-评测协议与结果) · [快速运行](#3-快速运行源码) · [已知限制](#5-兼容性测试与已知限制) · [上游缺陷修复](#51-顺带修掉的三个上游缺陷) · [来源与仓库卫生](#6-来源说明与仓库卫生) · [Demo 与验证入口](#7-demo-与验证入口)
 
 ## 核心思路
 
@@ -34,7 +36,7 @@ S(m) = 0.85 × sim(q, m)          # 与当前待办请求的语义相关度（BM
 
 ## 核心作用（它到底解决什么）
 
-**一句话：在同样约 1.1–1.2 倍的压缩后 token 下，让压缩后的上下文里"逐字可用的精确事实"从 0 条变成多数条。**
+**一句话：在同样约 1.1–1.2 倍的压缩后 token 下，让压缩后的上下文里"逐字可用的精确事实"从 0 条变成 6–18 条（四个基准格子，见下表）。**
 
 下表的每条数字都来自 `benchmarks/results/*.json`，用**从未参与过任何调参的 seed（20260921–20260930，n=10）** 重新跑过——不是见过 seed 上的最好成绩。指标是 20 条注入事实中，压缩后上下文里**逐字**（而非转述）仍在的条数：
 
@@ -59,6 +61,7 @@ S(m) = 0.85 × sim(q, m)          # 与当前待办请求的语义相关度（BM
 | 改动 | 在 `CompactionEngine` 增加可选 `scorePolicy`，从待摘要消息中选择性保留高分消息。**引擎层**缺省 = 上游路径（逐字节一致，golden fixture 守护）；**App 层**本 fork 默认开启，`agent.compaction.retention: off` 可一键关回上游。 |
 | 方法 | `S(m) = 0.85·语义相关 + 0.15·位置衰减 + 0.00·IDF 校正实体图 PageRank`，按 token 预算选取。rank 项权重落 0 是留出集上的结论，原因与取舍见 [4.2](#42-组件消融)。 |
 | 当前记录结果 | 结构性基准 N=160：事实保留 0/20 → 17.9/20（**从未参与调参的 10 个 seed 上 10 胜 0 平 0 负，符号检验 p=0.002**，随仓库 JSON 复现）；**提取精度（逐消息）89–100%，2.7–11× 高于随机**（[4.1a](#41a-提取精度逐消息精召回直接回答怎么保证提取得准)）。真 LLM 闭环跑了两个条件（不同端点 × 摘要预算），**中文任务两轮一致占优**（N=160：56.3% vs 31.3%；紧预算轮 81.3% vs 0%），英文任务随摘要预算变化——两轮全表与敏感性分析见 [4.3](#43-真-llm-闭环两轮记录含敏感性)，结论以 `benchmarks/results/*.json` 为准。 |
+| 顺带修掉的上游缺陷 | 三处与本改动无关、但真实用户会撞到的既有缺陷，各带"修复前必然失败"的测试：① 三处 `unref()` 超时定时器让被 `await` 的 promise 永不 settle（`fetch.ts` / `BackgroundTaskRuntime.wait()` / 流式空闲超时）；② `countTokens` 在长重复串上退化为 O(n²)，8,000 字符 **8,999 ms → 9.1 ms（993×）**，`read_file` 读 300 行工具结果 **79.2 s → 1.2 s**；③ 启动恢复的"最新事务"排序键混入文件 mtime（本机粒度 1 ms），偶发选错事务。见 [5.1](#51-顺带修掉的三个上游缺陷)。 |
 | 现场路径 | 打开 Web UI（`pnpm dev`，vite 客户端默认 http://localhost:5173，3001/5173 被占用会自动滑动，以启动日志 `[dev-launcher]` 打印为准；本 fork 中 `agent.compaction.retention` 默认 `hippo`，已启用）→ 创建长对话 → 触发 Compaction → **压缩分隔线上会直接显示保留徽章**（如「Hippo 逐字保留 3 条（1,204 tok）」，悬停给出策略与本次预算）→ 用原问题复问；或直接 `pnpm benchmark:demo`。预计 3–5 分钟。 |
 | 已知边界（我们主动划的） | ① 收益是"对**当前任务**保真"，**不是**"记住被放弃的旧话题"——旧话题优势经诊断是 harness 句式共享造成的假象，[4.6](#46-话题切换旧话题还剩多少回答中途换话题)；② 换成**真摘要器**后这条优势变成条件句：摘要预算宽裕时测不出差异（同配置重复的摆动就有 3–4 题），**预算吃紧时**才测得出（当前话题 10/16 → 16/16，摆动为 0），[4.7](#47-真摘要器下的话题切换46-第一条边界的补充测量)；③ 改默认权重的理由是"对齐调参 argmax + 少一项"，**不是**"权重优化带来提升"（该对比留出集上不显著，[4.5](#45-留出集验证选过参数的-seed-一律不用)）。 |
 
@@ -68,7 +71,7 @@ S(m) = 0.85 × sim(q, m)          # 与当前待办请求的语义相关度（BM
 
 我们选择本地可计算的特征，避免每次压缩再调用一个大模型：
 
-- **语义相关性**：`sim(q, m)` 中 `q` 是尾部最近一条真实 user 请求。默认 BM25（内部自带 IDF）；设置 `PILOTDECK_BGE_MODEL` 后可切换本地 embedding cosine（`Xenova/bge-small-zh-v1.5`，可离线运行，落在赛事端侧模型额度内）。
+- **语义相关性**：`sim(q, m)` 中 `q` 是尾部最近一条真实 user 请求。默认 BM25（内部自带 IDF）；设置 `PILOTDECK_BGE_MODEL` 后可切换本地 embedding cosine（`Xenova/bge-small-zh-v1.5`，可离线运行）。
 - **位置衰减**：当前没有可靠消息时间戳，因此按消息位置计算衰减；它是位置启发式，不等同于真实时间上的艾宾浩斯曲线。
 - **实体图核心度**：从消息抽取实体、建共现图、跑 PageRank，再乘 `log(1 + M / df)` 的 IDF，压低在多数消息重复出现的枢纽词。实体抽取双语：ASCII 抽大写驼峰记号，中文用滑动 bigram 免分词抽取 + 高频功能词文档频率剪枝。
 - **预算约束**：保留块预算为 `tailTokenBudget × 0.2`，至少 256 tokens；超预算按确定性 tie-break 截断。
@@ -139,7 +142,7 @@ resolveRetentionScorePolicy({ retention: "off" })   // → undefined（纯上游
 
 ## 3. 快速运行（源码）
 
-环境：Node.js `22.13+ <23`、Python 3、`make`、C/C++ 编译器、`ripgrep`。（桌面应用安装包与其他安装方式见[附录 A](#附录a上游-pilotdeck-项目)与[附录 B](#附录b赛事版指南比赛-token-配置与首次使用)。）
+环境：Node.js `22.13+ <23`、Python 3、`make`、C/C++ 编译器、`ripgrep`。（桌面应用安装包与其他安装方式见[附录 A](#附录a上游-pilotdeck-项目)。）
 
 ```bash
 corepack enable
@@ -181,7 +184,7 @@ corepack pnpm benchmark:tokenizer       # 分词器两实现的时间/加速表�
 corepack pnpm benchmark:extraction      # 逐消息精/召回，回答"怎么保证提取得准"（§4.1a）
 ```
 
-真 LLM 评测需要联网，端点解析顺序：① `PILOTDECK_EVAL_URL` + `PILOTDECK_EVAL_KEY` → ② 仓库根 `poliet_deck.txt`（比赛发放网关，密钥不入库）→ ③ `~/deepseek_key.txt`（官方 API）。生成的 JSON 记录端点来源、模型版本与三方 token 账本（摘要 prompt / 摘要 completion / 评审 prompt）；**摘要输出上限与每次调用的 `finish_reason` 是从 2026-09-11 这次改动起才落库的**——已提交的两轮 JSON 里没有，所以 §4.3 里"摘要被截断"只能写成推断（原因与影响见 §4.3）：
+真 LLM 评测需要联网，端点解析顺序：① `PILOTDECK_EVAL_URL` + `PILOTDECK_EVAL_KEY` → ② 仓库根 `poliet_deck.txt`（可选的自备网关端点，密钥不入库）→ ③ `~/deepseek_key.txt`（官方 API）。生成的 JSON 记录端点来源、模型版本与三方 token 账本（摘要 prompt / 摘要 completion / 评审 prompt）：
 
 ```bash
 corepack pnpm benchmark:real-llm                # §4.3 单话题闭环
@@ -234,7 +237,7 @@ corepack pnpm benchmark:real-llm-topic-switch   # §4.7 话题切换闭环（含
 | full（旧默认 0.4/0.35/0.25） | 10.5 | 6.5 | 6 | 5 |
 | **full（当前默认 0.85/0.15/0.00）** | **18** | **9** | **10** | **6** |
 
-（表内为调参协议下的中位数。"上一版默认 0.7/0.15/0.15" 不在此表——它与当前默认的差异用**留出集**做配对检验，见 §4.5 与下方第 3 条，两套协议的数字不混用。）
+（表内为调参协议下的中位数。`0.7/0.15/0.15` 变体未列在此表，它与当前默认的差异用**留出集**做配对检验，见 §4.5 第 4 行与下方第 3 条，两套协议的数字不混用。）
 
 消融发现并当场修掉的三个问题：
 
@@ -263,7 +266,7 @@ corepack pnpm benchmark:real-llm-topic-switch   # §4.7 话题切换闭环（含
 | zh | 80 | 0% (0/16)，2,340 tok | 18.8% (3/16)，2,319 tok |
 | zh | 160 | 0% (0/16)，4,002 tok | **81.3% (13/16)**，4,964 tok |
 
-轮次 B —— 比赛网关，摘要上限 4,000 tok/次，**每轮 16 次摘要调用**（8 格 × 2 seeds；此前 README 写的"32 次"是把两轮相加了）。触顶这次可以直接从 JSON 读出：`zh/80 上游` 一格恰好 8,000 = 2 × 4,000，两次调用都触顶；其余 7 格合计 5,266–7,335 全部 > 4,000，因此 16 次调用中**至少 8 次触顶**：
+轮次 B —— 自备网关端点，摘要上限 4,000 tok/次，**每轮 16 次摘要调用**（8 格 × 2 seeds）。触顶这次可以直接从 JSON 读出：`zh/80 上游` 一格恰好 8,000 = 2 × 4,000，两次调用都触顶；其余 7 格合计 5,266–7,335 全部 > 4,000，因此 16 次调用中**至少 8 次触顶**：
 
 | lang | N | 上游 | Hippo |
 |---|---:|---|---|
@@ -276,7 +279,7 @@ corepack pnpm benchmark:real-llm-topic-switch   # §4.7 话题切换闭环（含
 
 1. **中文任务上 Hippo 两轮一致占优（4/4 格）**。v4-flash 写中文摘要时不逐字保留数字事实（上游压缩后 FACT 标记 0/20），Hippo 保留块直接把原文带回上下文。
 2. **英文任务的结果随摘要长度变化**。A 轮摘要短（1,200 tok/次，8/8 格恒定）且上游 N=160 只有 12.5%；B 轮摘要长一倍以上（≥2,633 tok/次）时上游回到 100%，压缩后 tokens 随之上浮（en N=160：4,977 → 5,955）。**长度与得分同向是实测的，因果解释仍是推断**：最自然的解释是 A 轮摘要被截断、B 轮放开后上游靠"把检查点逐条抄进更长摘要"补回，但 A 轮实际生效的上限值在仓库里查不到，所以这里不把它写成结论。能确认的是代价方向——上游要保住精确事实就得付更长的摘要，Hippo 用受控预算的逐字保留块达成同样目标。
-3. **方差声明**：每格仅 16 题、2 seeds、同模型 judge，官方 API 与比赛网关的服务差异未知。因此只声明方向性结论（中文稳定占优、英文随摘要预算变化），不宣称单一"提升 X 点"。
+3. **方差声明**：每格仅 16 题、2 seeds、同模型 judge，官方 API 与自备网关两个端点的服务差异未知。因此只声明方向性结论（中文稳定占优、英文随摘要预算变化），不宣称单一"提升 X 点"。
 
 ### 4.4 打分延迟（效率代价）
 
@@ -406,8 +409,14 @@ corepack pnpm benchmark:real-llm-topic-switch   # §4.7 话题切换闭环（含
 - **已知限制（上游既有，未修）**：`ui/` 的 `tsc --noEmit` 是红的，125 个文件报错——不是本 fork 引入的，在上游 `ui/src/components/chat/hooks/useChatMessages.ts` 等文件里逐字复现（`msg.reasoningContent` / `msg.userHint` / `Record<string, unknown>` 强转，均在本 fork 改动行之外）。根因是依赖图里同时存在 **两份 `@types/react`（18.3.29 与 19.2.15）**，UI 自己解析到 18，其余文件经根 store 解析到 19，于是 19 的 `ReactNode`（含 `bigint`）与 18 的不相容。`vite build` 实测通过（37.6 s，退出码 0），所以这是 typecheck 卫生问题而非构建/运行时故障。修法（统一 `@types/react` 版本）要动依赖解析并重装，风险大于收益，故如实记录而不在提交前动它。
 - **保留徽章的测试边界（如实说明）**：网关侧「retention 随 agent_status 下发、上游路径完全不带该键」由根套件 `tests/context/retention-reporting.spec.ts` 覆盖；`compactMetadata → 徽章数据` 的映射（含畸形输入不抛异常）由 UI 侧 `ui/src/components/chat/hooks/useChatMessages.retention.test.ts` 14 例覆盖；**徽章的渲染**另由 `ui/src/components/chat/view/subcomponents/MessageComponent.retention-badge.test.tsx` 6 例覆盖——中英两个语料各自渲染、断言屏幕上真正显示的文字（含 `1,204 tok` 这类千分位）与悬停 `title` 里的策略和预算、上游边界不出现徽章，其中一例走完整链路 `compactMetadata → normalizedToChatMessages → 组件`。该文件做过**变异验证**：把 `MessageComponent` 的徽章渲染条件改成恒假后，6 例中 4 例正例失败、2 例反例照常通过，说明它确实在测渲染而不是在空转。**但 jsdom 不是浏览器**：CSS 样式、暗色模式、真实布局与 `i18next-browser-languagedetector` 的语言检测都没有被验证。现场 Demo 前仍请自己跑一遍 §7 的 Web UI 路径，确认徽章真的出现在分隔线上，不要只信本文的描述。
 - **UI 侧 `npx vitest run` 不是全绿（上游既有，如实说明）**：在 `ui/` 下执行会一并收进 `server/routes/*.test.js` 与 `e2e/*.spec.mjs`，其中有 5 个文件长期失败——Playwright 的 `e2e/history-fork.spec.mjs` 被 vitest 当单测收集（环境不适用）、`server/routes/{commands,memory,uploads}.test.js`（依赖本机服务与 `PILOT_HOME`）、以及 `src/components/chat/hooks/streamSmoother.test.ts` 的 4 个 `requestAnimationFrame` 计时用例。这些失败全部与 retention / 压缩 / i18n 代码无关，且**失败文件集在加不加本次新测试时完全相同**（同一次对照：只多出本次新增的例数）。通过/失败计数本身在两次运行间会小幅漂移（计时用例不稳），所以此处不给会漂移的具体数字——判断是否引入回归请以**失败文件集是否变化**为准，而不是以计数为准。
-- 测试数量声明需可复核：**根套件**（`pnpm test`，`tests/**/*.spec.ts` 经 `dist/` 运行）2026-09-11 实测（含 §4.7 新增的 3 例）**517 项 = 515 通过 / 0 失败 / 0 cancelled / 2 skipped**（32.7 s，退出码 0）。UI 侧是**独立**的 vitest 套件（约 900 例，状态见上一条），两者不合并计数——本文出现的 "517" 一律只指根套件。此前根套件为 481 通过 + 2 cancelled —— 那 2 项 cancelled 不是"满载并发的计时抖动"（早前版本如此解释过，此处撤回），而是 §5.1 缺陷三 的真实缺陷，修掉后取消项归零。
+- 测试数量声明需可复核：**根套件**（`pnpm test`，`tests/**/*.spec.ts` 经 `dist/` 运行）2026-09-11 实测（含 §4.7 新增的 3 例）**517 项 = 515 通过 / 0 失败 / 0 cancelled / 2 skipped**（32.7 s，退出码 0）。UI 侧是**独立**的 vitest 套件（约 900 例，状态见上一条），两者不合并计数——本文出现的 "517" 一律只指根套件。更早一轮根套件是 481 通过 + 2 cancelled；那 2 项 cancelled 的真因分别是 §5.1 缺陷二（读大文件用例挂死）与缺陷三（恢复排序并列），两者修复后取消项归零。
   - **为什么 CI 报 507 而本地是 517**：上游 `.gitignore` 明确把 `*.test.ts` 当作"本地测试草稿"（原文注释：`Local test drafts (force-add intentional new tests with git add -f)`）。我们的新测试按这条约定 `git add -f` 入库，而上游自己的 4 个草稿文件（`tests/gateway/{upload-store,dialog-project-files,dialog-model-catalog,dialog-skills-permissions}.test.ts`，共 10 例）**没有**入库，所以从仓库全新克隆跑出来是 507 项、本地工作区是 517 项。两个数都对，差别**可以在本地直接复核，不必翻 CI 日志**：`git check-ignore -v tests/gateway/upload-store.test.ts` 会打印命中 `.gitignore:200:*.test.ts`，那 4 个文件合计 10 例（4 + 3 + 1 + 2），517 − 10 = 507。我们选择尊重上游这条约定，没有替上游决定哪些草稿该入库。
+- 真 LLM 轮次 A 未记录 `finish_reason`，且 A 轮的摘要输出上限值在仓库里查不到（该轮未落库，代码值是 4,000），所以"上游英文崩盘源于摘要截断"**是事后推断，尚未被直接测量**。可实测的两条旁证：(a) A 轮 8/8 格 completion 恒为 1,200/次（触顶特征）；(b) B 轮 16 次调用中至少 8 次确实触顶 4,000（`zh/80 上游` 格恰好 8,000 = 2 × 4,000）。脚本已改为把 `finish_reason` 与每次调用的 completion 数写进 JSON，下一轮起这条归因可实测。
+- 未安装 Transformer.js、embedding 模型缺失或加载失败时自动回退 BM25，不报错、不崩溃；模型版本、缓存路径与离线安装说明见 `.env.example`。
+- 中文 bigram 会增大实体图（延迟见 4.4）；现场应同时报告硬件与测量脚本。
+- 评测主要是合成对话：事实分布偏前且 query 在尾部，time 项在该分布上天然反相关；真实任务的时间特征、噪声和多轮 query 可能改变权重最优点——权重结论以"同分布最优"为口径。
+- 真 LLM 结果样本量小（每格 16 题）且摘要器与 judge 同模型；后续应加入独立 judge、人工抽检与未见任务集。
+- Hippo 会增加压缩后 token（真 LLM 记录约 +5–24%，视轮次与格子）；展示时应同时给准确率与成本，不能只报准确率。
 
 ### 5.1 顺带修掉的三个上游缺陷
 
@@ -457,7 +466,7 @@ corepack pnpm benchmark:real-llm-topic-switch   # §4.7 话题切换闭环（含
   - 端到端 `read_file`：**79,238 ms → 1,214 ms**（65×）——这是修复当次的单次实测，**未落库**；要重测需把 `countTokens` 换回库原实现（该 path 已不存在于当前代码），所以此处只作为量级参考；
   - 该测试文件：修复前第 4 项挂死、整文件 60 s 超时 3/3 失败 → 修复后 **11/11 通过**（`pnpm test` 里每次都在跑，是这条缺陷的持续回归门）；
   - 等价性：`tests/context/tokenizer-equivalence.spec.ts` 用 **900 例随机输入 + 6 例固定边界（合计 906 次比对）**比对堆实现与库原实现（单字符重复串 70、重复单元 30、10 种字母表随机文本 600、混合文本 200；固定边界含 CJK、emoji、空串、特殊 token 拒绝路径），**0 失配**。
-- 影响面：`countTokens` 是所有预算判断的公共底座（`read_file` 文本预算、工具结果预算、micro-compaction、以及 Hippo 自己的 `estimateMessagesTokens`），一处修复全线受益。同样不计入 Hippo 创新点。
+- 影响面：`countTokens` 是所有预算判断的公共底座（`read_file` 文本预算、工具结果预算、micro-compaction、以及 Hippo 自己的 `estimateMessagesTokens`），一处修复全线受益。
 
 **缺陷三："最新事务"的排序键混了逻辑时间与文件 mtime（`src/web/server/replaceLastTurn.ts`）**
 
@@ -481,51 +490,35 @@ order: Math.max(preparedAt, backupMtime, journalMtime)   // 修复前
   ```
 - 证据：新增 `recovery orders transactions by their journal timestamp, not by artifact mtime`——用 `utimes` 把旧事务的文件 mtime 显式推到未来 60 秒（不依赖任何时序），断言恢复仍按 `preparedAt` 选中新事务。把 `Math.max` 改回去重跑，该用例**确定性失败**（1 fail）；修复后 16/16。这样把一个偶发 flake 变成了每次必检的确定性断言。
 
-**同节遗留的一条证据更正**：本 README 早前版本写过"余下 2 项 cancelled 是满载并发的计时抖动"。该说法当时依据的是 `/tmp/pilotdeck-fulltest.log`，而那个文件实际只有 106 字节、没有任何结果——**证据不足，已撤回**。现在的口径是：当时的取消项里，一项的真因是上面的分词器退化、另一项是这里的排序缺陷，两者都已定位并修复，各自有"修复前必然失败"的测试佐证；当前全量结果见 [§5](#5-兼容性测试与已知限制)。
+## 6. 来源说明与仓库卫生
 
-- 真 LLM 轮次 A 未记录 finish_reason，且 A 轮的摘要输出上限值在仓库里查不到（该轮未落库，代码值是 4,000），所以"上游英文崩盘源于摘要截断"**是事后推断，尚未被直接测量**。可实测的两条旁证：(a) A 轮 8/8 格 completion 恒为 1,200/次（触顶特征）；(b) B 轮 16 次调用中至少 8 次确实触顶 4,000（`zh/80 上游` 格恰好 8,000 = 2 × 4,000）。脚本已改为把 `finish_reason` 与每次调用的 completion 数写进 JSON，下一轮起这条归因可实测。
-- 未安装 Transformer.js、embedding 模型缺失或加载失败时自动回退 BM25，不报错、不崩溃；模型版本、缓存路径与离线安装说明见 `.env.example`。
-- 中文 bigram 会增大实体图（延迟见 4.4）；现场应同时报告硬件与测量脚本。
-- 评测主要是合成对话：事实分布偏前且 query 在尾部，time 项在该分布上天然反相关；真实任务的时间特征、噪声和多轮 query 可能改变权重最优点——权重结论以"同分布最优"为口径。
-- 真 LLM 结果样本量小（每格 16 题）且摘要器与 judge 同模型；后续应加入独立 judge、人工抽检与未见任务集。
-- Hippo 会增加压缩后 token（真 LLM 记录约 +5–24%，视轮次与格子）；展示时应同时给准确率与成本，不能只报准确率。
-
-## 6. Fresh Code 与来源说明（队长提交前确认）
-
-- [ ] Hippo 核心代码、专项测试、benchmark、设计稿和 Demo 在 **2026-09-11 14:00 之后**由参赛队员现场创建。
-- [x] 已保留上游基线的仓库链接与改动范围：基线 `https://github.com/OpenBMB/PilotDeck`，基线 commit 前缀 `85be774`（golden fixture 锁定其行为）。
-- [ ] 未携带成熟 Demo、商业项目或未报名人员完成的核心代码/设计/调试/文案。
-- [ ] 公开开源项目、模型、API 和素材均在本节或 `NOTICE` 中标注来源及许可证。
-- [ ] 仓库历史能通过 `git log --stat`、GitHub commit 时间和现场截图复核；所有 benchmark JSON 均脱敏，不含 API Key。
-
-基线信息：
+本仓库公开可读，无需授权即可 clone 复核：
 
 ```text
-公开仓库：https://github.com/qgeng1465/pilotdeck-hippo
-上游仓库：https://github.com/OpenBMB/PilotDeck
-基线完整 SHA：85be774751e496501370d7cf95ed45388f407c93
-参赛分支：main
-代码最终提交 SHA：b2927c0f974397e6a5d6c3d8b0b24b78869aa494
+仓库：https://github.com/qgeng1465/pilotdeck-hippo
+上游：https://github.com/OpenBMB/PilotDeck
+上游基线完整 SHA：85be774751e496501370d7cf95ed45388f407c93
+上游基线前缀：85be774（golden fixture 锁定其行为）
+交付分支：main
+main HEAD：26b329599a216afe9fd4193d2527c8bb234171b7
 ```
 
-> 提交时必须把仓库从 **private 改为 public**，否则评委点开是 404（这不代表链接写错）。上表 `代码最终提交 SHA` 是**行为变更的最后一个提交**，其后的提交只增加文档与测试（无引擎/UI 行为变更）；**交付物以 `main` 分支 HEAD 为准**，提交前请用 `git ls-remote https://github.com/qgeng1465/pilotdeck-hippo.git main` 复核一次，并把该 HEAD 填进提交表单。
+改动范围限于上游的上下文压缩模块与 chat-v2 压缩分隔行的渲染；上游其余能力未改动。上游版权声明保留，第三方依赖与素材来源见 `NOTICE`。
 
-仓库卫生：`.gitignore` 已排除 `poliet_deck.txt`（比赛网关凭据）、`*_key.txt`、`.env*`、`node_modules/`、`dist/`；`benchmarks/results/*.json` 已确认不含任何 API Key，随仓库提交以便复核。
+仓库卫生：`.gitignore` 已排除 `poliet_deck.txt`（自备网关凭据）、`*_key.txt`、`.env*`、`node_modules/`、`dist/`；`benchmarks/results/*.json` 已确认不含任何 API Key，随仓库提交以便逐条复核。
 
-## 7. 方向三提交清单
+## 7. Demo 与验证入口
 
-在 2026-09-12 12:00 前由队长提交：
+复现路径与技术说明：
 
-1. 公开 GitHub 代码仓链接（含本 README、测试和 benchmark 结果）。
-2. 可交互 Demo 入口：现场 `pnpm benchmark:demo` 与 Web UI（:3001）；3–5 分钟复现路径见 [docs/demo.md](docs/demo.md)。
-3. A3 竖版海报（297×420 mm、300 DPI、CMYK、四边 3 mm 出血）——已提交。
-4. README 中的改进点、架构/模块、运行方式、性能前后对比、已知限制和技术设计图（即本文件）。
-5. 可选加分材料：演示视频、CI/测试输出、`benchmarks/results/` 原始 JSON、独立评审或人工抽检记录。
-6. 方向三使用主办方当天公布的额外提交链接；不要误传方向一/二的小程序链路。
+1. 源码与测试：[仓库](https://github.com/qgeng1465/pilotdeck-hippo)（含本 README、`tests/`、`benchmarks/results/` 原始 JSON）。
+2. 可交互 Demo：`pnpm benchmark:demo`（离线、约 2.4 s）与 Web UI（:3001）；3–5 分钟现场复现路径见 [docs/demo.md](docs/demo.md)。
+3. 在线 Demo 页：[qgeng1465.github.io/pilotdeck-hippo](https://qgeng1465.github.io/pilotdeck-hippo/)——在真机构建上运行，附现场录屏与逐条可核对的基准数字。
+4. 独立抽检记录：[docs/independent-spotcheck.md](docs/independent-spotcheck.md)——从未参与调参的新 seed 上复跑，如实注明为作者自跑的可复现性复核，非第三方评审。
 
 ## 8. 许可证与上游致谢
 
-本改造基于 [OpenBMB/PilotDeck](https://github.com/OpenBMB/PilotDeck)（AGPL-3.0），遵循仓库中的许可证和 NOTICE。最终仓库将保留上游版权声明，并补充 Hippo 改动的作者、日期、基线 SHA 与第三方依赖清单。
+本改造基于 [OpenBMB/PilotDeck](https://github.com/OpenBMB/PilotDeck)（AGPL-3.0），遵循仓库中的许可证和 NOTICE。上游版权声明保留，`NOTICE` 记录了 Hippo 改动的作者、日期、基线 SHA 与第三方依赖清单。
 
 ## 附录A：上游 PilotDeck 项目
 
@@ -560,71 +553,6 @@ xattr -cr /Applications/PilotDeck.app
   year         = {2026}
 }
 ```
-
-## 附录B：赛事版指南（比赛 token 配置与首次使用）
-
-> 本附录面向本次赛事选手：赛事 token 配置、网页搜索、Web UI 首次使用与常见问题。
-
-### 配置赛事发放的 token（Web UI 可视化配置，推荐）
-
-本次赛事 token 资源包：
-
-- **价值 400 元的云端大模型 token**：用于接入 PilotDeck 执行任务。提交组队表单后，【接口地址】和【API密钥】将发送到队长邮箱。
-- **价值 100 元的端侧模型 token**：可在自己的作品中接入（Hippo 的本地 embedding 即可跑在端侧额度上）；可按需申请额外 200 元额度。
-
-配置步骤：
-
-1. 启动 PilotDeck 并打开 Web UI（默认 `http://localhost:3001`），在 onboarding 面板点击【开始配置】。
-2. 使用赛事发放的 token，请点击【自定义】。
-3. 填入队长邮箱收到的【接口地址】与【API密钥】。接口地址需要填到 `v1`（形如 `https://api.deepseek.com/v1`）。
-4. 在【待选模型】中点选想用的模型并添加（可多选）——出现在【已选用模型】里才算点选成功。
-5. 点击【测试连接】，显示绿色即为通过。
-
-本次赛事可选模型包括：**Hy3、DeepSeek-V4-Flash、DeepSeek-V4-Flash-Vision、GLM-5.3、GLM-5.2、GLM-5.3-Flash、MiniMax-M3**（实际模型 ID 可能有前缀）。
-
-等价的配置文件方式（`~/.pilotdeck/pilotdeck.yaml`）：
-
-```yaml
-schemaVersion: 1
-agent:
-  model: custom/<model-id>
-model:
-  providers:
-    custom:
-      protocol: openai
-      url: https://<赛事接口地址>/v1
-      apiKey: <队长邮箱收到的 API Key>
-```
-
-### 配置网页搜索
-
-如需【网页搜索】功能，点击左下角【Settings】→【Search】页面选择搜索服务提供商并配置对应的 API Key（一般都有免费额度）：
-
-| Provider 名 | 服务商 | 获取 Key 的网站 |
-| :--- | :--- | :--- |
-| tavily | Tavily | https://app.tavily.com |
-| glm | Z.AI / 智谱 | https://open.bigmodel.cn |
-| serper | Serper（Google SERP） | https://serper.dev |
-| brave | Brave Search API | https://brave.com/search/api |
-
-### Web UI 使用指南
-
-- **界面概览**：导航包含 Files、Skills、Routing（智能路由）、Memory、Always-On 等模块；左侧为 Projects 项目列表，可在 new conversation 直接创建对话，或进入各项目工作区。
-- **创建项目与进入工作区**：每个项目拥有独立的文件系统、记忆、技能与会话历史，项目间互不干扰。
-- **发起任务（Ask / Plan 模式）**：在输入框直接用自然语言描述目标；支持 `@文件` 引用工作区文件；可切换 Ask / Plan 模式、设置权限（如 Full Access）、调整上下文。
-- **白盒记忆管理**：Memory 模块定期沉淀长期上下文（用户偏好、项目背景、常用路径、关键决策）。可以查看每条记忆的来源与所属 WorkSpace、搜索记忆、修正不准确的记录，必要时直接修改或删除。
-- **定时任务与 Always-on**：在输入框直接描述定时任务（例如「每天上午 10 点给我推送最新新闻」），Agent 会自动创建对应的 Cron Job；在 Always-On 页面可查看全部计划与定时任务。
-
-### 赛事 FAQ
-
-| 问题 | 解决方法 |
-| :--- | :--- |
-| 测试连接失败 | 检查 API Key 是否正确、网络是否可达、Provider 余额是否充足、接口地址是否包含 `/v1` |
-| `pilotdeck: command not found` | `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc` |
-| 端口冲突（Port 3001/18080 already in use） | `lsof -i :3001 && kill -9 <PID>` |
-| `npm install` 失败 | `npm cache clean --force && rm -rf node_modules package-lock.json && npm install --registry=https://registry.npmmirror.com` |
-| Windows 报 `npm.ps1` 禁止运行脚本 | `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` 后重开 PowerShell，或显式调用 `npm.cmd run dev` |
-| 其他问题 | 先尝试刷新页面；仍无法解决可在赛事社群反馈或找现场技术人员 |
 
 ## 许可证
 

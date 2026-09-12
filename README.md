@@ -499,8 +499,7 @@ order: Math.max(preparedAt, backupMtime, journalMtime)   // 修复前
 上游：https://github.com/OpenBMB/PilotDeck
 上游基线完整 SHA：85be774751e496501370d7cf95ed45388f407c93
 上游基线前缀：85be774（golden fixture 锁定其行为）
-交付分支：main
-main HEAD：26b329599a216afe9fd4193d2527c8bb234171b7
+交付分支：main（HEAD 以仓库页显示为准）
 ```
 
 改动范围限于上游的上下文压缩模块与 chat-v2 压缩分隔行的渲染；上游其余能力未改动。上游版权声明保留，第三方依赖与素材来源见 `NOTICE`。

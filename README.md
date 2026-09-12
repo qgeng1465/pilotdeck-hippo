@@ -12,6 +12,12 @@
 
 > PilotDeck 创造计划 · 方向三（Harness / Memory / 架构优化） · [English](README.en.md) · **在线 Demo：<https://qgeng1465.github.io/pilotdeck-hippo/>**
 
+<a href="https://qgeng1465.github.io/pilotdeck-hippo/assets/demo.mp4">
+  <img src="https://qgeng1465.github.io/pilotdeck-hippo/assets/demo-poster.png" alt="真实会话里压缩边界上的 Hippo 保留徽章" width="760">
+</a>
+
+**60 秒录屏（点图播放）**：前半是 `benchmark:demo` 的真实终端输出——同一份输入，上游保留 0/20 条早期事实，Hippo 18/20；后半是真实 Web UI 里一个**仍在进行**的任务被压缩**两次**，两次压缩边界行都带 `Hippo kept N msgs verbatim` 徽章。只有开头 2 秒标题卡是合成的，压缩时刻全部原速。
+
 **一句话。** PilotDeck 在上下文变长时会压缩对话：保留最近一段原文，把更早的内容写成摘要。摘要记得住大意，但容易丢掉那些必须一字不差的事实——文件名、数字、检查点、决策记录。Hippo 在压缩前挑出一小批最相关的消息，让它们的**原文**绕过摘要、直接留在压缩后的上下文里。
 
 ## 它解决什么问题
@@ -42,6 +48,19 @@
 - 同一个任务跨多次压缩（预算吃紧，1,500 tok）：当前话题答题 **10/16 → 16/16**。
 - 中文任务：两轮独立记录里 Hippo 4/4 个格子占优。
 - 英文任务：摘要预算宽裕时测不出差异；预算吃紧时才拉开。
+
+**同一个任务跨多次压缩（结构性基准，`corepack pnpm benchmark:long-horizon`）：** 把同一个仍在进行的任务连续压缩 3 轮，每轮拿上一轮的**真实输出**当输入（不是重新模拟），持续注入事实，看压缩后逐字还在几条。80 个 seed 的平均：
+
+| 注入位置 | 上游 | Hippo |
+|---|---:|---:|
+| 最早的 5 条（第 1 轮之前） | 1.0 | 1.0 |
+| 中间的 5 条（第 2 轮之前） | 0.0 | **1.8** |
+| 最新的 5 条（第 3 轮之前） | 1.0 | **5.0** |
+| 合计 / 15 | 2.0 | **7.8** |
+
+边界同样要一起说：最旧那 5 条两侧都只剩 1 条。**保留不是记忆**——一个事实跨过几轮压缩之后，再旧也一样会掉，Hippo 没有解决这件事，也不声称解决。
+
+**跨轮次这次新加的一条。** 保留原本是每次压缩从头重算的：第 1 轮被逐字留下的消息，到第 2 轮没有任何优待，会因为问题漂移重新落回摘要桶。现在给「上一次被逐字保留过」的消息划一小块**封顶预算**（保留预算的 25%），让它们在下一轮优先占位。这不是加权——候选的排序完全不变，只是给旧消息留了一小块自己的额度，所以挤不掉当前问题真正需要的消息。80 个 seed 上的配对比较：中间那批 1.36 → **1.80**（27 胜 / 53 平 / 0 负），合计 7.38 → **7.78**（25 / 54 / 1），最新那批 5.00 → 4.98（80 个 seed 里 2 个各少 1 条）。它**没有**保住最旧那批（1.01 → 1.00）——那本来是这个改动的目标，实测没做到，如实写在这里。`PILOTDECK_CARRYOVER=off` 一行关掉，两个臂可以自己对比。
 
 **会不会把一堆没用的东西也塞回来？** 不会。用引擎自曝的保留列表逐消息统计，保留块里 **89–100%** 是当前问题需要的事实（比随机基线高 2.7–11×）。
 
@@ -120,6 +139,7 @@ corepack pnpm benchmark:no-regression   # 关掉 scorePolicy 时必须等于上�
 corepack pnpm benchmark:smoke           # 小规模冒烟
 corepack pnpm benchmark                 # 完整 A/B（N=40/80/160）
 corepack pnpm benchmark:extraction      # 逐消息精确率 / 召回率
+corepack pnpm benchmark:long-horizon    # 同一个任务连续压缩 3 轮（长程）
 corepack pnpm benchmark:tokenizer       # 分词器两实现的时间对比
 ```
 
@@ -141,13 +161,14 @@ corepack pnpm benchmark:real-llm-topic-switch   # 同一个任务跨多次压缩
 - **真 LLM 部分样本小**（每格 16 题、2 个 seed），而且摘要器和评审员是同一个模型，所以只声明方向，不宣称"提升了 X 个点"。
 - **Hippo 会增加压缩后 token**（真 LLM 记录约 +5–24%）。展示时准确率和成本要一起给。
 
-## 顺带修掉的三个上游缺陷
+## 顺带修掉的四个上游缺陷
 
-这三处和 Hippo 本身无关，但都是真实用户会撞到的既有问题，所以一并修了，每处都配了"修复前必然失败"的测试：
+这四处和 Hippo 本身无关，但都是真实用户会撞到的既有问题，所以一并修了，每处都配了"修复前必然失败"的测试：
 
 1. **三处被 `unref()` 掉的超时定时器**：它们本该 settle 一个被 `await` 的 promise，`unref()` 之后调用方拿到的是永不返回的 promise，而不是超时错误。影响 `fetch.ts`（所有模型/MCP 网络调用的底座）、后台任务的 `wait()`、流式响应的空闲超时。
 2. **分词器在长重复串上退化成 O(n²)**：`countTokens` 换成同一套贪心合并的堆实现后，8,000 字符 8,999 ms → 9.1 ms（993×），`read_file` 读一个 300 行的工具结果 79.2 s → 1.2 s。等价性由 906 次比对验证，0 失配。
 3. **启动恢复的"最新事务"排序键混了逻辑时间和文件 mtime**：本机 mtime 粒度是 1 ms，两个事务落在同一毫秒就并列，恢复会挑错事务——这正是那条偶发失败的测试用例的真身。改成由事务自己的时间戳决定后，偶发变成确定性断言。
+4. **摘要失败时，压缩边界标记会作为一条 user 消息被喂给下一次摘要器**：边界标记靠"紧跟其后的摘要"配对，而摘要失败时后面什么都没有，于是标记被留在 live 消息里——摘要器被要求读"用户刚问的是什么"，读到一个 `<compact-boundary/>`；若尾部恰好覆盖它，还会每轮逐字复读。标记本身不含内容，丢掉零损失。
 
 完整证据与复现命令：[docs/upstream-fixes.md](docs/upstream-fixes.md)（[English](docs/upstream-fixes.en.md)）。
 
@@ -156,7 +177,7 @@ corepack pnpm benchmark:real-llm-topic-switch   # 同一个任务跨多次压缩
 - 上游基线：[OpenBMB/PilotDeck](https://github.com/OpenBMB/PilotDeck) `85be774`，fork 起点逐字节可比对（见 `NOTICE`）。
 - 本 fork 的改动集中在 `src/context/compaction/`（保留策略与接入）、`benchmarks/`（评测脚本）、`tests/context/`（专项测试）三处。
 - 仓库公开始终可读，无需授权即可 clone 复核；所有对外数字都来自仓库里已提交的 `benchmarks/results/*.json`，没有第三方评审。
-- 测试与类型检查现状：根套件 `pnpm test` 520 项 / 518 通过 / 0 失败；UI 侧 `npx vitest run` 118 个文件 / 922 个用例 / 0 失败；`ui` 的 `tsc --noEmit` 退出码 0。
+- 测试与类型检查现状：根套件 `pnpm test` 529 项 / 527 通过 / 0 失败（2 项 skip）；UI 侧 `npx vitest run` 118 个文件 / 922 个用例 / 0 失败；`ui` 的 `tsc --noEmit` 退出码 0。
 
 ## 许可证与致谢
 

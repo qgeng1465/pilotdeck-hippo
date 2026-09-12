@@ -11,6 +11,7 @@ import type {
 } from "../../model/index.js";
 import { flattenToolResultContentText } from "../../model/index.js";
 import type { RetentionScorePolicy } from "./retention/RetentionTypes.js";
+import { isCarryOverEnabled, withHippoRetainedMarker } from "./retention/CarryOver.js";
 import { messageVisibleText } from "./retention/MessageText.js";
 import { createHash, randomUUID } from "node:crypto";
 import type { TokenAccountingRuntime } from "../budget/TokenAccountingRuntime.js";
@@ -523,6 +524,12 @@ export class CompactionEngine {
           text: `<compact-boundary trigger="${opts.trigger}" preTokens="${opts.preTokens}" messagesSummarized="${opts.messagesSummarized}" status="${status}" />`,
         },
       ],
+      // Same contract as the summary control message: this marker is runtime
+      // bookkeeping, not something a participant said. Stamping it lets every
+      // consumer that already tests `metadata.synthetic` (query anchoring,
+      // visible-transcript filtering, retention eligibility) recognize it
+      // structurally, instead of each one re-deriving it from the text prefix.
+      metadata: { synthetic: true, purpose: "compact-boundary" },
     };
   }
 }
@@ -553,18 +560,32 @@ function splitCheckpointPrefix(messages: CanonicalMessage[]): {
   liveMessages: CanonicalMessage[];
 } {
   let index = 0;
+  const stablePrefix: CanonicalMessage[] = [];
   const previousSummaries: CanonicalMessage[] = [];
   // Legacy snapshots may contain multiple boundary/summary pairs. Collect
   // every accepted summary so the next successful pass can replace them with
   // one rolling checkpoint.
-  while (index + 1 < messages.length
-    && isCompactBoundaryMessage(messages[index]!)
-    && isWrappedSummaryMessage(messages[index + 1]!)) {
-    previousSummaries.push(messages[index + 1]!);
-    index += 2;
+  while (index < messages.length && isCompactBoundaryMessage(messages[index]!)) {
+    const summary = messages[index + 1];
+    if (summary && isWrappedSummaryMessage(summary)) {
+      stablePrefix.push(messages[index]!, summary);
+      previousSummaries.push(summary);
+      index += 2;
+      continue;
+    }
+    // Orphan boundary: a boundary marker whose summary never landed, because
+    // the summarizer failed (status="summary_failed") or because a legacy
+    // snapshot lost the pair. Matching pairs positionally used to leave it in
+    // `liveMessages`, where it was fed to the next summarizer as a user turn
+    // ("what did the user just ask? a <compact-boundary/> marker") and, when
+    // the tail happened to cover it, re-emitted verbatim forever. A boundary
+    // marker carries no content -- only the trigger and token counts, which
+    // are already reported through `CompactionResult` and its diagnostics --
+    // so dropping it cannot lose anything a model could use.
+    index += 1;
   }
   return {
-    stablePrefix: messages.slice(0, index),
+    stablePrefix,
     previousSummaries,
     liveMessages: messages.slice(index),
   };
@@ -620,7 +641,10 @@ async function planFullCompactionMessages(
 ): Promise<{
   messagesToSummarize: CanonicalMessage[];
   messagesToKeep: CanonicalMessage[];
-  /** Hippo: messages the score policy pulled out of the summary bucket. */
+  /**
+   * Hippo: messages the score policy pulled out of the summary bucket, as the
+   * objects that reach `messagesToKeep` (marked copies when carry-over is on).
+   */
   retainedMessages: CanonicalMessage[];
   /** Hippo: the budget the policy was given, echoed for reporting. */
   retentionBudgetTokens: number;
@@ -652,7 +676,17 @@ async function planFullCompactionMessages(
 
   // Hippo additive hook: pull high-score messages out of the summary bucket
   // and keep them verbatim, before tool-pair integrity is applied below.
+  //
+  // Two arrays, deliberately: `retainedMessages` holds the *original* message
+  // objects the policy picked and is the identity used to filter the summary
+  // bucket and to order the preserved prefix, while `retainedForOutput` holds
+  // what is actually placed into `messagesToKeep` (the originals again, or
+  // marked copies of them when carry-over is on). A copy is a different object,
+  // so using it for the Set/Map lookups below would silently stop matching --
+  // the retained message would then be summarized *and* kept, and the copy
+  // would sort to the front of the prefix.
   let retainedMessages: CanonicalMessage[] = [];
+  let retainedForOutput: CanonicalMessage[] = [];
   let retentionBudgetTokens = 0;
   if (scorePolicy && messagesToSummarize.length > 0) {
     try {
@@ -671,14 +705,22 @@ async function planFullCompactionMessages(
         256,
         Math.floor(tailTokenBudget * (retentionBudgetRatio ?? RETENTION_BUDGET_RATIO)),
       );
-      retainedMessages = await scorePolicy.pickRetained({
+      // Stamp what the policy kept so the *next* compaction can give these
+      // messages carry-over priority instead of re-scoring them from zero
+      // against a hint that may have drifted. Skipped entirely when the
+      // carry-over kill switch is set, so `PILOTDECK_CARRYOVER=off` leaves
+      // nothing of the mechanism in the transcript. See `retention/CarryOver.ts`.
+      const picked = await scorePolicy.pickRetained({
         candidates: messagesToSummarize,
         retentionBudgetTokens,
         estimateTokens: (msgs) => estimateTurnTokens(msgs),
         queryHint,
       });
+      retainedMessages = picked;
+      retainedForOutput = isCarryOverEnabled() ? picked.map(withHippoRetainedMarker) : picked;
     } catch {
       retainedMessages = [];
+      retainedForOutput = [];
     }
     const retainedSet = new Set(retainedMessages);
     if (retainedSet.size > 0) {
@@ -690,11 +732,23 @@ async function planFullCompactionMessages(
   // message, so any tool_result in the preserved portion whose tool_call was
   // summarized away (and vice versa) must be stripped.
   let prefixPreserved = protectedMessages;
-  if (retainedMessages.length > 0) {
+  if (retainedForOutput.length > 0) {
     const messageIndexes = new Map<CanonicalMessage, number>();
     messages.forEach((message, index) => messageIndexes.set(message, index));
-    prefixPreserved = [...protectedMessages, ...retainedMessages]
-      .sort((left, right) => (messageIndexes.get(left) ?? 0) - (messageIndexes.get(right) ?? 0));
+    // A marked copy is not a key in `messageIndexes` and would fall through the
+    // `?? 0` default straight to the front of the prefix, reordering the kept
+    // block out of conversation order. `retainedMessages[i]` is the original
+    // behind `retainedForOutput[i]`, so the copy borrows its original's
+    // transcript position.
+    const outputIndexes = new Map<CanonicalMessage, number>();
+    retainedForOutput.forEach((message, index) => {
+      const original = retainedMessages[index];
+      outputIndexes.set(message, original ? (messageIndexes.get(original) ?? 0) : 0);
+    });
+    const indexOf = (message: CanonicalMessage): number =>
+      messageIndexes.get(message) ?? outputIndexes.get(message) ?? 0;
+    prefixPreserved = [...protectedMessages, ...retainedForOutput]
+      .sort((left, right) => indexOf(left) - indexOf(right));
   }
   const preserved = [...prefixPreserved, ...tail];
   const preservedToolResultIds = collectToolResultIds(preserved);
@@ -702,7 +756,9 @@ async function planFullCompactionMessages(
   const pairedToolCallIds = collectToolCallIds(withoutDanglingCalls);
   const messagesToKeep = stripUnpairedToolResults(withoutDanglingCalls, pairedToolCallIds);
 
-  return { messagesToSummarize, messagesToKeep, retainedMessages, retentionBudgetTokens };
+  // Returns the array that actually lands in `messagesToKeep`, so the identity
+  // comparison in `run` reports exactly what survived -- marked copies included.
+  return { messagesToSummarize, messagesToKeep, retainedMessages: retainedForOutput, retentionBudgetTokens };
 }
 
 function splitMessagesIntoCompactionGroups(messages: CanonicalMessage[]): Array<{ index: number; messages: CanonicalMessage[] }> {

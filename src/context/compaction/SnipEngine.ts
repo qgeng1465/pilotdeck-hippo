@@ -57,6 +57,10 @@ export function createSnipBoundary(turnsSnipped: number, headTurns: number, tail
         text: `${SNIP_BOUNDARY_TEXT_PREFIX} turnsSnipped="${turnsSnipped}" headTurns="${headTurns}" tailTurns="${tailTurns}" />`,
       },
     ],
+    // Runtime bookkeeping, not a participant turn. Same contract as the
+    // compact boundary marker: consumers that test `metadata.synthetic` can
+    // recognize it structurally rather than by re-parsing the text prefix.
+    metadata: { synthetic: true, purpose: "snip-boundary" },
   };
 }
 

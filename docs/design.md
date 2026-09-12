@@ -66,9 +66,20 @@ resolveRetentionScorePolicy({ retention: "hippo" }) // → EbbinghausPageRankPol
 resolveRetentionScorePolicy({ retention: "off" })   // → undefined（纯上游）
 ```
 
+### 2.1 跨轮次再选择（carry-over）
+
+长任务会跨过多次压缩边界。第二轮的输入是**第一轮的真实输出**，而第一轮被逐字保留的消息到了第二轮没有任何优待：它重新进入"将被摘要掉"的集合，和新来的消息一起按**当前**请求重新打分。请求一旦漂移，上一轮刚钉住的原文就可能被折进摘要——留下、丢掉、再留下，来回翻烧饼。
+
+`src/context/compaction/retention/CarryOver.ts` 给这批消息一小块**封顶预算**：占保留预算的 25%（`CARRYOVER_BUDGET_SHARE = 0.25`），按当前分数从高到低填，填满即止。上一轮被保留过的消息在输出时被打上 `metadata.hippoRetained: true`，下一轮据此识别。
+
+关键取舍是**不动排序**：这一块额度不会给任何消息加分，候选的相对顺序与不开启时完全一致，所以一条旧消息挤不掉当前问题真正需要的消息。`PILOTDECK_CARRYOVER=off`（或 `0` / `false` / `no` / `disabled`）一行关掉，两个臂可以直接对比。
+
+两种被否掉的方案留在文件头注释里，连同实测数字：**扁平加分**（给上一轮保留过的消息直接加一个固定分数）会把最新的一个事实段从 5/5 打到 1.67/5——它抬高了旧消息，代价是当前问题要的消息被挤出去；**最旧优先配额**（老消息先占额度）在四个事实段上是 2.01 / 0.45 / 4.80 / 合计 7.26，总量反而低于关闭 carry-over 的臂。现在这版在 80 个 seed 上的配对结果是中间段 1.36 → 1.80、合计 7.38 → 7.78，而最旧段 1.01 → 1.00（**没有**救回来——那正是它想解决的问题，实测没做到，如实记录）。口径见 [§4.9](./evaluation.md#49-长程同一个任务跨多次压缩)。
+
 建议在评审时查看以下文件：
 
 - `src/context/compaction/CompactionEngine.ts`：接入开关、候选消息、保留块与合并顺序。
+- `src/context/compaction/retention/CarryOver.ts`：跨轮次再选择；开关、预算份额，以及两个被否方案与其实测数字都在文件头注释里。
 - `src/context/compaction/retention/RetentionTypes.ts`：策略与评分类型。
 - `src/context/compaction/retention/MessageText.ts`：统一消息文本化。
 - `src/context/compaction/retention/LocalEmbedding.ts`：本地 embedding 与 BM25 fallback。

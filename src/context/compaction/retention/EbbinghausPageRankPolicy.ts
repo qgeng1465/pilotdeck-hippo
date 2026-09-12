@@ -1,5 +1,6 @@
 import type { CanonicalMessage } from "../../../model/index.js";
 import { isSyntheticPseudoMessage } from "../toolPairIntegrity.js";
+import { CARRYOVER_BUDGET_SHARE, isCarryOverEnabled, isHippoRetained } from "./CarryOver.js";
 import { EntityGraph } from "./EntityGraph.js";
 import { bm25Relevance, ebbinghausScore } from "./EbbinghausScore.js";
 import { tryLoadTransformersEmbedding } from "./LocalEmbedding.js";
@@ -106,24 +107,57 @@ export class EbbinghausPageRankPolicy implements RetentionScorePolicy {
     scored.sort((left, right) => right.score - left.score);
 
     const retained: CanonicalMessage[] = [];
+    const retainedSet = new Set<CanonicalMessage>();
     let usedTokens = 0;
-    for (const entry of scored) {
-      const tokens = input.estimateTokens([entry.message]);
-      if (tokens <= 0) continue;
+    const eligible = (message: CanonicalMessage): number | undefined => {
+      const tokens = input.estimateTokens([message]);
+      if (tokens <= 0) return undefined;
       // A candidate with no visible text (e.g. an assistant turn that carries
       // only a `thinking` block) would be charged against the retention budget
       // and replayed as an empty message. Keeping it spends budget to deliver
       // nothing, so it must not be retained -- fall through to the next one.
-      if (messageVisibleText(entry.message).length === 0) continue;
+      if (messageVisibleText(message).length === 0) return undefined;
       // The same argument covers engine bookkeeping: a snip/compact boundary
       // marker or other synthetic pseudo-message carries no turn the request
       // can use, yet it is short and (being recent) scores well, so it wins
       // the budget and is replayed verbatim -- observed in a live session
       // where a 26-token `<snip-boundary>` absorbed a 1612-token budget. Score
       // it away rather than keep it: the summary bucket still handles it.
-      if (isSyntheticPseudoMessage(entry.message)) continue;
+      if (isSyntheticPseudoMessage(message)) return undefined;
+      return tokens;
+    };
+
+    // Carry-over allowance: a capped slice of the budget offered to messages a
+    // previous compaction kept verbatim, best current score first. This is a
+    // cap on spend, not a score bonus, so plain relevance still decides the
+    // rest of the block and current-query relevance is never out-ranked.
+    // See `CarryOver.ts` for the measured reason a flat bonus was rejected.
+    if (isCarryOverEnabled()) {
+      const share = this.options.carryOverBudgetShare ?? CARRYOVER_BUDGET_SHARE;
+      const allowance = Math.floor(input.retentionBudgetTokens * share);
+      let allowanceUsed = 0;
+      for (const entry of scored) {
+        if (!isHippoRetained(entry.message)) continue;
+        const tokens = eligible(entry.message);
+        if (tokens === undefined) continue;
+        if (allowanceUsed + tokens > allowance) continue;
+        if (usedTokens + tokens > input.retentionBudgetTokens) continue;
+        retained.push(entry.message);
+        retainedSet.add(entry.message);
+        usedTokens += tokens;
+        allowanceUsed += tokens;
+      }
+    }
+
+    // Everything else -- including carried messages that did not fit the
+    // allowance -- competes on its own score, exactly as it did before.
+    for (const entry of scored) {
+      if (retainedSet.has(entry.message)) continue;
+      const tokens = eligible(entry.message);
+      if (tokens === undefined) continue;
       if (usedTokens + tokens > input.retentionBudgetTokens) continue;
       retained.push(entry.message);
+      retainedSet.add(entry.message);
       usedTokens += tokens;
     }
     return retained;

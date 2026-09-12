@@ -66,9 +66,20 @@ resolveRetentionScorePolicy({ retention: "hippo" }) // → EbbinghausPageRankPol
 resolveRetentionScorePolicy({ retention: "off" })   // → undefined (pure upstream)
 ```
 
+### 2.1 Carry-over: re-selecting across rounds
+
+A long task crosses several compaction boundaries. Round 2's input is round 1's **actual output**, and a message round 1 deliberately kept verbatim gets no credit in round 2: it re-enters the "about to be summarised" set and is scored, together with everything new, against the request that is current *now*. The moment the request drifts, the text pinned one round ago can be folded back into a summary — kept, dropped, kept again.
+
+`src/context/compaction/retention/CarryOver.ts` gives that batch a **capped allowance** of its own: 25% of the retention budget (`CARRYOVER_BUDGET_SHARE = 0.25`), filled best-current-score first until it is full. A message a previous round kept is stamped `metadata.hippoRetained: true` on the way out, and that is how the next round recognises it.
+
+The trade-off that matters is that **nothing is re-ranked**. The allowance adds no bonus to any message, so the candidates' relative order is exactly what it would be with carry-over off — an old message can never outrank one the pending request actually needs. `PILOTDECK_CARRYOVER=off` (or `0` / `false` / `no` / `disabled`) turns it off in one word so the two arms can be compared directly.
+
+The two rejected designs are recorded in the file header together with their measured numbers. A **flat score bonus** — simply adding a constant to a carried message's score — holds the oldest bracket, but a bonus large enough to do that is also large enough to outrank the message the pending request is about: it collapsed the newest bracket from 5/5 to 1.67/5 by round 3. An **oldest-first allowance** reaches the oldest bracket (2.01) but pays for it with the two newer ones (middle 0.45, newest 4.80, total 7.26 — *below* the carry-over-off arm). The shipped version, paired over 80 seeds, moves the middle bracket 1.36 → 1.80 and the total 7.38 → 7.78, while the oldest bracket goes 1.01 → 1.00 — it does **not** rescue it. That was the goal of the change; we measured that it fails, and say so. Protocol: [§4.9](./evaluation.en.md#49-long-horizon-one-task-across-several-compactions).
+
 Suggested files to look at during review:
 
 - `src/context/compaction/CompactionEngine.ts`: the switch, candidates, retention block, and merge order.
+- `src/context/compaction/retention/CarryOver.ts`: cross-round re-selection — the switch, the budget share, and both rejected designs with their measured numbers in the header comment.
 - `src/context/compaction/retention/RetentionTypes.ts`: policy and scoring types.
 - `src/context/compaction/retention/MessageText.ts`: uniform message textification.
 - `src/context/compaction/retention/LocalEmbedding.ts`: local embedding and BM25 fallback.

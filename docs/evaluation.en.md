@@ -208,7 +208,31 @@ The several `X/20` in the text arise from **different conventions**, not contrad
 | §4.1 `0→8/9/18` | `benchmark` (tune protocol) | **median over tuning seeds** | base 20260911 | `2026-09-11T11-16-22-522Z.json` | N=40/80/160 medians; **not the same seed batch** as holdout, hence 18≠17.9 |
 | §4.1a "recall 16/20" | `benchmark:extraction` | **median over 3 held-out seeds** | 20260921–23 (SEEDS=3) | `extraction-precision-2026-09-11T13-39-26-139Z.json` | measures only precision/recall, not the main benchmark |
 | `pnpm benchmark:demo` live `18/20` | single run | **single run** | 20260911 (**tuning seed**, not holdout) | terminal output | demo single line, not the headline number |
+| §4.9 long-horizon table | `benchmark:long-horizon` | **mean of the final state over 80 seeds** | 20261021–20261100 (disjoint from tune, holdout and spot-check seeds) | `long-horizon-carryover-{on,off}-2026-09-12.json`, `finalByBracket[]` | unit is "facts / 5", not `X/20`; the file's `carryOverMode` field says which arm it is |
 
 Two notes:
 1. **How finely numbers reconcile**: each JSON is a resettable on-disk output; `holdout`'s `max=18` exactly covers the demo's 18/20 (that is one sample within the same seed range), not a contradiction.
 2. **Why two aggregations**: holdout is "never use tuned seeds + mean" to answer "robustness"; tune is "median over seen seeds" to answer "shape". Both use the same metric (how many of 20 facts reproduce verbatim) but differ in seed set and aggregation — all stated, all auditable.
+
+---
+
+### 4.9 Long horizon: one task across several compactions (`benchmark:long-horizon`)
+
+Every protocol above measures **one** compaction. A real long session does not: a task runs to the context limit, gets compacted, keeps running, gets compacted again. `benchmarks/longHorizon.ts` measures that — one continuing task compacted 3 times in a row, where **round r's input is round r−1's actual output** (`buildPostCompactMessages(result)` + a new phase), not a re-simulation. Facts are injected in three brackets: before round 1 (oldest), before round 2 (middle), before round 3 (newest), 5 each; after every round we count how many are still verbatim in the post-compaction context.
+
+80 seeds (20261021–20261100, disjoint from every tune, holdout and spot-check seed), final state after round 3 (facts / 5):
+
+| Injected | Upstream | Hippo (carry-over off) | Hippo (default, carry-over on) |
+|---|---:|---:|---:|
+| Oldest | 1.00 | 1.01 | 1.00 |
+| Middle | 0.00 | 1.36 | **1.80** |
+| Newest | 1.00 | 5.00 | 4.98 |
+| Total / 15 | 2.00 | 7.38 | **7.78** |
+
+Paired per seed (carry-over on vs off, 80 pairs): middle 27 W / 53 T / 0 L, total 25 / 54 / 1, both two-sided exact sign test p < 1e-4; newest 0 / 78 / 2 (p = 0.5 — 2 seeds of 80 lose one fact).
+
+Three caveats that belong with the table:
+
+1. **Both sides keep only 1 of the oldest 5.** Rescuing that bracket was the point of carry-over and it **failed** (1.01 → 1.00, 79 ties and 1 loss). The mechanism is in `src/context/compaction/retention/CarryOver.ts`: the allowance is handed out best-current-score first, and the oldest messages have the lowest similarity *and* the lowest recency, so the allowance is consumed by the middle bracket carried from the previous round. Filling it oldest-first instead gives oldest 2.01 / middle 0.45 / newest 4.80 / total 7.26 — it trades brackets rather than fixing them and lands below the off arm, so it was not taken. **Both rejected designs (flat bonus, oldest-first) are recorded in the code comment with their measured numbers**, not just dismissed in prose.
+2. **The summariser is a fixed-text stub** that never emits a fact marker, so "summary-only" is 0 by construction and "survives nowhere" equals "not verbatim". A real summariser can preserve a fact in prose, so this column **over-states** what a real model loses; the real-summariser long-horizon record is §4.7 and `benchmark:real-llm-topic-switch`.
+3. **Result files**: `benchmarks/results/long-horizon-carryover-on-2026-09-12.json` and `...-off-...json` — the filename does not name the arm, the `carryOverMode` field inside does (`on (shipped default)` / `off`). Reproduce with `corepack pnpm benchmark:long-horizon`; `PILOTDECK_CARRYOVER=off` for the control arm; `PILOTDECK_LONG_HORIZON_SEEDS` / `--rounds` change the seed and round counts; every run writes a fresh timestamped JSON. The table above is aggregated straight from those files' `raw[]` (each seed's `rounds[-1].byBracket`), and **rounding is worth watching**: `finalByBracket[].hippoVerbatim` is the script's own two-decimal **truncation**, which is why the newest bracket reads `4.97` there while the raw mean is `4.975` — this table and the README round, so they say `4.98`. Likewise the total column is the sum of the three raw means (`7.375` / `7.775`) and can differ by 0.01 from adding the rounded rows. To check a digit, aggregate `raw[]`, not `finalByBracket[]`.

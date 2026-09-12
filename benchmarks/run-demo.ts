@@ -1,12 +1,13 @@
 import { runEngine } from "./engineRunner.js";
 import { generateTranscript } from "./syntheticTranscript.js";
+import { factPresent } from "./factPresent.js";
 
 async function main() {
   const transcript = generateTranscript({ numPairs: 160, seed: 20260911 });
   const upstream = await runEngine(transcript.messages, "upstream");
   const hippo = await runEngine(transcript.messages, "hippo");
-  const upstreamFacts = transcript.facts.filter((fact) => upstream.fingerprint.includes(fact.marker));
-  const hippoFacts = transcript.facts.filter((fact) => hippo.fingerprint.includes(fact.marker));
+  const upstreamFacts = transcript.facts.filter((fact) => factPresent(upstream.fingerprint, fact.marker));
+  const hippoFacts = transcript.facts.filter((fact) => factPresent(hippo.fingerprint, fact.marker));
 
   console.log("============================================================");
   console.log("PilotDeck-Hippo demo (seed=20260911, N=160 pairs)");

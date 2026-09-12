@@ -12,6 +12,7 @@ import {
   generateZhTranscript,
   type SyntheticTranscript,
 } from "./syntheticTranscript.js";
+import { factPresent } from "./factPresent.js";
 
 // Held-out seed validation.
 //
@@ -69,7 +70,7 @@ const VARIANTS: Variant[] = [
 ];
 
 function countFacts(transcript: SyntheticTranscript, text: string): number {
-  return transcript.facts.filter((fact) => text.includes(fact.marker)).length;
+  return transcript.facts.filter((fact) => factPresent(text, fact.marker)).length;
 }
 
 function mean(values: number[]): number {

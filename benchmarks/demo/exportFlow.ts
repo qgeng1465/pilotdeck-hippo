@@ -60,6 +60,7 @@ import { defaultEmbeddingModelPath } from "../../src/context/compaction/retentio
 import type { RetentionScorePolicy } from "../../src/context/compaction/retention/RetentionTypes.js";
 import type { CanonicalMessage } from "../../src/model/index.js";
 import { fakeModel } from "../engineRunner.js";
+import { factPresent } from "../factPresent.js";
 import { generateTranscript } from "../syntheticTranscript.js";
 
 // ---------------------------------------------------------------------------
@@ -389,7 +390,7 @@ async function main(): Promise<void> {
       preview: preview(text),
     };
     for (const [marker, factIndex] of factIndexOf) {
-      if (text.includes(marker)) row.fact = factIndex;
+      if (factPresent(text, marker)) row.fact = factIndex;
     }
     return row;
   });
@@ -415,7 +416,7 @@ async function main(): Promise<void> {
     };
     if (step.skipReason) row.skipReason = step.skipReason;
     for (const [marker, factIndex] of factIndexOf) {
-      if (messageVisibleText(message).includes(marker)) row.fact = factIndex;
+      if (factPresent(messageVisibleText(message), marker)) row.fact = factIndex;
     }
     return row;
   });
@@ -427,8 +428,8 @@ async function main(): Promise<void> {
     index,
     marker: fact.marker,
     text: fact.text,
-    inUpstream: upstreamFingerprint.includes(fact.marker),
-    inHippo: hippoFingerprint.includes(fact.marker),
+    inUpstream: factPresent(upstreamFingerprint, fact.marker),
+    inHippo: factPresent(hippoFingerprint, fact.marker),
   }));
 
   // ---- Post-compaction context for both arms ---------------------------

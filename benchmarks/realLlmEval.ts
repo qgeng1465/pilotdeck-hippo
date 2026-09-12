@@ -12,6 +12,7 @@ import {
   type SyntheticFact,
   type SyntheticTranscript,
 } from "./syntheticTranscript.js";
+import { factPresent } from "./factPresent.js";
 import {
   chat,
   configureEndpoint,
@@ -176,7 +177,7 @@ async function main() {
           const row = rowFor(lang, numPairs, variant);
           const outcome = await runVariant(transcript, variant, apiKey);
           row.factsRetained.push(
-            transcript.facts.filter((fact) => outcome.postText.includes(fact.marker)).length,
+            transcript.facts.filter((fact) => factPresent(outcome.postText, fact.marker)).length,
           );
           row.postTokens.push(outcome.postTokens);
           row.summaryMs.push(outcome.summaryMs);

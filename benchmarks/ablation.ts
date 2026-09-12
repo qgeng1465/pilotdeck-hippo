@@ -11,6 +11,7 @@ import {
   generateZhTranscript,
   type SyntheticTranscript,
 } from "./syntheticTranscript.js";
+import { factPresent } from "./factPresent.js";
 
 type Combo = {
   key: string;
@@ -52,7 +53,7 @@ type Observation = {
 };
 
 function countFacts(transcript: SyntheticTranscript, text: string): number {
-  return transcript.facts.filter((fact) => text.includes(fact.marker)).length;
+  return transcript.facts.filter((fact) => factPresent(text, fact.marker)).length;
 }
 
 function median(values: number[]): number {

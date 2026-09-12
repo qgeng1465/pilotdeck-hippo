@@ -5,6 +5,7 @@ import { pathToFileURL } from "node:url";
 import { runEngine, type EngineVariant } from "./engineRunner.js";
 import { messageVisibleText } from "../src/context/compaction/retention/MessageText.js";
 import { isCarryOverEnabled } from "../src/context/compaction/retention/CarryOver.js";
+import { factPresent } from "./factPresent.js";
 import type { CanonicalMessage } from "../src/model/index.js";
 
 // Long-horizon retention: what survives when ONE task is compacted N times in a row?
@@ -201,7 +202,7 @@ export function generatePhases(options: {
 }
 
 function markersIn(facts: readonly LongHorizonFact[], text: string): Set<string> {
-  return new Set(facts.filter((fact) => text.includes(fact.marker)).map((fact) => fact.marker));
+  return new Set(facts.filter((fact) => factPresent(text, fact.marker)).map((fact) => fact.marker));
 }
 
 export type RoundRecord = {

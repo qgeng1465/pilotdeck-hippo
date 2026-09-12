@@ -1,6 +1,6 @@
 {
   "protocol": "benchmarks/longHorizon.ts",
-  "timestamp": "2026-09-12T05-07-45-404Z",
+  "timestamp": "2026-09-12T05-35-57-945Z",
   "seedBase": 20261021,
   "seeds": [
     20261021,
@@ -132,13 +132,13 @@
       "round": 2,
       "variant": "upstream",
       "atRisk": 10,
-      "inputVerbatim": 7,
-      "outputVerbatim": 2,
-      "foundation": 1,
+      "inputVerbatim": 6,
+      "outputVerbatim": 1,
+      "foundation": 0,
       "mid": 1,
       "recent": 0,
       "summaryOnly": 0,
-      "survivesNowhere": 8,
+      "survivesNowhere": 9,
       "preTokens": 8372,
       "postTokens": 2426,
       "messagesSummarized": 111,
@@ -149,13 +149,13 @@
       "round": 2,
       "variant": "hippo",
       "atRisk": 10,
-      "inputVerbatim": 10,
-      "outputVerbatim": 8.6125,
-      "foundation": 3.65,
+      "inputVerbatim": 9.9875,
+      "outputVerbatim": 7.625,
+      "foundation": 2.6625,
       "mid": 4.9625,
       "recent": 0,
       "summaryOnly": 0,
-      "survivesNowhere": 1.3875,
+      "survivesNowhere": 2.375,
       "preTokens": 8619,
       "postTokens": 2752,
       "messagesSummarized": 109,
@@ -166,13 +166,13 @@
       "round": 3,
       "variant": "upstream",
       "atRisk": 15,
-      "inputVerbatim": 7,
-      "outputVerbatim": 2,
-      "foundation": 1,
+      "inputVerbatim": 6,
+      "outputVerbatim": 1,
+      "foundation": 0,
       "mid": 0,
       "recent": 1,
       "summaryOnly": 0,
-      "survivesNowhere": 13,
+      "survivesNowhere": 14,
       "preTokens": 8893,
       "postTokens": 2549,
       "messagesSummarized": 119,
@@ -183,13 +183,13 @@
       "round": 3,
       "variant": "hippo",
       "atRisk": 15,
-      "inputVerbatim": 13.6125,
-      "outputVerbatim": 7.775,
-      "foundation": 1,
+      "inputVerbatim": 12.625,
+      "outputVerbatim": 6.775,
+      "foundation": 0,
       "mid": 1.8,
       "recent": 4.975,
       "summaryOnly": 0,
-      "survivesNowhere": 7.225,
+      "survivesNowhere": 8.225,
       "preTokens": 9218,
       "postTokens": 2962,
       "messagesSummarized": 117,
@@ -221,10 +221,10 @@
     {
       "bracket": "foundation",
       "factsPerSeed": 5,
-      "upstreamVerbatim": 1,
-      "hippoVerbatim": 1,
-      "upstreamNowhere": 4,
-      "hippoNowhere": 4
+      "upstreamVerbatim": 0,
+      "hippoVerbatim": 0,
+      "upstreamNowhere": 5,
+      "hippoNowhere": 5
     },
     {
       "bracket": "mid",
@@ -251,18 +251,18 @@
     },
     {
       "round": 2,
-      "upstream": 1,
-      "hippo": 3.65
+      "upstream": 0,
+      "hippo": 2.66
     },
     {
       "round": 3,
-      "upstream": 1,
-      "hippo": 1
+      "upstream": 0,
+      "hippo": 0
     }
   ],
   "hippoNotBetter": [],
   "hippoTies": [
-    "round 3 foundation: both 1"
+    "round 3 foundation: both 0"
   ],
   "raw": [
     {
@@ -297,16 +297,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "ffacefb8403e02912bd20427dc7dca8bf3cb2725dc4d0856da4e1899e978b3a0"
         },
         {
@@ -317,16 +317,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "635690cbfb8128515a5c738e2f05111069144ddab80a6befe1e5633efc7bde6d"
         }
       ]
@@ -365,14 +365,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "df1d16f1f245091984a070970e1965906c1e41dedd54e49cb280e4ac8dada7e7"
         },
         {
@@ -383,16 +383,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 2,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 7,
+          "survivesNowhere": 8,
           "fingerprint": "b0904581ebaf007d121d73c4df4de116018da15bb4d3334e337b4e7ee9473dcf"
         }
       ]
@@ -429,16 +429,16 @@
           "messagesKept": 41,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "d5b98ac902065ab7a30092f5ba18adf0131ca96526da2de589af4648addc2e2a"
         },
         {
@@ -449,16 +449,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 43,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "f7251b1c42ef34a53d3a3e83e70fed1f92ec7817dbd640f631aace54670a7b95"
         }
       ]
@@ -497,14 +497,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "0eea1f87ac280aaa162339f8a1fe350b36c9db4aab1cd44134d30fee314afe86"
         },
         {
@@ -515,16 +515,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "eb35568eeb7fecb254105571c2a1bc8a928b150841cf932e8db6c0b4e54baacd"
         }
       ]
@@ -561,16 +561,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "b730bc4d7f3c9b53b851b1a240a01f5c8e926a79ec27601e9fd775e63f82654d"
         },
         {
@@ -581,16 +581,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "1ae46ae85b8c6c22e13b271f56ef09e2dd1bddcce879e2b12703cf534be06b6a"
         }
       ]
@@ -629,14 +629,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "98300f593f9b78b38a5ccedb49b452c132eae1e07eb2bf9794ad460542488aff"
         },
         {
@@ -647,16 +647,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 2,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 7,
+          "survivesNowhere": 8,
           "fingerprint": "6fd262be6901c6161585ec9faa9a63bff43ecd4b1d0ca2eec51575d43eb97a70"
         }
       ]
@@ -693,16 +693,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "8e4fe7f3b8fd370a105fb167181c15c2ed4c0292cff6423843938d5dae04fa1a"
         },
         {
@@ -713,16 +713,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "7412ed54c090795ed588af726744a70aa8f5dc46d52c8e55bbbe286794e59e66"
         }
       ]
@@ -761,14 +761,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "23e62a895adeabc8ea80fb944b5b7810644d15b182325f18f7027709a79a9d9e"
         },
         {
@@ -779,16 +779,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "53bfe8589aba31c47da08976cc4036a49e85f35ed9cc8a648918935827e24eb4"
         }
       ]
@@ -825,16 +825,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "3647b9221bfb4f4d62ef7ecea87f58f401d421492c2ec49916ad663f40b738cd"
         },
         {
@@ -845,16 +845,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "51fc41825434d6f845734e506b65f39699203d5deed8a13dd92cc2cc53e0acb1"
         }
       ]
@@ -893,14 +893,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "0ae00b9d8a410a4bc058a46db0646a2e1bebda517943135e983335ecc8cab90a"
         },
         {
@@ -911,16 +911,16 @@
           "messagesKept": 53,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "8deea6f89396158972508c4c93da426c44900541123e8ecbc7d6a4b02991f2d0"
         }
       ]
@@ -957,16 +957,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "d895c96d873ac5a2d9d8737fc3d60425c0834aca44bc80ed4d18fc7beaf20f2d"
         },
         {
@@ -977,16 +977,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "20dafd43f63b16467e7c7f4aaa1179eb2c8da749c85b1cd995c45e70c53ad3e3"
         }
       ]
@@ -1025,14 +1025,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "057e0afc8bd048f6ab098fd31505aeb0881667a5586729476b1f0bf17a70cef1"
         },
         {
@@ -1043,16 +1043,16 @@
           "messagesKept": 53,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "ec7bce19808171b27470081e5d63d12664cd2f32ea1cc69a140e7e14144ca74a"
         }
       ]
@@ -1089,16 +1089,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "f574d4112a53860748c6ca720e5ca6fbefdece40b3a0f34818f3c142e460b3aa"
         },
         {
@@ -1109,16 +1109,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "e80448bfb2b4237cc7a0a9640859f5aac9efa311b4824b1915bb15c9c579e6cd"
         }
       ]
@@ -1157,14 +1157,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "6a225c30696f4d185aafdd236012950fbceed7e229d581e416f499b3cfaf43ce"
         },
         {
@@ -1175,16 +1175,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "a129644070e5c37a6dd4d215a2fe3503ae876d0496a3ad8067524c66584e6e0a"
         }
       ]
@@ -1221,16 +1221,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "50049e0ec45a9eafee759361688afdf9c64fd89819ce4df1cf6db678d93ddb2d"
         },
         {
@@ -1241,16 +1241,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "5b594356fc54fe0e102eb73d6226552f1daa81fc3ba04a8d2f9d183630e6f89f"
         }
       ]
@@ -1289,14 +1289,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "8b3a077861831fb32adc29d348eafcc79e01366f2185aacffe38492953677faf"
         },
         {
@@ -1307,16 +1307,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 2,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 7,
+          "survivesNowhere": 8,
           "fingerprint": "704b3b8538d73a9008c5c5a2832695a4a73938c878f221b3e14c51c2826bd2d8"
         }
       ]
@@ -1353,16 +1353,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "2121b91a9d8613d63e8ea8dbf8cd60ceaaae7e7c05d075ce78fb6c96ebba4bbc"
         },
         {
@@ -1373,16 +1373,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "d60707937694d96d854d0ed30cbfe4e3fc966ac1d1d64eaf687f6501482df06e"
         }
       ]
@@ -1421,14 +1421,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "53be9f9ce6cffe4a54bcbd6f6a872387a82a6551d1abfbfa240f2da023d25bf7"
         },
         {
@@ -1439,16 +1439,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "46ac9ea27b9923390718cdd48fd7d8edf3dfdfd5833ca2d89c347642dc5eecfc"
         }
       ]
@@ -1485,16 +1485,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "faa6f6470d512935d8e97f4fffd668b086013011312020a281fda3f4af3609b6"
         },
         {
@@ -1505,16 +1505,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "6226c9205c92ae1ca7e25dc5c766d6bae946440df2fa599729ba834c0ac74b81"
         }
       ]
@@ -1553,14 +1553,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "bc11805e84aa6fd1bef8847122fd4af9c5a349f01a77abec033ef472d4f798bd"
         },
         {
@@ -1571,16 +1571,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 55,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "95dadf38f9b7d9e967190857b1a434bdce8de7ad31323193ad93aa28132ee980"
         }
       ]
@@ -1617,16 +1617,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "7f3129eb19633b5f620a37423c4c44d9a3b79df08b119f433ed126e8f063db9d"
         },
         {
@@ -1637,16 +1637,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "ddd1ffd8fd9b4506aa817359cbe0970b3676f2bf25deb97b1f9bfcbde98db2b4"
         }
       ]
@@ -1685,14 +1685,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "4a00e1626c5a90c693940ff0fdc1f27c70d60d74a19004452c34054e0fac9ce2"
         },
         {
@@ -1703,16 +1703,16 @@
           "messagesKept": 53,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "db8d4f7c7c2876c2760b3bf4830590516832d4d2781750c5c6b757dcdaba529b"
         }
       ]
@@ -1749,16 +1749,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "69cba42045fadea11ec49c5b95357587e530a263c948b8b46821c20192562647"
         },
         {
@@ -1769,16 +1769,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "ab2fa09bec6738fee504d0a53d8f5e5e4d83b9bcdc5e0b084154cf3f0c8a4386"
         }
       ]
@@ -1817,14 +1817,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "71dacade9b75b3b99e0a3d6aa7c3b620955d3c63ffc7e3cdcc655679228f8261"
         },
         {
@@ -1835,16 +1835,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "f27c9cea3484777fd27b30cba82fd6c82eb6e4260e7dea4163ce0b512fd45fe8"
         }
       ]
@@ -1881,16 +1881,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "cfd2f5ebe4509b58299ca601eba27c9277facfddfe94bb0b3b8cddaf7ca874d0"
         },
         {
@@ -1901,16 +1901,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "045630e15196053a2aabe9537478b66c2560510dd9442a4e48f8837ef382207a"
         }
       ]
@@ -1949,14 +1949,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "a26aec4bfb2818184c21b9589879e2aa82426df165a419be22c50e4ed3b4fc45"
         },
         {
@@ -1967,16 +1967,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "04eefe3854f874e435ad113f41734a5a16c068f6efd47573a0e331c2fd999546"
         }
       ]
@@ -2013,16 +2013,16 @@
           "messagesKept": 41,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "307ed9f431d19fb3fa2f0545d502b5c987ee7d17deed7936958facf0f52eae29"
         },
         {
@@ -2033,16 +2033,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 43,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "94462c0917847e8f1c40a6aae176f4ec98837580bbc1a020c2438f1112d27b57"
         }
       ]
@@ -2081,14 +2081,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "3ca535acf4a70521161e27b45fbaf567df019175ed7f3b993bc38eb43de685cb"
         },
         {
@@ -2099,16 +2099,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "57e3f1cca7ad0c73a727334f5720b53a5387c01eee68f869cac1d396b82c27ef"
         }
       ]
@@ -2145,16 +2145,16 @@
           "messagesKept": 41,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "f3004bbe6c66e9967c9e041412a7cef45928f7d48fe43ade704e2823f9d36a6b"
         },
         {
@@ -2165,16 +2165,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 43,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "581647ebb04facfc015cc5f1861a68398d25d5114c44d74d80b53f5208453f9a"
         }
       ]
@@ -2213,14 +2213,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "82e57a3d025b993ad65c0d98785e93b7993212f04e43638b6039e774951b89e9"
         },
         {
@@ -2231,16 +2231,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "c393c92bb457e488cff6ac2126bfae3c7688705b4504213cc79d6b73128714a7"
         }
       ]
@@ -2277,16 +2277,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "778e8a9a3b765a5cec41ee7c45f93a8c8a1e8f616ab2724889562488730d71e9"
         },
         {
@@ -2297,16 +2297,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "d6d41212378138aa589e09eb6094e16722f34a70632f5347eb55590513aa87ba"
         }
       ]
@@ -2345,14 +2345,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "b47fbe1285db2b81e20981dbd8f74b9c6e75314ebc3b5a317726fd6ba2a67008"
         },
         {
@@ -2363,16 +2363,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "32b56105004085e5543e9575f4df5b683393e50081490aa9ded92b2a65326aac"
         }
       ]
@@ -2409,16 +2409,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "4a3f7d8a650037de4b7501f171a58419eed26e50ba0f4efd7f4fe6ab3d57154c"
         },
         {
@@ -2429,16 +2429,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "186a1ca1e8d5abab5c551ec7b165d0693970425d4d8da71c65fc2ae0f6704bf3"
         }
       ]
@@ -2477,14 +2477,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "a4d979d7498dc90ac03b580ba3e079f1278de6544cf681d1fa1bcdb346b02af5"
         },
         {
@@ -2495,16 +2495,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "c0fd8d4487c224e265bdfb8fc51f1a515851f2e560b7e6f4e8e9f774b36230d5"
         }
       ]
@@ -2541,16 +2541,16 @@
           "messagesKept": 41,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "b8e6a931e877b6914881d3a43c9ea20933d3bcb5e120ecd352f6c3276291efa3"
         },
         {
@@ -2561,16 +2561,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 43,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "646cc583d0ddc85dcaf6f7687f1091776dcd9cfa053f3d46600ef80a74f95ffe"
         }
       ]
@@ -2609,14 +2609,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "32422b86fb564749f3a2773cda905fda329d74f98f9736316971231525413a07"
         },
         {
@@ -2627,16 +2627,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "a29adbc7dfac50a50c4f7f3de16880dad0dd8ee0c9e704ea09483200367161e7"
         }
       ]
@@ -2673,16 +2673,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "31b5378524ae4f88d24c381d2874b04e8e8bb5fef0b7a506c9b84d948455f890"
         },
         {
@@ -2693,16 +2693,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "7af2d43edf2540d933d8e95f09182db3af97f4691c065b10d5e82ec165e10e4b"
         }
       ]
@@ -2741,14 +2741,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "7f4970bd5f50d794c5d133b0c405f44e066a9c48fbe48ee173845c641f75025f"
         },
         {
@@ -2759,16 +2759,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "6eb8685fc4d51f233f741659b188542ba044540888a2c62fcab7defbd5f14c3a"
         }
       ]
@@ -2805,16 +2805,16 @@
           "messagesKept": 41,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "f1b9ea36ba28b3260ee10d5693a4830556a6d4290bb157817b64b54dc68d1664"
         },
         {
@@ -2825,16 +2825,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 43,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "ca09984dc5f7f1baa47c8b14af7a35d63c6609da48ab5b0411501e00f5384455"
         }
       ]
@@ -2873,14 +2873,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "914b90300d73349bd85c67fd54d9f68f954364ab362c05d2eafef57dab44663f"
         },
         {
@@ -2891,16 +2891,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 2,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 7,
+          "survivesNowhere": 8,
           "fingerprint": "b3b868211e0e5be9298f73d65ba54356d3d1ef265760b58ee7bcb5a188a3bc24"
         }
       ]
@@ -2937,16 +2937,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "63b3ec71f8386e27fc9a7dc2ef49391c20ec2190796e2db10ad259f4c2ca27d6"
         },
         {
@@ -2957,16 +2957,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "602e18e5b672b376471c356f280c4144f0a081e079b6e452d71afede76101063"
         }
       ]
@@ -3005,14 +3005,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "a52664008792647079fc08384dda7806c7bacc171b5eae5883c6b4cae559fd48"
         },
         {
@@ -3023,16 +3023,16 @@
           "messagesKept": 53,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 2,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 7,
+          "survivesNowhere": 8,
           "fingerprint": "1fa00b261555598931c02f7ec93379874f8577208bd0590f82ce853b3a7313f6"
         }
       ]
@@ -3069,16 +3069,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "c2cab85b04e64e169b9f787c3faba7a3ed94d710a0cab626538ed63917db194d"
         },
         {
@@ -3089,16 +3089,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "472a7b602be98f716d5ad45ce8b5b8fff703e4db44990c90915891b5b801bf97"
         }
       ]
@@ -3137,14 +3137,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 4,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "d5df48c38eded78de67d545014050e2c24a3a560cc9429cd403625a2f684bebc"
         },
         {
@@ -3155,16 +3155,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "6c60392b531a64ca23787e1cffb64551664edd0f685e0b05277e7596598e5f10"
         }
       ]
@@ -3201,16 +3201,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "9dadea701a187de6316373d399478c0b260cb6031a5b86b75e302a535e208a2c"
         },
         {
@@ -3221,16 +3221,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "f0815f374270781a43c88696a497cbf63766634e16da72d7733a3339e9636fad"
         }
       ]
@@ -3269,14 +3269,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "1e1aa71e2975c3484d87daa42456e6f5e0efca833043ff8c3843a4c244f6c58e"
         },
         {
@@ -3287,16 +3287,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "38539d6d63f907f0d0b6b8bd6aec977087ea0c6fef4b7817c42428741a73d50f"
         }
       ]
@@ -3333,16 +3333,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "26e175acc783c40f918f2319cdcbdfc42ddb4bb81b76d27a2b56f35e7ea5cabd"
         },
         {
@@ -3353,16 +3353,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "205fc3c7292195496da60f37f2e46b15123fc9d8012d42a7fdf835a39b10e48a"
         }
       ]
@@ -3401,14 +3401,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "6f45908a3312ae4c8085a9e32f99cc70913cfcfb2101446ac9e943e05b11dcbf"
         },
         {
@@ -3419,16 +3419,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "ca190be30c91eb1c4fa35bfee8e42d33cbd4fbe6ff9c937916dfba14d8382234"
         }
       ]
@@ -3465,16 +3465,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "a0d566e0f72c70683b3779dbd7b57642e2fc62a6920a5e63bf5bdca0c7e91a14"
         },
         {
@@ -3485,16 +3485,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "99f49ce907b21a7535bbd7b279d7911c23ebc0968cc64e41c0eb4d01ee1e74f4"
         }
       ]
@@ -3533,14 +3533,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "f6152cc9c8ac24fe34b6a4554af65d8065980fce5e4fdc0947508e602eba0565"
         },
         {
@@ -3551,16 +3551,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 2,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 7,
+          "survivesNowhere": 8,
           "fingerprint": "a775befa42f31e94186c6d4ee81225395e8d9a87ec9854efc0067e1902185085"
         }
       ]
@@ -3597,16 +3597,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "6677a8dc4cbc976ee262cb4db45354ed634ec680b4183f320f737c2a47b0ed8b"
         },
         {
@@ -3617,16 +3617,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "ffc952048f47b2418c084ece3ca6687dc5db84bae93e7a0e6bf4a186a288cdfd"
         }
       ]
@@ -3665,14 +3665,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "124ffa6b5367b77d9b525244bfa57a26b72f169d4f95e29799604db1243e4dd9"
         },
         {
@@ -3683,16 +3683,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "c8e22f620473cfd9396015632bea488c64a1032c88da7af247d9b173c4a3ad00"
         }
       ]
@@ -3729,16 +3729,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "77fb5fab3b3b2b15f46572b61bff28019f83374d0d4b16dabc5da0c1f9b7ca6c"
         },
         {
@@ -3749,16 +3749,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "9f9e8ee6bda2bd9a2c921f82d5934523a303bb521edf5a24d679b1767bc119f4"
         }
       ]
@@ -3797,14 +3797,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "877c8f0c1bb3ca3bfc38e54dd07a3680af3b983dce26ee3d8565033c428fa10f"
         },
         {
@@ -3815,16 +3815,16 @@
           "messagesKept": 53,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 2,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 7,
+          "survivesNowhere": 8,
           "fingerprint": "973bcc986b63658e44fe23a6003651bb5c37d564193a5c1aede9daad6e8e97b6"
         }
       ]
@@ -3861,16 +3861,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "707012f2b12d3be532d670176c67ed77dc25d50397f761e25e36ee50d3b49732"
         },
         {
@@ -3881,16 +3881,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "cbf90b8e33326f7948182d7fbe04e7ce0bacda44ed42fc4cdcdf3e181a2f90cb"
         }
       ]
@@ -3929,14 +3929,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "6b39ad26cfb4f1ca3fe73ab7e15bc8d8288b5311c8f9521ca245a2cf52a80e4d"
         },
         {
@@ -3947,16 +3947,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "2fd2a490d6c4816fb407a47a09b5b96afa1228dcaf18531d8f9d4acc34753cc0"
         }
       ]
@@ -3993,16 +3993,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "a5cfc7e1d31b6ade220e6542c365048061faeb21ffbacb9cfabb596adb81d524"
         },
         {
@@ -4013,16 +4013,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "3dcf540462a8c87f63d2d976e0c834d2a7f56c7aec9ba8d7eecfa2a2949308d4"
         }
       ]
@@ -4061,14 +4061,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "8dff947518350479f2180eef23365177c86e86ba87f324389aead4c43e835211"
         },
         {
@@ -4079,16 +4079,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "83d7f881b08190306d8b23fd70ccf3d4662d07c21b152e358b68dc05176dea93"
         }
       ]
@@ -4125,16 +4125,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "d9a689aae40c26e3fc0ac83d19fb2a9e06aa0cee13ab45f36203435bc68c9f4d"
         },
         {
@@ -4145,16 +4145,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "0daeb8d2d32d5984a893a27eb2b161e3406307e93f6f97af523cb06020ab4508"
         }
       ]
@@ -4193,14 +4193,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "af55f9d1151fc10dddd11ab190b123bf951e10812e0ee8dca051ba36d829caa1"
         },
         {
@@ -4211,16 +4211,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "abf0073c097c2ad651458948947f418fc7fe238c04a4cc22da1107def3f40434"
         }
       ]
@@ -4257,16 +4257,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "c485617ea17211ea422b18bbf5ae1ab6342cf24b79a24c93f8135600f5d3d796"
         },
         {
@@ -4277,16 +4277,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "76864d57270653d2281358e0b5ee70f607ba823f6b9e8e2c085a7aab030f3c0e"
         }
       ]
@@ -4325,14 +4325,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "c7a63b13c1ec6699146305103fd075148b2b734c7fceccbfb6159e3960dc623f"
         },
         {
@@ -4343,16 +4343,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "8174b49b539675c5a069c25736c5f7d392c6ac20b9981cdb378a2303a1110266"
         }
       ]
@@ -4389,16 +4389,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "4fa95527f8cac26e676b1d5cf394156a1615534d5a5cb4e31f7881325fc9c1b1"
         },
         {
@@ -4409,16 +4409,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "e2c541946ce78d76c668b864b4b8e0290274c995319c5a3a67804aee1cfc021e"
         }
       ]
@@ -4457,14 +4457,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "2ce61217aebcdf79335f1cfaf13d4ac246672d0fb25909482dbe89ee3fe25497"
         },
         {
@@ -4475,16 +4475,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 2,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 7,
+          "survivesNowhere": 8,
           "fingerprint": "f4d698c7040e87cdc23fe09fcf97b94bd3b2374392a51771e1ac10db4b921dec"
         }
       ]
@@ -4521,16 +4521,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "675f2cd8a9f0950a87d702cbf2b40f5b07cd28c6f78e7c380f54ee55e6b005af"
         },
         {
@@ -4541,16 +4541,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "7298c2514bfb3bbb8af432516fec137da9013556938e22d0bf220e139ee7c464"
         }
       ]
@@ -4589,14 +4589,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 4,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "2ae05018fb9d58778f034b1a493ee6ccb592d020882c0653e03a328a9c78e727"
         },
         {
@@ -4607,16 +4607,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 55,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "cc2e3ef33020574488c0b5f5cb7727a1c48ca56867a50501c5e9cb3995ae1682"
         }
       ]
@@ -4653,16 +4653,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "c61f5a52fc73594d5cd1b5f197c65bf40e4bba644fa77d8d3ae884164a87d5f6"
         },
         {
@@ -4673,16 +4673,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "3762bf7698d843c63d6da92b0fb081b3854199d5e2418cdb72a01482a6a81665"
         }
       ]
@@ -4721,14 +4721,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "0bb42b8d33ead2d6f224255acc283da99057576e0d9f44e172d11cc1546c8aed"
         },
         {
@@ -4739,16 +4739,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "37648d6b2705a125305366fe41495fa4178f36a5b69eab4dd924258bc4e637a0"
         }
       ]
@@ -4785,16 +4785,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "0865a5861594f3d699bb6653d97ed4cd41ea4d36438923651ffc70488abc5ce3"
         },
         {
@@ -4805,16 +4805,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "f5d30a120aee69c2c63561046633a2318dc8506e10b17048b915d07a1ebf1c58"
         }
       ]
@@ -4853,14 +4853,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "52e592ee5812726456a055a3012f9680d085bf7538284b257ec746b522828e2c"
         },
         {
@@ -4871,16 +4871,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 55,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "264a80aa9ad11de38f570e926f18f4d30d0ecd89a72740f4536b083fb7e3583c"
         }
       ]
@@ -4917,16 +4917,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "e9970c7d01f73527b4ee12f37d8cb9a0f2d91a536ea1a5337c70e4c1aa5e547c"
         },
         {
@@ -4937,16 +4937,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "5fc8d8252126f22b9dcff03a2aa832844bb45daa852ebb51788ea435da714931"
         }
       ]
@@ -4985,14 +4985,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "1a1505a5a716cf8cdc683e7d0df59f5fc754698b2b115edc671c1ae8d173a987"
         },
         {
@@ -5003,16 +5003,16 @@
           "messagesKept": 54,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "2970c15d0170063e0065bfab61a5061b6410b6be303f5d8c2a61d1f0db1275d0"
         }
       ]
@@ -5049,16 +5049,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "11f4d46cb7f4af7fd1500f817bb1732f2021975995b7b3305ba0ec69d734eca7"
         },
         {
@@ -5069,16 +5069,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "ccffeabcd659b03941cdda8e8300b9a6539ef580f780cf64420b7d65bb36ce1c"
         }
       ]
@@ -5117,14 +5117,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "b02c44619cdf5f7ff0e1cd84e7e56f2038978f805797cb8b4ab29633b8bbae41"
         },
         {
@@ -5135,16 +5135,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "5b3b99b1833633c34e976ec040f8d6157e4d197ad44b17c28009be1f01a9b4b8"
         }
       ]
@@ -5181,16 +5181,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "98c8b035219e5e05ac8f9a05e7a77d897bf79e098bf27012971d05df3f1c56b7"
         },
         {
@@ -5201,16 +5201,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "230ea0c1617999454e49bea7bfb3d668336141692e0dc8f0e73b62034621326a"
         }
       ]
@@ -5249,14 +5249,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "b03fba2aa58a17a05d8e0641aa4eee319b4a61557dbe49cbe6519b283efcd365"
         },
         {
@@ -5267,16 +5267,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "88b7acac1e769ef020adedf0737edc4aa97f8cacae48bfbedf2dd6d93a7f6d84"
         }
       ]
@@ -5313,16 +5313,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "663c2fb438c0f76fe5768a3bc4c0caa5741aef800c2abdf0c69c5f4f6c5f5653"
         },
         {
@@ -5333,16 +5333,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "d16d082c0607c64cf51f3fd5b5315a1595c8e2f3c9358e2482b3e5df24b374e8"
         }
       ]
@@ -5381,14 +5381,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "4da05fb71f88f3432fe8099f856c5e68149bc5857685c18fefffbd4dd00b6b93"
         },
         {
@@ -5399,16 +5399,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "2c50231359c66f0ca55a1da77798e6a684eb16ba89192b5e866e9ba20fb96a2d"
         }
       ]
@@ -5445,16 +5445,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "a4c2518d55a10801a010806e9439d3a036dd86760efa73b393a2f20fe054d848"
         },
         {
@@ -5465,16 +5465,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "1f1367e19372a86aaa0de605d25ceec377a8398e624cbf49167555d4848a8264"
         }
       ]
@@ -5513,14 +5513,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "efbdeffe3054c5f288cba970f2a755bbb643d4c4b1dcfcfef499e0e9651a3a68"
         },
         {
@@ -5531,16 +5531,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "ff7c86b11a58e29b2ccc0f3821e186e25c61c4650caba71419d5c26b18021d20"
         }
       ]
@@ -5577,16 +5577,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "f25f9488bc6abecd3a2fbe3d97d18211e65112cfbf0aff0d6128cb8156d9645a"
         },
         {
@@ -5597,16 +5597,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "567975744f952dd4730bccae5599c658033125ccf6def5e230169ceb872f94a6"
         }
       ]
@@ -5645,14 +5645,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "8907b0eb48a3da0cf3cfcc48930d940e8965667dcf4daaf3c32ea3f7a9830270"
         },
         {
@@ -5663,16 +5663,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "ab9f9491018102548167be59bb2a3054f1746a031e2d97940ddb4a06f9b730b8"
         }
       ]
@@ -5709,16 +5709,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "610df938eff37b6d9409dc24c74bc44bed5c0f15d6eb1125adaae3149560ba34"
         },
         {
@@ -5729,16 +5729,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "262046ce94e4121016fdd9479c1cc960f17cafdb87d8117d4942df88191c9f68"
         }
       ]
@@ -5777,14 +5777,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "4dcaa7de92c3d25dd2bbc47ef9991e04cc82445007ba442c0540f2c401e5c04b"
         },
         {
@@ -5795,16 +5795,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "28961ac236c26972984823883e8f3300a39d69f53b4395f3589829fcb3ca7b3e"
         }
       ]
@@ -5841,16 +5841,16 @@
           "messagesKept": 41,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "626a9e6690f43a3fcf14d3d0e3facdcebcb731b64e07e474365beaf2f1369aea"
         },
         {
@@ -5861,16 +5861,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 43,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "695ee2e1d18b1c5b29228af924e4587d7c6fdc32b01d3df6aa7611c7a2806465"
         }
       ]
@@ -5909,14 +5909,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "199af4e794f979e03c06b1ef0c676901ccd5b9cfa3f07b95360e0000152c9fec"
         },
         {
@@ -5927,16 +5927,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "4cdbfa301b832bb0d2b6b60a678e3fd78d9b7e2b65e2608a23c430781dbc52f9"
         }
       ]
@@ -5973,16 +5973,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "77d88c604059c9abb646ec7a0d22b74eec168431e1a8d797087dd5524d6a84fe"
         },
         {
@@ -5993,16 +5993,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "8991f18e4346d7c5da308cf5abd0633ce6a61d3cc80d08788335254abc951644"
         }
       ]
@@ -6041,14 +6041,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "43feb35341179ff2b93513bb113def2cacd4798a10af16f1d2e99bbdf0575de9"
         },
         {
@@ -6059,16 +6059,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "b9df2edd7a8105413ec2c2c7acb3d4f895e7b5b7abdfb1d6f1a525fcf10a4f21"
         }
       ]
@@ -6105,16 +6105,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "fc3a2ab2dca98457b5242a79a366bb4d25fe87520abaae9292fcbbb775223487"
         },
         {
@@ -6125,16 +6125,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "69f5501b1a442cb8dea96d3f16ec488501133e6b570b54aab19058a8b5bc56e5"
         }
       ]
@@ -6173,14 +6173,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "5974050b9a70bbeeca93aa48b9bfd06a726834bbd75fa20888abecf6adf705f3"
         },
         {
@@ -6191,16 +6191,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 2,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 7,
+          "survivesNowhere": 8,
           "fingerprint": "38ff2e61fa87bab20c91e034ace1188e9e61435990964401041256d83d37f40b"
         }
       ]
@@ -6237,16 +6237,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "2314cf633f894a91e6b6a2a9a06e3fe65577f720e3c8a54e38cfbd164a79e7a1"
         },
         {
@@ -6257,16 +6257,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "dfe2124557fa6361f555b4d50f58ee0b61e1f077b8c9a78354da0663f28e65c1"
         }
       ]
@@ -6305,14 +6305,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "7f89d11f15eb20b7ac66b75d8480dfd6fa3b857713df01f05021c4a53902b8d3"
         },
         {
@@ -6323,16 +6323,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 2,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 7,
+          "survivesNowhere": 8,
           "fingerprint": "c69a313380ecd481adedd7bf33a05aee3ed6943aa7015c1db60315bace6e7bd5"
         }
       ]
@@ -6369,16 +6369,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "6bea5d5cc41f0fd460d53f066e75fc2bf28be14137697a3952751f484018ea72"
         },
         {
@@ -6389,16 +6389,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "bdda739977b48ab4a4a8ee8306ab564a0c98a5bcf7771b857abf19388726bbcc"
         }
       ]
@@ -6437,14 +6437,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "ec5c548ed2e31294771ad7beb762a88bac11770896ae1062a7d165b15e66c094"
         },
         {
@@ -6455,16 +6455,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 2,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 7,
+          "survivesNowhere": 8,
           "fingerprint": "edc6eebfcdb798d1b25d70b34c960dc0042c69743626d4da0ad64b7d8a344001"
         }
       ]
@@ -6501,16 +6501,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "80de61cfed12196aa0670c1e0cd1a7cd37f6af7ed34b9f1b22468f11765d8b58"
         },
         {
@@ -6521,16 +6521,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "04861a975f98e13af65568325270f90c81629a9ce760957948c5e0d4ef9e1d5a"
         }
       ]
@@ -6569,14 +6569,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "6e341bc51d9204308dd6a74bce2f368de722cca06cdd8742faf5af33e852d94c"
         },
         {
@@ -6587,16 +6587,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "184df355c67cde02fc6b92a00e4170e5bc285289e97a76ff257493f6fef77906"
         }
       ]
@@ -6633,16 +6633,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "e068cd09a7e2d0116479874b9293f643286e09fd86d268b45874539961ca919b"
         },
         {
@@ -6653,16 +6653,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "f931d9b664f95f27346af815ef1ca75fa915944df4eaa7f07a54803e9e6be80a"
         }
       ]
@@ -6701,14 +6701,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "5444ca51b4668151c20702fd946a106eb6767644ea8d6c9a6e42b6195b7f36df"
         },
         {
@@ -6719,16 +6719,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "f164116372ac49da30622f896274c8df95a8f5c03171f2e1c05f295ee14b1bab"
         }
       ]
@@ -6765,16 +6765,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "fdb5802e8599ca0487b753e01b84a0fc540235c0f227d0c05792ca7f54872cab"
         },
         {
@@ -6785,16 +6785,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "a4c9e06dc8d903ac833feacbca2e5a55cfaccc81d391b58c167fa80fbb2bcd05"
         }
       ]
@@ -6833,14 +6833,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "3988b64dcf4894b357da7175993f62e98db1703504a5436889f7e964a4293eed"
         },
         {
@@ -6851,16 +6851,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "2799bb1d8e9ad684b86ac5187221efde6647a9fe7fe59be904ce3bdc789e7122"
         }
       ]
@@ -6897,16 +6897,16 @@
           "messagesKept": 41,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "97a37985bdeac5d342cfdff676e87c4404b25537e74ea2ca7f64485990714779"
         },
         {
@@ -6917,16 +6917,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 43,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "fa02ef1868d3829bbf9fa21369891f1671fa5a17dfc17b641a461e2ddab917d7"
         }
       ]
@@ -6965,14 +6965,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "85ae0e1673d3feefc2e2742ef9023bc6600a21c4f050c95426efd9c3609ff5ba"
         },
         {
@@ -6983,16 +6983,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "768de2d6b8626e21b1bd328837aefaa4f5ed1f26b1a9f64aac2317e863b41ca2"
         }
       ]
@@ -7029,16 +7029,16 @@
           "messagesKept": 41,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "611b7376deae8d2936fb1ce6fdf0e6f777310b4d52a9d279b52261189dec3088"
         },
         {
@@ -7049,16 +7049,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 43,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "e9325f90d95c0afdb71c127bcc78908c7031db5c7d4f999acfe8b4332d76815e"
         }
       ]
@@ -7097,14 +7097,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "ab636e12ed603410a30869de26b788b8bf77b12e57267d35d1c9980543361705"
         },
         {
@@ -7115,16 +7115,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "1597371922781d554c7cf5c1a72dc7b9ee31040f0cfcb18e909656c7b3a2cc95"
         }
       ]
@@ -7161,16 +7161,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "7bf68d6f73ca59be522fd842607c2331669ecf856eafb32210a630b6c54759ce"
         },
         {
@@ -7181,16 +7181,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "c765946e9de1b41c9ba3542387e327f58e8b55bf8bab040a9c368b8a624419e5"
         }
       ]
@@ -7229,14 +7229,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "976c3b27ee00affa8e9f50956ef38442cf79703b359cf6896d3b4962d1804e2b"
         },
         {
@@ -7247,16 +7247,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "02ec0e9bd61651d264e76e8c33b06f19fd3069b74a9947a081a7f370905eb8c9"
         }
       ]
@@ -7293,16 +7293,16 @@
           "messagesKept": 41,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "fde37551deeafe8d44f616efab22fe0430672dc849260615dd9f3a7c6e546e65"
         },
         {
@@ -7313,16 +7313,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 43,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "125d0332e0b09c78df9d53732805e97329e82613e5607354a08d45d2de0347f4"
         }
       ]
@@ -7361,14 +7361,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "6fadef7f245939e1504e051c8850be2e3c53f5e30d3e5574b1ad05e96f7f1eb3"
         },
         {
@@ -7379,16 +7379,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 2,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 7,
+          "survivesNowhere": 8,
           "fingerprint": "7a9969bcf63b40f7d10feb2eccea68a35c8b721aee4fd2fd1cfd39b8ded209a8"
         }
       ]
@@ -7425,16 +7425,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "0d24dcdb1f53b340de245fd6f30213d208b49ce89bad3da12e3485648fbf41b5"
         },
         {
@@ -7445,16 +7445,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "586aafcef937d7baf17e2650d9583b8c45832d7d6a7ac29a8eb8f319dbe66ce2"
         }
       ]
@@ -7493,14 +7493,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "2c01c5c6b46b79e58062513354bdcc49916f536aa1a3ba21e3d1e2f374a1b86e"
         },
         {
@@ -7511,16 +7511,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "de0373f694939c6e89345dacccf029fcd843f026ecdc92e872adba92c3320b13"
         }
       ]
@@ -7557,16 +7557,16 @@
           "messagesKept": 41,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "440fab0b93d69bb03d2fb4b7f2c44b4020d5b6fbf7dec3ad1bfb7b706ec4db91"
         },
         {
@@ -7577,16 +7577,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 43,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "98a4331d65bbec9341d46d8013efa6c68778884616f86722249bcfd3f7e136f4"
         }
       ]
@@ -7625,14 +7625,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "77f8fee24b1c08271467130ec1dc315cc21c888ae273727d6dc962ca97250d2e"
         },
         {
@@ -7643,16 +7643,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "727cad322c5c46ee9f5eec3b3b2913704e45e19b77b5d8cfcc31d02230e11ca9"
         }
       ]
@@ -7689,16 +7689,16 @@
           "messagesKept": 41,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "faeedddb70f216f4457dda7cc11343f479b7abfd0aa12edc007b847932babbf0"
         },
         {
@@ -7709,16 +7709,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 43,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "befa49180b90d3c64d61406010cc834d287a63413aa1fc32c9086f81eb070d0d"
         }
       ]
@@ -7757,14 +7757,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "ab44f1d7a2f42411213c21e989a12ed335d0dfd4e7d0ead8de4d757a3b394181"
         },
         {
@@ -7775,16 +7775,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "341fed34021e386f1c01919ee3ab0a331c7613c6ba04f86e09de2b180ac6d185"
         }
       ]
@@ -7821,16 +7821,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "fdfeaf41857970d8c7ae625c7701acff71ed89b6a123837e542e8632636ee338"
         },
         {
@@ -7841,16 +7841,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "eb86dc267758195d724ff50e3dbd54424c0355e0097bbcf93cc3ad2b4b822b31"
         }
       ]
@@ -7889,14 +7889,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "b7e6051ee1406ac623f93a886cc55ce8014fc41f6abcbfd93d3c747400146948"
         },
         {
@@ -7907,16 +7907,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 2,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 7,
+          "survivesNowhere": 8,
           "fingerprint": "edbb231d5f5353057cf62cd0a28248dee17557ce15d9474171f2c308817b353b"
         }
       ]
@@ -7953,16 +7953,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "478e8d8e02b0d30fe77ed5e1b703d3c328cb80126a6f6df926d93ef2075c3e02"
         },
         {
@@ -7973,16 +7973,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "92213c09da690f8771e7f341c927a1985bd0eeaf67594d7819d3ce98922a3a54"
         }
       ]
@@ -8021,14 +8021,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "72b692c970bb78d7182d884e9700326320ed2a5f90299af46f681254ea06a9e1"
         },
         {
@@ -8039,16 +8039,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "04a8b6096fe4caa864dbd76162d7cc191ce38e15b31c80ead68a78c1eb007fae"
         }
       ]
@@ -8085,16 +8085,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "b9433736c2ffb54612516ff8be7acfce39e42b05dea406309d6a60583613262d"
         },
         {
@@ -8105,16 +8105,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "af5bb7a9f28653c99bc1690024a19767cd5b7f08d825228f81a29bc2e9a0ae1b"
         }
       ]
@@ -8153,14 +8153,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 4,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "70cd9026217bf394bc9a6b017eef539f503fee98dd2a6b8ffe2954ccfeecef46"
         },
         {
@@ -8171,16 +8171,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "c4752cc5cead75e52bf240c50bf129eee62ab679535439f9866b5acc570db053"
         }
       ]
@@ -8217,16 +8217,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "63a86e37af40ec061a6ab6422cf3afbbe2d1f5282e86fe4305a643e270d5e777"
         },
         {
@@ -8237,16 +8237,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "53a31be506ac83028d157b87423219b0b140d6b0bed20ad13720aac0be92351b"
         }
       ]
@@ -8285,14 +8285,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "19201cc0f5f7b51becd6c0688cff0ecda4b2d69e826264dccf4aab96a211ebc7"
         },
         {
@@ -8303,16 +8303,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 6,
+          "outputVerbatim": 5,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 4
           },
           "summaryOnly": 0,
-          "survivesNowhere": 9,
+          "survivesNowhere": 10,
           "fingerprint": "7ff4ca38d6661c146772263d17cd1fe2f0ca264dae4be9b172c6d11d2cde2966"
         }
       ]
@@ -8349,16 +8349,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "304f1a4bb90f56e17fead0dc982238a99539f560668885af0db81474249663a2"
         },
         {
@@ -8369,16 +8369,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "8bd04d44e7d586b8ff205b9db00cf2cf3771f43057441a8e19fcfc2dae679d16"
         }
       ]
@@ -8437,14 +8437,14 @@
           "carriedInMessages": 53,
           "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "9791c14b7f117279a202b1aa1ccc832ff61b75d302a874525769dacb321542be"
         }
       ]
@@ -8481,16 +8481,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "bc2fc66ce4ffc8ba94cd7586018a753757922e120995240b9dae1805dec811f9"
         },
         {
@@ -8501,16 +8501,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "4ec93206312fd994314c61e46f3a5a3907b549dc9b17c3726134186d5c50e16d"
         }
       ]
@@ -8549,14 +8549,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "9d423fab154869b972807018e1784ad19a5935b94fa95c205779872e9255e95d"
         },
         {
@@ -8567,16 +8567,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "856f1a1a039cb74d67a8856813d2299fc46bbd55467920f43aad06270821b085"
         }
       ]
@@ -8613,16 +8613,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "bf7f6ac0235e55c44f40a118615d921262e2d4d42472ba276921fd90d89a3866"
         },
         {
@@ -8633,16 +8633,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "ba0dc960a5f09e1dbbcc5d831960e8c96052e47cd9ac17451ce29a3369ad9c32"
         }
       ]
@@ -8681,14 +8681,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "b583c274d49d753db2ccda0fe0a37c445509bc3b3c9503a524c378f709466c06"
         },
         {
@@ -8699,16 +8699,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "f3d8f61e3d0a87fd4339298eb0c6e693cf24721d2a68946766915742562b2ab0"
         }
       ]
@@ -8745,16 +8745,16 @@
           "messagesKept": 41,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "f53d7da68487d5ee7312284b89be047cc76162db0f987d443ade3a8481b6c5a5"
         },
         {
@@ -8765,16 +8765,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 43,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "8e81210b7b7345e0c913ee222efd3f008d747d55a6e86a2d9324c59210ba2bd2"
         }
       ]
@@ -8813,14 +8813,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "afca8db1c951960db573b40bd24682a346d530160738e3ac166ddb7e1eaa328c"
         },
         {
@@ -8831,16 +8831,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "a87e91637bc75ad316a26af45023b79bcbb30b48f78a3b3878fa03203cd5e3a2"
         }
       ]
@@ -8877,16 +8877,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "5f36f59809e396d74015a013389008a46c259bea31f99c142e1ab8a02100f617"
         },
         {
@@ -8897,16 +8897,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "e7a8437b9c1ee98d48446b7a64e7619eb65a0ebf10936d145945de5d48c8111a"
         }
       ]
@@ -8945,14 +8945,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "6739d06adf4185706c45502bb9b5ee8c28adb9b20e2e2026ee388282468fcbd2"
         },
         {
@@ -8963,16 +8963,16 @@
           "messagesKept": 56,
           "retainedMessages": 9,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 3,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 6,
+          "survivesNowhere": 7,
           "fingerprint": "507c6253a2651bee177584ad435a232e7790f903cac364a8b9b6511bf9ce8ced"
         }
       ]
@@ -9009,16 +9009,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "57523cb0e3105e9f4f3e22a20b3124fbbe645dab73e11793f67561a3dee557b5"
         },
         {
@@ -9029,16 +9029,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "45726b74bd0f4e542fa4370665f52860f581891f8bb7bce64756435e5a1ea6d3"
         }
       ]
@@ -9077,14 +9077,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "bb3b066b167058d2a5d64402e77e26401e5a6e97af99479ae14bd3ca7f949841"
         },
         {
@@ -9095,16 +9095,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 6,
+          "outputVerbatim": 5,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 4
           },
           "summaryOnly": 0,
-          "survivesNowhere": 9,
+          "survivesNowhere": 10,
           "fingerprint": "9c1e620e21b872df22a77eefdb7230b28471806fb9298e304fc323e5c0d13c37"
         }
       ]
@@ -9141,16 +9141,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "8b3f0490c0fe36d18f70b061ace2814555ee3436fd3a51f1b6b7b5b327704b96"
         },
         {
@@ -9161,16 +9161,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "8f4e400948e1bd9b6b56a6bd2e6ee26dbd7f3a2cfea1cbd761fecc56d6bd0789"
         }
       ]
@@ -9209,14 +9209,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 2,
+            "foundation": 1,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 3,
+          "survivesNowhere": 4,
           "fingerprint": "10749d5bf91722f476b68d7ecebff637ebf9e2f5c64ead88cf0cfc8021274658"
         },
         {
@@ -9227,16 +9227,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 54,
-          "inputVerbatim": 12,
+          "inputVerbatim": 11,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "32b4f1153b1d25e7b828e2110b78ac4f6e15c2198d6c84cdc0049a27f191c08f"
         }
       ]
@@ -9273,16 +9273,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "cc2a44c215d80da067bcc1ddbd096e67df684c080e35473699d4e9da166057dd"
         },
         {
@@ -9293,16 +9293,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "608415180bc832c33b63c0e9eab4825074aba3dc8cb9c8cea8e4bc8dea2b479f"
         }
       ]
@@ -9341,14 +9341,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "d97740a8cc51a52070d093131cffb0b29324b2609442e90a953ea2e4431a0e9b"
         },
         {
@@ -9359,16 +9359,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "bb6c3536956761f0f88aa607407647f17d5c3d6b7a88872b584d1a2df6bfbc75"
         }
       ]
@@ -9405,16 +9405,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "8931059c21ced698957c11f00751e71a1e1dbb5d816ec3b963ee37cf42be811a"
         },
         {
@@ -9425,16 +9425,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "706fa2389d4ad9ccfc6ac2737701493ea7b209114893fb8a318f743b66d143d0"
         }
       ]
@@ -9473,14 +9473,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "f8ec87825df3a57a8c08f3f7cc37d812ae6b7bbfcf87d284873012114824fbe2"
         },
         {
@@ -9491,16 +9491,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "c502151677bec79fa2d9fab8a653c7ef70fb1bfe3d7e53aa0e657c3fb16e9fe9"
         }
       ]
@@ -9537,16 +9537,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "aa7282e8cb05f18f853c2b00430ce8b672869dcaac881d4f3ca96dfc94809be6"
         },
         {
@@ -9557,16 +9557,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "c6debe00e6a35c0446f5a1049d5506eb6f418704dad8720e5ad4407177c48e38"
         }
       ]
@@ -9605,14 +9605,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "52cd0f9c19ad43da9c814e83885e43f099a4bf48c22e963f81aefe4fbceb6eba"
         },
         {
@@ -9623,16 +9623,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "92b7f8b53b0cb75cf23ba20e953aa35dd76daf56931a7ba62903b6f79afef5cd"
         }
       ]
@@ -9669,16 +9669,16 @@
           "messagesKept": 41,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "ee4ee27fce3d7ce391005340381da71896454d384e00fa4fa854362c4f56e8d9"
         },
         {
@@ -9689,16 +9689,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 43,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "0d4265914b7c9f4f6abf05b4cec14200f58631b8f8b4e43728c0de0fe8c70132"
         }
       ]
@@ -9737,14 +9737,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "0f0552263d1806a7b0bc408164b3d9df3aac9e56c6a1c703651afa89eb7c34dc"
         },
         {
@@ -9755,16 +9755,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 2,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 7,
+          "survivesNowhere": 8,
           "fingerprint": "f48f3415be04a55c656415d6f68ea9d4909efce503695222b0ee3dd20645642e"
         }
       ]
@@ -9801,16 +9801,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "457cd8f224581c2a8f38b2da58eccd1404c6fb2909fb7ab9cd002a30036c4478"
         },
         {
@@ -9821,16 +9821,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "68bd55f9861638fbcc55decaac409f6a7e8710471b0cc9a666f98b085fa6c619"
         }
       ]
@@ -9869,14 +9869,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "1bf5ab70c5255dc08151d23a3b5362279dbaee28b05f23bfa555ccf6807ac3c4"
         },
         {
@@ -9887,16 +9887,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "8a10639e1671b1dd1740111e62868a4d8e66a0606e0a5ff5821dd548d9031859"
         }
       ]
@@ -9933,16 +9933,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "d85a37d060a9725fdc10ab3ca7e399d616a33f58a00fb69e7ee9b5b85429e5ba"
         },
         {
@@ -9953,16 +9953,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "6ad6c2d244199fb66b8c24d0594b3a805651115cc7562081c38d39a8219c6980"
         }
       ]
@@ -10001,14 +10001,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "4ebc975c63371b3ca822ae2d85b4d8a5efe51f6e95d58609352d4f4e22e45a2d"
         },
         {
@@ -10019,16 +10019,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 2,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 7,
+          "survivesNowhere": 8,
           "fingerprint": "42c68837fda4a7a714f77988181535365392e5e8db6404a543bbf88c826747e8"
         }
       ]
@@ -10065,16 +10065,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "5f7b85d21e082c0f67160e091121e5b8ff6dd67045007b5f647ce63fa56defd3"
         },
         {
@@ -10085,16 +10085,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "071fb79afa610349ca44f2d726f4f5865d30e960da8cef2eeca8990455656491"
         }
       ]
@@ -10133,14 +10133,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "1bb3fbf2d1bca85cfebebd7684354459896bb73b1b3817027d7fd20ea40a1e2f"
         },
         {
@@ -10151,16 +10151,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "163355496e7fa54f03e0cde31ac4407eaa0090ab76c6afa89ae5e50ba59e5757"
         }
       ]
@@ -10197,16 +10197,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "f95364ed1f90443e7e4565f4d4592e95fa8549af6c25261ff176f87dc58a643f"
         },
         {
@@ -10217,16 +10217,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "a2d847418985cc0af17dc6635f4310b905c07a48daabe1719ec6aba035394112"
         }
       ]
@@ -10265,14 +10265,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "00b076a0986c9814fad55b8919761246fc5fdc9e7edef25b51ebe42c944d7c4d"
         },
         {
@@ -10283,16 +10283,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "6fa248538ba6a02ef078cfc540e1a7da4e793a071ce09e236709c993ccaac182"
         }
       ]
@@ -10329,16 +10329,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "e25c5d9d2b6d3d4838f6906e551efd6e7616263bd426b508a125fc411253f155"
         },
         {
@@ -10349,16 +10349,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "2b836e6405aab9815ee0aefda58433e15113faf40355f8edf7b20124ce93bc58"
         }
       ]
@@ -10397,14 +10397,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "f691139f5e7a939eafe5a12ff05f4d8058aeb9a0f02a72f273914b0779cffd94"
         },
         {
@@ -10415,16 +10415,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 2,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 7,
+          "survivesNowhere": 8,
           "fingerprint": "b20a946ecc19f763d4f6b167c2e08406e2ade70c5042c6d3e786a078173eceb5"
         }
       ]
@@ -10461,16 +10461,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "77b15630f7a9f97cb4e3794bd4cfacef8119bb6da23ad49d6d3617a1c78cdc4a"
         },
         {
@@ -10481,16 +10481,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "022c573f85e2688efb2f45ddfc8343561ae4b1eac32ec77e112119bd80155823"
         }
       ]
@@ -10529,14 +10529,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "90aca55e03c0573f827b67c7d6a8c8a1ace6c4f0cb47fdc79c631b036b1a0a29"
         },
         {
@@ -10547,16 +10547,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 2,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 7,
+          "survivesNowhere": 8,
           "fingerprint": "b76d9d9b03e2db43ecd177fe7138df59f3dc64b69b14e59178116b9f7042c051"
         }
       ]
@@ -10593,16 +10593,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "bae1e42069dc01a30cb5ad6fbde09441ed9b85479f7771d8fe18e3320a9f36fc"
         },
         {
@@ -10613,16 +10613,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "b7749f436c13a9e1cbf7ab88417d7cef9cade04d2ca504e794d5d5eebdf5d130"
         }
       ]
@@ -10659,16 +10659,16 @@
           "messagesKept": 51,
           "retainedMessages": 8,
           "carriedInMessages": 41,
-          "inputVerbatim": 10,
+          "inputVerbatim": 9,
           "atRisk": 10,
-          "outputVerbatim": 9,
+          "outputVerbatim": 8,
           "byBracket": {
-            "foundation": 4,
+            "foundation": 3,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 1,
+          "survivesNowhere": 2,
           "fingerprint": "2e4bbad39f75a914c121433ed960c57fd9ed8492ef90133256a7bcb84785cac5"
         },
         {
@@ -10679,16 +10679,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 14,
+          "inputVerbatim": 13,
           "atRisk": 15,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 2,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 7,
+          "survivesNowhere": 8,
           "fingerprint": "40c63b0a6072d5c4c8da46c651f5a7b5dc13f58db2a8993ab4205c3076f3f0b4"
         }
       ]
@@ -10725,16 +10725,16 @@
           "messagesKept": 43,
           "retainedMessages": 0,
           "carriedInMessages": 35,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 10,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "8d321c7535f523801489143ee69bbfa3f4333721c00ef711c02d0892eae4a498"
         },
         {
@@ -10745,16 +10745,16 @@
           "messagesKept": 45,
           "retainedMessages": 0,
           "carriedInMessages": 45,
-          "inputVerbatim": 7,
+          "inputVerbatim": 6,
           "atRisk": 15,
-          "outputVerbatim": 2,
+          "outputVerbatim": 1,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 0,
             "recent": 1
           },
           "summaryOnly": 0,
-          "survivesNowhere": 13,
+          "survivesNowhere": 14,
           "fingerprint": "7d4c6618688a3ec02b8816dcbdeb9b455ea9e403484e47d50676d80f4f8601bc"
         }
       ]
@@ -10793,14 +10793,14 @@
           "carriedInMessages": 41,
           "inputVerbatim": 10,
           "atRisk": 10,
-          "outputVerbatim": 8,
+          "outputVerbatim": 7,
           "byBracket": {
-            "foundation": 3,
+            "foundation": 2,
             "mid": 5,
             "recent": 0
           },
           "summaryOnly": 0,
-          "survivesNowhere": 2,
+          "survivesNowhere": 3,
           "fingerprint": "2dfd943eb4655daf41d5e1ae5bbfd0bb0d166380b5296b34d7e623fe0e1750db"
         },
         {
@@ -10811,16 +10811,16 @@
           "messagesKept": 55,
           "retainedMessages": 8,
           "carriedInMessages": 53,
-          "inputVerbatim": 13,
+          "inputVerbatim": 12,
           "atRisk": 15,
-          "outputVerbatim": 7,
+          "outputVerbatim": 6,
           "byBracket": {
-            "foundation": 1,
+            "foundation": 0,
             "mid": 1,
             "recent": 5
           },
           "summaryOnly": 0,
-          "survivesNowhere": 8,
+          "survivesNowhere": 9,
           "fingerprint": "4e71f913ff3dc97bf558317695d4eea26776a828a6a3aa7e5173c28531c08ac3"
         }
       ]

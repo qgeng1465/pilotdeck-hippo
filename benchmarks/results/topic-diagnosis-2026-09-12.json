@@ -1,0 +1,47 @@
+{
+  "protocol": "benchmarks/topicDiagnosis.ts",
+  "timestamp": "2026-09-12T05-38-14-915Z",
+  "seedBase": 20260921,
+  "seeds": 10,
+  "pairsPerTopic": 160,
+  "factsPerTopic": 10,
+  "arms": [
+    {
+      "label": "upstream (no scoring)",
+      "aMean": 0,
+      "bMean": 5
+    },
+    {
+      "label": "default 0.85/0.15/0.00",
+      "aMean": 4.9,
+      "bMean": 10
+    },
+    {
+      "label": "sim only 1/0/0",
+      "aMean": 5,
+      "bMean": 10
+    },
+    {
+      "label": "time only 0/1/0",
+      "aMean": 0,
+      "bMean": 6
+    },
+    {
+      "label": "rank only 0/0/1 (+idf)",
+      "aMean": 0,
+      "bMean": 5
+    }
+  ],
+  "retainedTopicAPositions": {
+    "count": 59,
+    "of": 100,
+    "meanPosition": 0.58
+  },
+  "sim": {
+    "topicAFactsTemplateForm": 0.82,
+    "topicAFactsProseForm": 0.37,
+    "topicBFactsTemplateForm": 0.88,
+    "topicAFillerMessages": 0.24
+  },
+  "caveat": "Prose-form similarity is a diagnostic intervention on probe data, not a re-run of the benchmark: the topic A facts are restated without their shared field labels, and that rewrite is not what benchmark:topic-switch measures."
+}

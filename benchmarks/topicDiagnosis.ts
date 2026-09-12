@@ -6,6 +6,7 @@ import { messageVisibleText } from "../src/context/compaction/retention/MessageT
 import { buildEbbinghausPageRankPolicy } from "../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
 import { fakeModel } from "./engineRunner.js";
 import { buildTranscript, TOPIC_SWITCH_QUERY, type TopicFact } from "./topicSwitch.js";
+import { factPresent } from "./factPresent.js";
 import type { CanonicalMessage } from "../src/model/index.js";
 
 // Why does Hippo keep part of the abandoned topic A after a topic switch?
@@ -44,7 +45,7 @@ const ARMS: Array<{ label: string; weights: { wSim: number; wTime: number; wRank
 ];
 
 function markersIn(facts: TopicFact[], text: string): Set<string> {
-  return new Set(facts.filter((fact) => text.includes(fact.marker)).map((fact) => fact.marker));
+  return new Set(facts.filter((fact) => factPresent(text, fact.marker)).map((fact) => fact.marker));
 }
 
 async function runArm(messages: CanonicalMessage[], weights: { wSim: number; wTime: number; wRank: number } | null) {

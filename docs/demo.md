@@ -18,15 +18,15 @@ pnpm benchmark:demo
 
 ```
 upstream postTokens: 4683   facts=0/20
-hippo    postTokens: 5283   facts=18/20
-[KEEP] FACT1: KRAS Concordance TCGA-LIHC n=371 freq=0.540 stat=0.46
-...（18 条 KEEP + 2 条 FOLD）
+hippo    postTokens: 5283   facts=16/20
+[KEEP] FACT5: BAP1 DESeq2 TCGA-LIHC n=371 freq=0.800 stat=2.54
+...（16 条 KEEP + 4 条 FOLD，被折进摘要的正是最旧的 FACT1–FACT4）
 ```
 
 对评委的三句话：
 
 1. 上游把前文整体压成一段摘要，**精确事实 0 条**回到上下文。
-2. Hippo 多付约 1.13× token，换来 **18/20 条逐字保留**。
+2. Hippo 多付约 1.13× token，换来 **16/20 条逐字保留**。
 3. 这一行是"逐字保留可用"的召回代理，不是回答正确率——真 LLM 下的回答准确率口径见[评测记录 §4.3](./evaluation.md#43-真-llm-闭环两轮记录含敏感性)（中文、摘要预算吃紧时优势稳定）。
 
 ## 入口 B：Web UI 真实压缩 + 徽章
@@ -62,7 +62,7 @@ hippo    postTokens: 5283   facts=18/20
 
 录屏是提交清单里的可选加分项，**不是必交**；现场真机目检徽章比录屏更重要。若要做，录两段、每段 15–20 秒即可：
 
-1. **CLI A/B 表**：录 `pnpm benchmark:demo` 的终端，重点停在"upstream 0/20 → hippo 18/20"那两行。
+1. **CLI A/B 表**：录 `pnpm benchmark:demo` 的终端，重点停在"upstream 0/20 → hippo 16/20"那两行。
 2. **Web UI 分隔线徽章**：录浏览器窗口，跑长对话触发压缩，等压缩分隔线上的绿色徽章（`逐字保留 N 条（X tok）`，悬停出策略/预算）出现，放大到那条分隔线，然后用原问题复问一次。
 
 **在这台无显示器、无录屏软件、也没有浏览器内核的开发机上录不了**（`with_deps` 装 Chromium 约 170 MB 且需要系统库，投入产出不划算）。在有显示器的队伍机器 / 比赛机器上：用 OBS 区选捕获剪辑即可，无 OBS 也可用系统自带的录屏。**剪辑里不要出现工具/模型指纹**（如页脚 `Generated with …`），画面只留 UI 本身。

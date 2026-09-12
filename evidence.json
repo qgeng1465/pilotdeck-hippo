@@ -68,7 +68,7 @@
     "dom_selector_matched": "[title*=\"Selective retention\"]",
     "answer_after_compaction": "us-east-2 has the highest total cost, at $95,025.00.",
     "screenshot": "media/badge-live.png",
-    "video": "media/pilotdeck-compaction.webm"
+    "video": "media/demo1.mp4"
   },
 
   "raw_boundary_record": {

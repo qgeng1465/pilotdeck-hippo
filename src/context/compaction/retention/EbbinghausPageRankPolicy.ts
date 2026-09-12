@@ -109,6 +109,11 @@ export class EbbinghausPageRankPolicy implements RetentionScorePolicy {
     for (const entry of scored) {
       const tokens = input.estimateTokens([entry.message]);
       if (tokens <= 0) continue;
+      // A candidate with no visible text (e.g. an assistant turn that carries
+      // only a `thinking` block) would be charged against the retention budget
+      // and replayed as an empty message. Keeping it spends budget to deliver
+      // nothing, so it must not be retained -- fall through to the next one.
+      if (messageVisibleText(entry.message).length === 0) continue;
       if (usedTokens + tokens > input.retentionBudgetTokens) continue;
       retained.push(entry.message);
       usedTokens += tokens;

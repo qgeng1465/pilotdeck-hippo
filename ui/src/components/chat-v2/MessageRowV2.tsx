@@ -720,6 +720,38 @@ function ForkMessageButton({
 
 export default memo(MessageRowV2);
 
+/**
+ * Hippo selective-retention summary, shown next to the "Compacted context" row.
+ *
+ * The compaction boundary is folded into the process row, so the retention
+ * numbers ride on the synthetic summary (see `createSyntheticProcessSummary`).
+ * Nothing is rendered when the policy kept nothing — an upstream engine, or one
+ * whose policy retained no message, must not claim a badge.
+ */
+function RetentionBadge({
+  retention,
+  t,
+}: {
+  retention: ChatMessage['compactRetention'];
+  t: TFunction<'chat'>;
+}) {
+  if (!retention || (retention.retainedMessages ?? 0) <= 0) return null;
+  return (
+    <span
+      className="rounded-full border border-emerald-300/70 bg-white/60 px-2 py-0.5 text-[11px] font-medium tabular-nums text-emerald-800 dark:border-emerald-700/60 dark:bg-emerald-950/40 dark:text-emerald-200"
+      title={t('compact.retentionTitle', {
+        policy: retention.policyId || 'ebbinghaus-pagerank',
+        budget: (retention.budgetTokens ?? 0).toLocaleString(),
+      })}
+    >
+      {t('compact.retention', {
+        count: retention.retainedMessages ?? 0,
+        tokens: (retention.retainedTokens ?? 0).toLocaleString(),
+      })}
+    </span>
+  );
+}
+
 function ProcessSummaryRow({
   message,
   processKey,
@@ -752,6 +784,7 @@ function ProcessSummaryRow({
       status={trace.status}
       metrics={trace.metrics}
       steps={detailSteps}
+      badge={<RetentionBadge retention={message.compactRetention} t={t} />}
       expanded={expanded}
       onExpandedChange={resolvedProcessKey
         ? (nextExpanded) => onProcessExpandedChange?.(resolvedProcessKey, nextExpanded)

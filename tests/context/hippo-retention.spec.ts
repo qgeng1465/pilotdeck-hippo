@@ -3,6 +3,8 @@ import test from "node:test";
 
 import { buildEbbinghausPageRankPolicy } from "../../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
 import { EntityGraph } from "../../src/context/compaction/retention/EntityGraph.js";
+import { messageVisibleText } from "../../src/context/compaction/retention/MessageText.js";
+import type { CanonicalMessage } from "../../src/model/protocol/canonical.js";
 import type { RetentionScorePolicy } from "../../src/context/compaction/retention/RetentionTypes.js";
 import { TokenBudgetManager } from "../../src/context/budget/TokenBudgetManager.js";
 import { generateTranscript, generateZhTranscript } from "../../benchmarks/syntheticTranscript.js";
@@ -146,5 +148,59 @@ test("retention is still query-conditioned when the tail holds no user request",
   assert.ok(
     (result.result.retention?.retainedMessages ?? 0) > 0,
     "an empty query hint leaves the policy with nothing to rank by",
+  );
+});
+
+// --- regression: a retained message must carry content the model can receive ---
+// A thinking-only assistant turn replays with an empty `content`; its text rides
+// in `reasoning_content`, which an OpenAI-compatible endpoint may ignore. Such a
+// message must never be selected: it would spend retention budget and be reported
+// as "kept" while delivering nothing.
+
+test("messageVisibleText ignores thinking blocks", () => {
+  const thinkingOnly: CanonicalMessage = {
+    role: "assistant",
+    content: [{ type: "thinking", text: "secret reasoning about the alarm threshold" }],
+  };
+  const withText: CanonicalMessage = {
+    role: "assistant",
+    content: [
+      { type: "thinking", text: "secret reasoning" },
+      { type: "text", text: "the visible answer" },
+    ],
+  };
+
+  assert.equal(messageVisibleText(thinkingOnly), "");
+  assert.equal(messageVisibleText(withText), "the visible answer");
+});
+
+test("pickRetained never keeps a candidate with no visible content", async () => {
+  // The thinking-only turn is made the *strongest* candidate on purpose: its
+  // thinking text is the query verbatim, so before the fix it outranked the
+  // real answer and was the one retained.
+  const question = "what is the backup rotation period";
+  const messages: CanonicalMessage[] = [
+    { role: "user", content: [{ type: "text", text: `Question: ${question}?` }] },
+    { role: "assistant", content: [{ type: "thinking", text: question }] }, // thinking-only
+    { role: "assistant", content: [{ type: "text", text: "The rotation period is 19 days." }] },
+    { role: "user", content: [{ type: "text", text: "thanks" }] },
+  ];
+
+  const policy = buildEbbinghausPageRankPolicy();
+  const retained = await policy.pickRetained({
+    candidates: messages,
+    retentionBudgetTokens: 10_000,
+    estimateTokens: (msgs) => new TokenBudgetManager().estimateMessagesTokens(msgs),
+    queryHint: question,
+  });
+
+  assert.ok(retained.length > 0, "the real answer is available and must be retained");
+  assert.ok(
+    retained.every((message) => messageVisibleText(message).length > 0),
+    "every retained message must carry visible content",
+  );
+  assert.ok(
+    !retained.some((message) => message.content.every((block) => block.type === "thinking")),
+    "the thinking-only turn must not be retained",
   );
 });

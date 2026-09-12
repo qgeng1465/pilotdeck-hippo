@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PilotDeck — two retention bugs fixed, with a live run</title>
+<title>PilotDeck-Hippo — 长上下文压缩里的选择性记忆</title>
 <style>
   :root {
     --bg: #0d1117; --panel: #161b22; --line: #262d36;
@@ -13,16 +13,17 @@
   * { box-sizing: border-box; }
   body {
     margin: 0; background: var(--bg); color: var(--fg);
-    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", Helvetica, Arial, sans-serif;
   }
   .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 24px 80px; }
   header { border-bottom: 1px solid var(--line); padding-bottom: 24px; margin-bottom: 32px; }
-  .kicker { color: var(--accent); font: 600 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
-  h1 { font-size: 30px; line-height: 1.25; margin: 12px 0 8px; letter-spacing: -.02em; }
-  .sub { color: var(--dim); font-size: 16px; margin: 0; max-width: 76ch; }
+  .kicker { color: var(--accent); font: 600 12px/1.5 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+  h1 { font-size: 30px; line-height: 1.3; margin: 12px 0 8px; letter-spacing: -.02em; }
+  .sub { color: var(--dim); font-size: 16px; margin: 0; max-width: 78ch; }
   h2 { font-size: 15px; letter-spacing: .06em; text-transform: uppercase; color: var(--dim);
-       margin: 44px 0 14px; font-weight: 600; }
-  h3 { font-size: 17px; margin: 26px 0 6px; }
+       margin: 46px 0 14px; font-weight: 600; }
+  h3 { font-size: 17px; margin: 28px 0 6px; }
   video { width: 100%; display: block; border: 1px solid var(--line); border-radius: 10px; background: #000; }
   .cap { color: var(--dim); font-size: 13px; margin: 10px 0 0; }
   ul { padding-left: 20px; margin: 0; }
@@ -31,7 +32,7 @@
   code { background: #0b0f14; border: 1px solid var(--line); border-radius: 5px; padding: 1px 5px; font-size: 13px; }
   pre {
     background: #0b0f14; border: 1px solid var(--line); border-radius: 10px;
-    padding: 16px 18px; overflow-x: auto; font-size: 12.5px; line-height: 1.55; color: #c9d1d9;
+    padding: 16px 18px; overflow-x: auto; font-size: 12.5px; line-height: 1.6; color: #c9d1d9;
   }
   .note {
     background: rgba(210,153,34,.07); border: 1px solid rgba(210,153,34,.35);
@@ -39,7 +40,6 @@
   }
   .note b { color: #e3b341; }
   .ok { color: var(--accent); font-weight: 600; }
-  .bad { color: #f85149; font-weight: 600; }
   figure { margin: 0; }
   figure img { width: 100%; border: 1px solid var(--line); border-radius: 10px; display: block; }
   figcaption { color: var(--dim); font-size: 13px; margin-top: 8px; }
@@ -47,8 +47,13 @@
     display: inline-block; font: 500 12px/1.4 var(--mono); color: #7ee0a0;
     border: 1px solid var(--accent-dim); border-radius: 999px; padding: 2px 10px; white-space: nowrap;
   }
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
-  @media (max-width: 760px) { .row { grid-template-columns: 1fr; } }
+  .tblwrap { overflow-x: auto; margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { border-bottom: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { color: var(--dim); font: 600 11.5px/1.4 var(--mono); letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
+  td.n, th.n { text-align: right; font-family: var(--mono); white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: none; }
+  .src { color: var(--dim); font: 12.5px/1.6 var(--mono); margin: 10px 0 0; }
   footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line);
            color: var(--dim); font-size: 13px; }
   a { color: #58a6ff; }
@@ -58,129 +63,294 @@
 <div class="wrap">
 
 <header>
-  <div class="kicker">PilotDeck · bug fix · 2026-09-12</div>
-  <h1>Two retention bugs, fixed and shown running</h1>
+  <div class="kicker">PilotDeck 创造计划 · 方向三（Harness / Memory / 架构优化）· 2026-09-12</div>
+  <h1>PilotDeck-Hippo：压缩会丢事实，Hippo 把一部分内容移出有损路径</h1>
   <p class="sub">
-    PilotDeck compresses long agent conversations. Its Hippo policy keeps a few messages
-    word-for-word instead of folding everything into a summary. Two defects in the selection and
-    rendering path were fixed today; this page states them and shows the live run that proves both.
+    PilotDeck 在上下文吃紧时会压缩对话：保留最近一段（tail）的原文，把更早的历史摘要成一段文字。
+    摘要保得住大意，但会丢掉低频的精确事实——基因名、频率数字、文件路径、检查点、决策记录，
+    而这些正是 Agent 之后要逐字复述的东西。Hippo 不打算做一个更好的摘要器，
+    而是在 <code>CompactionEngine</code> 上加一条可开关的保留路径：压缩前对即将被摘要的消息逐条打分，
+    按一个固定的 token 预算挑出得分最高的若干条，让它们的原文和摘要一起进入压缩后的上下文。
   </p>
 </header>
 
-<h2>1 — The defects</h2>
+<h2>1 — 核心机制</h2>
 
-<h3>Defect 1: a "kept" message could carry no visible text</h3>
-<p>
-  An assistant turn can contain only a <code>thinking</code> block. On replay that becomes an empty
-  assistant message (<code>content: ""</code>), with the text riding in <code>reasoning_content</code>,
-  which an OpenAI-compatible endpoint may ignore. The thinking text often sits near the user's
-  question, so such a candidate scored high and was selected: it spent retention budget and was
-  reported as kept while delivering nothing. The fix is in
-  <code>src/context/compaction/retention/EbbinghausPageRankPolicy.ts</code>, inside <code>pickRetained</code>:
-</p>
-<pre>    for (const entry of scored) {
-      const tokens = input.estimateTokens([entry.message]);
-      if (tokens &lt;= 0) continue;
-      // A candidate with no visible text (e.g. an assistant turn that carries
-      // only a `thinking` block) would be charged against the retention budget
-      // and replayed as an empty message. Keeping it spends budget to deliver
-      // nothing, so it must not be retained -- fall through to the next one.
-      if (messageVisibleText(entry.message).length === 0) continue;
-      if (usedTokens + tokens > input.retentionBudgetTokens) continue;
-      retained.push(entry.message);
-      usedTokens += tokens;</pre>
-<p>
-  Paired change in <code>src/context/compaction/retention/MessageText.ts</code>: the
-  <code>thinking</code> case no longer contributes to the "visible text" used for scoring. Scoring and
-  replayability now agree.
-</p>
+<pre>S(m) = 0.85 × sim(q, m)          # 与当前待办请求的语义相关度（默认 BM25，可选本地 embedding）
+     + 0.15 × position_decay(m)  # 越靠近当前越可能相关
+     + 0.00 × idf_pagerank(m)    # 实体共现图核心度；默认权重 0，公式项与配置项保留
 
-<h3>Defect 2: the retention summary never reached the screen</h3>
+retentionBudgetTokens = max(256, floor(tailTokenBudget × 0.2))</pre>
+
+<pre>const engine = new CompactionEngine({
+  model,
+  // 不传 scorePolicy 时，引擎走纯上游摘要路径
+  scorePolicy: buildEbbinghausPageRankPolicy({ wSim: 0.85, wTime: 0.15, wRank: 0 }),
+});</pre>
+
 <p>
-  The UI has two chat panes. The rendered one is v2. Its grouping code folds the compaction boundary
-  into a synthetic "process" row and drops the boundary itself from <code>detailMessages</code> before
-  rendering, so the boundary's retention summary was lost before any component could draw it. The v1
-  pane read the boundary directly and drew it fine; v2 never did.
+  关键不在打分公式，在路径。摘要是有损的，保留块不是：Hippo 把少量消息从"将被摘要掉"的集合里直接拿走，
+  逐字放回压缩后的上下文，因此这部分内容不受摘要模型能力波动影响。打分公式只决定"拿哪几条"。
 </p>
-<p>
-  Fix, across three files: <code>ui/src/components/chat-v2/processGrouping.ts</code> copies
-  <code>compactRetention</code> onto the synthetic summary; <code>ui/src/components/chat-v2/ProcessTrace.tsx</code>
-  gained an optional <code>badge</code> slot; <code>ui/src/components/chat-v2/MessageRowV2.tsx</code>
-  renders the pill. The pill renders nothing when the policy kept zero messages, so an upstream engine
-  never claims a badge.
+<ul>
+  <li><b>预算是硬的</b>：保留块最多花掉 tail 预算的 20%（<code>RETENTION_BUDGET_RATIO = 0.2</code>，
+      <code>src/context/compaction/CompactionEngine.ts</code>），下限 256 tokens。对话再长，压缩后的上下文也不会因为"想多记一点"而失控。</li>
+  <li><b>输出是原文</b>：被保留的消息逐字进入上下文，不是转述。</li>
+  <li><b>失败即退让</b>：打分抛错、embedding 加载超时或模型缺失，一律退回纯上游摘要路径（<code>pickRetained</code> 外层 try/catch），不阻塞对话。</li>
+</ul>
+<p class="cap">
+  一处机制细节：压缩不一定由新的用户请求触发（一条超长工具输出也能撑爆预算）。此时 tail 里没有用户消息，
+  相似度项会归零。引擎现在回退到全对话中最近的一条真实用户请求，而不是用空串打分；
+  撤销这条回退会让 <code>tests/context/hippo-retention.spec.ts</code> 里的回归用例确定性失败。
 </p>
 
-<h2>2 — The live proof</h2>
+<h2>2 — 核心数据</h2>
+
+<h3>2.1 结构性基准（上游 vs Hippo）</h3>
+<div class="tblwrap">
+<table>
+  <thead>
+    <tr>
+      <th>对话长度 N</th><th class="n">压缩前 tokens</th><th class="n">上游压缩后</th>
+      <th class="n">Hippo 压缩后</th><th class="n">逐字事实 / 20（上游 → Hippo）</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>40</td><td class="n">3,906</td><td class="n">1,153</td><td class="n">1,381</td><td class="n">0 → 8</td></tr>
+    <tr><td>80</td><td class="n">8,291</td><td class="n">2,368</td><td class="n">2,634</td><td class="n">0 → 9</td></tr>
+    <tr><td>160</td><td class="n">17,034</td><td class="n">4,739</td><td class="n">5,339</td><td class="n">0 → 18</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="src">
+  来源：<code>benchmarks/results/2026-09-11T11-16-22-522Z.json</code>（<code>groups[]</code>；seed 20260911，每格 10 cases 的中位数，
+  30/30 cases <code>deterministic=true</code>）。指标 = 20 条注入事实中，压缩后上下文里逐字（而非转述）仍在的条数。
+  代价是明着的：Hippo 压缩后 token 是上游的 1.11–1.20×，多出来的是保留块，不是省下来的。
+</p>
+<p class="cap">
+  上游的 0 来自"不生成 FACT 文本的假摘要器"，它是"有损摘要 vs 逐字保留"的结构性对照，
+  不能当作真实摘要能力上限——真 LLM 的对照见 2.4。该指标是逐字保留的召回代理，不是回答正确率。
+</p>
+
+<h3>2.2 留出集与独立抽检（换 seed 复核）</h3>
+<div class="tblwrap">
+<table>
+  <thead>
+    <tr>
+      <th>场景</th><th class="n">上游（不做保留）</th>
+      <th class="n">留出集 20260921–30</th><th class="n">独立抽检 20261001–10</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>en N=80</td><td class="n">0</td><td class="n">9.4</td><td class="n">9.2</td></tr>
+    <tr><td>en N=160</td><td class="n">0</td><td class="n">17.9</td><td class="n">18.0</td></tr>
+    <tr><td>zh N=80</td><td class="n">0</td><td class="n">6.0</td><td class="n">6.0</td></tr>
+    <tr><td>zh N=160</td><td class="n">0</td><td class="n">10.0</td><td class="n">10.0</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="src">
+  留出集：<code>benchmarks/results/holdout-2026-09-11T11-19-13-567Z.json</code> · 抽检：
+  <code>benchmarks/results/spotcheck-seeds20261001-2026-09-11T16-59-44-443Z.json</code> ·
+  记录：<code>docs/independent-spotcheck.md</code>。单位为"20 条事实里逐字保留几条"，10 个 seed 的均值，每个 seed 与自己配对。
+</p>
+<p class="cap">
+  两轮的四个格子都是 <span class="ok">10 胜 0 平 0 负</span>，双侧精确符号检验 p = 0.002
+  （10 个 seed 全胜时，p 的最小可能值就是 0.002）。抽检用的是与 tune、ablation、留出集全部不相交的 seed；
+  四格均值与留出集同向、差值 ≤ 0.2，上游四格仍全部为 0。
+</p>
+<p class="cap">
+  权重口径：默认 <code>0.85/0.15/0.00</code> 的正当理由是对齐调参 argmax 且少一项，<b>不是</b>"权重优化带来了提升"。
+  在同一留出集上与上一版默认 <code>0.7/0.15/0.15</code> 做配对比较是 7 胜 / 33 平 / 0 负，
+  四个格子无一显著（p = 1 / 0.5 / 1 / 0.125）。rank 项不是删掉，是权重落 0，代码与配置项都留着。
+</p>
+
+<h3>2.3 提取精度（逐消息）——保留块里是不是掺了无关消息</h3>
+<div class="tblwrap">
+<table>
+  <thead>
+    <tr>
+      <th>场景</th><th class="n">召回</th><th class="n">精度</th>
+      <th class="n">随机基线</th><th class="n">相对随机</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>en N=40</td><td class="n">6/20</td><td class="n">100%</td><td class="n">36%</td><td class="n">2.8×</td></tr>
+    <tr><td>en N=80</td><td class="n">7/20</td><td class="n">100%</td><td class="n">18%</td><td class="n">5.7×</td></tr>
+    <tr><td>en N=160</td><td class="n">16/20</td><td class="n">100%</td><td class="n">9%</td><td class="n">11×</td></tr>
+    <tr><td>zh N=40</td><td class="n">4/20</td><td class="n">100%</td><td class="n">37%</td><td class="n">2.7×</td></tr>
+    <tr><td>zh N=80</td><td class="n">4/20</td><td class="n">100%</td><td class="n">18%</td><td class="n">5.6×</td></tr>
+    <tr><td>zh N=160</td><td class="n">8/20</td><td class="n">89%</td><td class="n">9%</td><td class="n">10×</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="src">
+  来源：<code>benchmarks/results/extraction-precision-2026-09-11T13-39-26-139Z.json</code>
+  （<code>precisionMedian</code> / <code>recallMedian</code> / <code>liftOverChance</code>；留出 seed 20260921–23，3 个 seed 的中位数）。
+  精度按引擎自曝的保留块逐消息算，不用指纹反推。
+</p>
+<p class="cap">
+  保留块几乎全是当前 query 需要的事实（只有 zh N=160 混进一条噪音），说明打分确实把信号和噪音分开了，
+  不是在把整段历史一股脑塞回来。召回受 token 预算限制（实测用掉预算的 88–99%），所以是 4–16 条而不是 20 条。
+</p>
+
+<h3>2.4 真 LLM 闭环（摘要器与评审员均为 DeepSeek-V4-Flash）</h3>
+<div class="tblwrap">
+<table>
+  <thead>
+    <tr>
+      <th>摘要输出预算</th><th>事实措辞</th><th class="n">当前话题答对 · 上游</th>
+      <th class="n">当前话题答对 · Hippo</th><th class="n">四例中摘要触顶（上游 / Hippo）</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>吃紧 1,500 tok</td><td>shared</td><td class="n">10/16（重复 4、6）</td><td class="n">16/16（重复 8、8）</td><td class="n">3 / 4</td></tr>
+    <tr><td>吃紧 1,500 tok</td><td>decorrelated</td><td class="n">10/16（重复 6、4）</td><td class="n">16/16（重复 8、8）</td><td class="n">3 / 4</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="src">
+  来源：<code>benchmarks/results/real-llm-topic-switch-2026-09-11T12-45-03-182Z.json</code>
+  （N/topic=160，每话题 10 条事实、每例抽 4 题问当前话题，2 个留出 seed × 2 次重复）。
+  宽裕预算轮（8,000 tok，<code>real-llm-topic-switch-2026-09-11T12-29-27-528Z.json</code>）：当前话题四臂全部 16/16，
+  旧话题臂间只差 1 题，而同配置重复内的摆动有 3–4 题 —— 摆动大于臂差，<b>那一轮不声明方向</b>。
+</p>
+<p class="cap">
+  可声明的是上面这四行：预算吃紧时臂差 6 题，约为上游自身摆动的 3 倍，Hippo 四次重复零摆动，两种措辞同向。
+  两轮吃紧轮的摘要触顶次数几乎一样（3 比 4），所以"上游被截断、Hippo 没被截断"不是解释；
+  解释在两臂的保留区计数（Hippo 8/10，上游 6/10 全靠 tail）。保留的价值在摘要器扛不住预算时显现。
+  每格只有 16 题、2 个 seed，且摘要器与 judge 同模型，因此这里只声明方向，不换算成"提升 X 点"。
+</p>
+
+<h3>2.5 测试计数</h3>
+<div class="tblwrap">
+<table>
+  <thead>
+    <tr><th>套件</th><th>口径</th><th class="n">结果</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>根套件 <code>npm test</code></td>
+      <td>本机工作区，2026-09-12 实测（<code>dist/tests/**/*.spec.js</code>，34.3 s）</td>
+      <td class="n">519 项 = 517 通过 / 0 失败 / 0 cancelled / 2 skipped</td>
+    </tr>
+    <tr>
+      <td>根套件（CI / 全新 clone）</td>
+      <td><code>.github/workflows/ci.yml</code> 与 README §5：上游 <code>.gitignore</code> 把 <code>*.test.ts</code> 当本地草稿，
+          我们的新测试 <code>git add -f</code> 入库，上游自己的 4 个草稿文件（10 例）不入库</td>
+      <td class="n">507 项 = 505 通过 / 0 失败 / 2 skipped</td>
+    </tr>
+    <tr>
+      <td>UI chat-v2 套件</td>
+      <td>本机实测 <code>cd ui &amp;&amp; npx vitest run src/components/chat-v2/</code>，2026-09-12（6.4 s）</td>
+      <td class="n">13 文件 / 114 测试通过</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p class="src">
+  两个数（519 与 507）的差额可以本地复核：<code>git check-ignore -v tests/gateway/upload-store.test.ts</code> 会打印命中
+  <code>.gitignore:200:*.test.ts</code>，那 4 个文件合计 10 例。<code>ui/</code> 下整体 <code>vitest run</code>
+  不是全绿（上游既有的 5 个无关文件常年失败，见 README §5），所以这里只报 chat-v2 这一个目录。
+</p>
+
+<h2>3 — 验证方式</h2>
+<ul>
+  <li><b>合成基准</b>：<code>pnpm benchmark</code>，生信对话把 20 条精确事实分散在前 75%，tail 提问要求逐字复述；
+      每格 10 cases，全部 <code>deterministic=true</code>。上游臂用不生成 FACT 文本的假摘要器，做结构性对照。</li>
+  <li><b>留出集</b>：<code>pnpm benchmark:holdout</code>。调参与消融只用 ≤ 20260920 的 seed；
+      留出集固定取 20260921–30 共 10 个 seed，从未参与任何选择（权重、IDF 开关、PageRank 迭代数）。
+      统计上每个 seed 与自己配对，报 per-seed 差值、胜/平/负与双侧精确符号检验 p。</li>
+  <li><b>独立抽检</b>：换一批全新 seed（holdout 用 20261001–10、精度用 20261011–13）复跑，
+      seed 与 tune/ablation/留出集全部不相交；脚本支持 <code>PILOTDECK_HOLDOUT_SEED_BASE</code> 覆盖，任何人都能自己换 seed 重跑。</li>
+  <li><b>真 LLM 闭环</b>：<code>pnpm benchmark:real-llm</code> / <code>pnpm benchmark:real-llm-topic-switch</code>，
+      摘要器与评审员均为 DeepSeek-V4-Flash，每格 16 题 × 2 seeds，两轮换不同的摘要输出预算。</li>
+  <li><b>无回归门</b>：<code>pnpm benchmark:no-regression</code> —— 不传 <code>scorePolicy</code> 时，
+      引擎输出必须与上游基线 <code>85be774</code> 逐字节一致（golden fixture <code>benchmarks/baseline-85be774.json</code>）。
+      本页实测输出：<code>NO-REGRESSION OK: scorePolicy=undefined output matches upstream 85be774 baseline.</code></li>
+  <li><b>原始数据随仓库提交</b>：上面每个数字都对应 <code>benchmarks/results/*.json</code> 里的一个字段，
+      README §4.8 给了逐数字 → JSON 行的对账索引。</li>
+</ul>
+<div class="note">
+  <b>这些数字全部是我方自跑，不是第三方评审。</b>抽检记录（<code>docs/independent-spotcheck.md</code>）也明确这么标注：
+  它回答的只是"换一批从没用过的 seed，旗舰数字还在不在"，不能替代独立评审或人工抽检。
+  真 LLM 闭环里摘要器与 judge 是同一个模型，这项偏差没有被消除。
+</div>
+
+<h2>4 — 实机运行</h2>
 <figure>
-  <img src="media/badge-live.png" alt="Retention pill next to the Compacted context row in the built UI">
+  <img src="media/badge-live.png" alt="压缩分隔线右侧的保留徽章，以及压缩后继续给出的答案">
   <figcaption>
-    Captured by a Playwright script driving the real built UI at <code>http://127.0.0.1:3001</code>.
+    真实构建 UI 的会话截图：压缩分隔线行 <code>Ran 1 command&nbsp;&nbsp;Compacted context</code> 右侧是保留徽章，
+    压缩后对话继续答出 <code>us-east-2 has the highest total cost, at $95,025.00.</code>（录屏 UI 为英文）。
   </figcaption>
 </figure>
 <p class="cap" style="margin-top:16px">
-  Pill text, exactly: <span class="pill">Hippo kept 1 msgs verbatim (210 tok)</span><br>
-  It appeared next to the row <code>Ran 1 command&nbsp;&nbsp;Compacted context</code>.
-</p>
-<p class="cap">
-  Tooltip, exactly (budget value shown in the tooltip):
+  徽章文字，逐字：<span class="pill">Hippo kept 1 msgs verbatim (210 tok)</span><br>
+  悬停 title，逐字：
   <code>Selective retention (ebbinghaus-pagerank) preserved these messages word-for-word instead of folding them into the summary.</code>
 </p>
 <video controls preload="metadata" src="media/pilotdeck-compaction.webm">
   <source src="media/pilotdeck-compaction.webm" type="video/webm">
 </video>
 <p class="cap">
-  <code>media/pilotdeck-compaction.webm</code> — a real session: large tool-style payloads across several
-  turns, compaction fires, and the pill is on screen at the end.
+  <code>media/pilotdeck-compaction.webm</code> —— 一段真实会话：多轮大段工具输出，上下文吃紧时 compaction 触发，
+  保留徽章出现在压缩分隔线上，被保留的消息逐字留在上下文里而没有进入摘要。保留摘要在 v2 聊天面板里正常渲染。
+</p>
+<p class="cap">
+  如实说明：录屏由 Playwright 驱动真实构建 UI（<code>http://127.0.0.1:3001</code>）跑出，输入是脚本而非人手；
+  为让 compaction 在这段短会话里触发，临时调低了 <code>agent.maxContextTokens</code>，事后已还原，产品代码没有为录屏改动。
 </p>
 
-<h2>3 — Tests</h2>
+<h2>5 — 代码质量 / 工程</h2>
 <ul>
-  <li><code>tests/context/hippo-retention.spec.ts</code> (new):
-      <code>messageVisibleText ignores thinking blocks</code>,
-      <code>pickRetained never keeps a candidate with no visible content</code>.</li>
-  <li><code>ui/src/components/chat-v2/processGrouping.test.ts</code> (new):
-      <code>carries the retention summary off the folded boundary onto the process row</code>,
-      <code>reports no retention summary when the boundary carried none</code> — file total 24 passed.</li>
+  <li><b>CI</b>（<code>.github/workflows/ci.yml</code>）：typecheck → 无回归门 → 根套件；测试步骤只在
+      <code># fail</code> 计数非零时失败，不放宽对 flake 的容忍。另有 <code>docker-build.yml</code>。
+      保留徽章另有专项测试：根套件 <code>tests/context/retention-reporting.spec.ts</code>，
+      UI 侧 <code>useChatMessages.retention.test.ts</code>（14 例）与
+      <code>MessageComponent.retention-badge.test.tsx</code>（6 例，做过变异验证：把徽章渲染条件改成恒假后 4/6 正例失败）。</li>
+  <li><b>无回归守护</b>：引擎层 <code>scorePolicy</code> 缺省 = 上游路径，golden fixture 锁定上游 <code>85be774</code> 的行为，
+      <code>pnpm benchmark:no-regression</code> 逐字节比对；App 层本 fork 默认 <code>retention: hippo</code>，
+      <code>off</code> 一键关回上游。Hippo 是纯增量：不传策略时输出与上游完全一致。</li>
+  <li><b>上游缺陷一 · 被 <code>unref()</code> 掉的超时定时器</b>：本应用来 settle 一个被 <code>await</code> 的 promise
+      的定时器被 <code>unref()</code>，事件循环先排空，调用方拿到永不 settle 的 promise 而不是超时错误。
+      三处站点（<code>src/network/fetch.ts</code>、<code>src/task/runtime/BackgroundTaskRuntime.ts</code> 的 <code>wait()</code>、
+      <code>src/model/streaming/streamModel.ts</code> 的 <code>withIdleTimeout()</code>），每处都配了一个修复前必然失败的测试
+      （修复后 7/7、6/6、6/6）。其余站点是有意不阻止进程退出，未动。</li>
+  <li><b>上游缺陷二 · 分词器二次退化</b>：<code>src/context/budget/tokenizer.ts</code> 在长重复串上退化为 O(n²)
+      （CPU profile 显示 96% 时间在 <code>js-tiktoken</code> 的 <code>bytePairMerge</code>）；
+      <code>countTokens</code> 换成同一套贪心合并的堆实现后，8,000 字符 8,998.9 ms → 9.1 ms。
+      数据见 <code>benchmarks/results/tokenizer-scaling-2026-09-11T13-06-44-566Z.json</code>；
+      <code>tests/context/tokenizer-equivalence.spec.ts</code> 用 906 次比对（900 随机 + 6 固定边界）验证等价性，0 失配。</li>
+  <li><b>上游缺陷三 · "最新事务"的排序键混了逻辑时间与文件 mtime</b>：
+      <code>src/web/server/replaceLastTurn.ts</code> 原本写 <code>Math.max(preparedAt, backupMtime, journalMtime)</code>，
+      而本机 mtime 粒度是 1 ms，两个事务落在同一毫秒就并列，并列由 <code>readdirSync</code> 的任意顺序决定，
+      启动恢复会挑错事务。改成 <code>preparedAt</code> 可解析时由它单独决定，mtime 只兜底；
+      新增的测试用 <code>utimes</code> 把旧事务 mtime 推到未来 60 秒，不依赖时序，改回旧代码确定性失败（修复后 16/16）。</li>
 </ul>
-<p class="cap">
-  On the old code the two retention-spec tests fail and the "carries the retention summary" test fails:
-  the retained-set assertions reject the thinking-only turn, and the folded process row has no
-  <code>compactRetention</code> to compare. The fourth test is a no-regression guard — it passes either way.
-</p>
-<p class="cap">
-  Suite counts: <code>ui</code> chat-v2 suite 13 files, 114 tests passed. Root repo suite exit code 0
-  (517 passed, 2 skipped, 0 failed).
-</p>
 
-<h2>4 — Reproduce</h2>
-<pre># Node 22
-node dist/src/cli/pilotdeck.js server        # gateway  -> 127.0.0.1:18789
-cd ui &amp;&amp; node server/webRuntimeSupervisor.js start-built   # UI -> 127.0.0.1:3001</pre>
-<pre># the tests that pin the fixes
-npx vitest run src/components/chat-v2/processGrouping.test.ts   # in ui/, 24 passed
-npm test                                                        # repo root, exit 0</pre>
-
-<div class="note">
-  <b>Context budget.</b> Compaction only fires when the live context crosses the threshold, so a demo
-  needs a small budget. A temporary <code>agent.maxContextTokens</code> was set for this recording
-  (in <code>~/.pilotdeck/pilotdeck.yaml</code>) and restored afterwards. The demo forces compaction
-  early by lowering the budget; under the normal budget the same path runs, only later. No product code
-  was changed to produce the recording.
-</div>
-
-<h2>5 — What this does not show</h2>
+<h2>6 — 已知限制</h2>
 <ul>
-  <li>The recording is a scripted UI session — Playwright typing into the app — not a human. It is the
-      real built UI and a real model, but the input is automated.</li>
-  <li>The retention policy itself is the project's existing ebbinghaus-pagerank policy, unchanged by this
-      work. These fixes change which messages are eligible and whether the summary renders, not how
-      messages are scored or ranked.</li>
+  <li>收益是对<b>当前任务</b>保真，不是"记住被放弃的旧话题"。旧话题那一列的优势经诊断是 harness 句式共享造成的假象，
+      换成 decorrelated 措辞后归零（§4.6/§4.7）；对外不应说"Hippo 保住了旧话题"。</li>
+  <li>评测主要是合成转录、模板化事实，上游 0/20 是假摘要器的结构性对照，不是真实摘要能力上限；
+      真 LLM 闭环每格只有 16 题、2 个 seed，且摘要器与 judge 同模型，只声明方向。</li>
+  <li>Hippo 会增加压缩后 token（结构性基准约 1.11–1.20×，真 LLM 记录约 +5–24%，视轮次与格子）。
+      展示时应同时给准确率与成本，不能只报准确率。</li>
+  <li>上游既有、未修：<code>ui/</code> 的 <code>tsc --noEmit</code> 是红的（125 个文件报错，根因是依赖图里同时存在两份
+      <code>@types/react</code>：18.3.29 与 19.2.15）。<code>vite build</code> 实测通过（37.6 s，退出码 0），
+      所以这是 typecheck 卫生问题，不是构建或运行时故障；修它要动依赖解析并重装，风险大于收益。</li>
 </ul>
 
 <footer>
-  Repo: <a href="https://github.com/qgeng1465/pilotdeck-hippo">github.com/qgeng1465/pilotdeck-hippo</a> ·
-  branch <code>fix/retention-replayable</code>, based on public <code>main</code> = commit <code>79e56b4</code> ·
-  PR <a href="https://github.com/qgeng1465/pilotdeck-hippo/pull/21">#21</a>.
+  仓库：<a href="https://github.com/qgeng1465/pilotdeck-hippo">github.com/qgeng1465/pilotdeck-hippo</a> ·
+  在线 Demo：<a href="https://qgeng1465.github.io/pilotdeck-hippo/">qgeng1465.github.io/pilotdeck-hippo</a> ·
+  上游基线：<a href="https://github.com/OpenBMB/PilotDeck">OpenBMB/PilotDeck</a> <code>85be774</code>（AGPL-3.0）<br>
+  本次实机录屏来自分支 <code>fix/retention-replayable</code>（PR
+  <a href="https://github.com/qgeng1465/pilotdeck-hippo/pull/21">#21</a>，已合入 <code>main</code>，
+  merge commit <code>26b3295</code>），录屏所用 UI 构建为 <code>cf17442</code>。<br>
+  抽检记录 <code>docs/independent-spotcheck.md</code> 在分支 <code>spotcheck-polish</code>（PR #20）。
+  本页所有数字均来自仓库内已提交的 <code>benchmarks/results/*.json</code>，未经第三方评审。
 </footer>
 
 </div>

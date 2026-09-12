@@ -1,41 +1,76 @@
 {
   "project": "PilotDeck-Hippo",
+  "page": "index.html",
   "date": "2026-09-12",
-  "what_this_is": "Evidence captured from a real run of the built UI. Nothing here is mocked.",
-  "build": {
-    "branch": "fix/retention-replayable",
-    "base_commit": "79e56b4",
-    "bundle_served": "ui/dist (vite production build)",
-    "server": "http://127.0.0.1:3001"
+  "what_this_is": "Judge-facing landing page for the PilotDeck-Hippo competition entry (PilotDeck 创造计划 · 方向三). The page leads with the core mechanism and the committed benchmark numbers. Every number on the page is traceable to a file in the repository.",
+
+  "repo": {
+    "url": "https://github.com/qgeng1465/pilotdeck-hippo",
+    "live_page": "https://qgeng1465.github.io/pilotdeck-hippo/",
+    "upstream_baseline": "OpenBMB/PilotDeck @ 85be774 (AGPL-3.0)",
+    "recording_branch": "fix/retention-replayable",
+    "recording_commit": "cf17442",
+    "pr": "https://github.com/qgeng1465/pilotdeck-hippo/pull/21 (merged into main, merge commit 26b3295)",
+    "spotcheck_branch": "spotcheck-polish (PR #20, not merged into main)"
   },
-  "defect_1": {
-    "where": "src/context/compaction/retention/EbbinghausPageRankPolicy.ts (pickRetained)",
-    "what": "The policy could select a message carrying no visible text -- an assistant turn whose only block is `thinking`. It was charged against the retention budget and replayed as an empty assistant message, so it was reported as kept while delivering nothing.",
-    "fix": "Skip candidates whose messageVisibleText() is empty. MessageText.ts no longer counts `thinking` blocks as visible text, so scoring and replayability agree.",
-    "tests": [
-      "tests/context/hippo-retention.spec.ts :: messageVisibleText ignores thinking blocks",
-      "tests/context/hippo-retention.spec.ts :: pickRetained never keeps a candidate with no visible content"
-    ]
+
+  "core_data_sources": {
+    "structural_benchmark": {
+      "file": "benchmarks/results/2026-09-11T11-16-22-522Z.json",
+      "fields": "groups[].preTokensMedian / upstreamPostTokensMedian / hippoPostTokensMedian / upstreamFactsRetainedMedian / hippoFactsRetainedMedian",
+      "used": "(N=40: 3906/1153/1381, 0->8) (N=80: 8291/2368/2634, 0->9) (N=160: 17034/4739/5339, 0->18); seed 20260911, 10 cases per cell, 30/30 deterministic"
+    },
+    "holdout": {
+      "file": "benchmarks/results/holdout-2026-09-11T11-19-13-567Z.json",
+      "fields": "rows[] variant='shipped default' mean, comparisons[] winsA/ties/winsB/signTestP",
+      "used": "en80 9.4, en160 17.9, zh80 6.0, zh160 10.0, upstream all 0; each cell 10/0/0, p=0.002; seeds 20260921-20260930; vs previous default 0.7/0.15/0.15: 7 wins / 33 ties / 0 losses (p=1/0.5/1/0.125)"
+    },
+    "independent_spotcheck": {
+      "file": "benchmarks/results/spotcheck-seeds20261001-2026-09-11T16-59-44-443Z.json",
+      "record": "docs/independent-spotcheck.md",
+      "used": "en80 9.2, en160 18.0, zh80 6.0, zh160 10.0, upstream all 0; each cell 10/0/0, p=0.002; seeds 20261001-20261010",
+      "note": "Author self-run reproducibility spot-check, explicitly NOT a third-party review. Lives on branch spotcheck-polish."
+    },
+    "extraction_precision": {
+      "file": "benchmarks/results/extraction-precision-2026-09-11T13-39-26-139Z.json",
+      "fields": "rows[].recallMedian / precisionMedian / chanceBaselineMedian / liftOverChance",
+      "used": "en40 6/20 100% 2.8x, en80 7/20 100% 5.7x, en160 16/20 100% 11x, zh40 4/20 100% 2.7x, zh80 4/20 100% 5.6x, zh160 8/20 89% 10x; holdout seeds 20260921-20260923, 3 seeds median"
+    },
+    "real_llm_rounds": {
+      "tight_budget_1500": "benchmarks/results/real-llm-topic-switch-2026-09-11T12-45-03-182Z.json",
+      "wide_budget_8000": "benchmarks/results/real-llm-topic-switch-2026-09-11T12-29-27-528Z.json",
+      "used": "tight budget, current topic: upstream 10/16 both fact styles (per-repeat 4/6 and 6/4), hippo 16/16 both styles (per-repeat 8/8); summaryTruncated 3 (upstream) vs 4 (hippo) out of 4 cases; wide budget: all four current-topic arms 16/16, old-topic arm difference 1 while within-config repeat swing is 3-4 -> no direction declared"
+    },
+    "tokenizer_scaling": {
+      "file": "benchmarks/results/tokenizer-scaling-2026-09-11T13-06-44-566Z.json",
+      "used": "length 8000: referenceMs 8998.86 -> fastMs 9.06"
+    },
+    "no_regression_guard": {
+      "script": "benchmarks/assertNoRegression.ts",
+      "fixture": "benchmarks/baseline-85be774.json",
+      "verified_output": "NO-REGRESSION OK: scorePolicy=undefined output matches upstream 85be774 baseline."
+    }
   },
-  "defect_2": {
-    "where": "ui/src/components/chat-v2/ (processGrouping.ts, ProcessTrace.tsx, MessageRowV2.tsx)",
-    "what": "The rendered v2 chat pane folds the compaction boundary into a synthetic process row and drops the boundary from detailMessages, so the boundary's retention summary was lost before any component could draw it. The v1 pane rendered it; v2 never did.",
-    "fix": "createSyntheticProcessSummary copies compactRetention onto the synthetic summary; ProcessTrace gained an optional `badge` slot; MessageRowV2 renders the pill, and renders nothing when the policy kept zero messages.",
-    "tests": [
-      "ui/src/components/chat-v2/processGrouping.test.ts :: carries the retention summary off the folded boundary onto the process row",
-      "ui/src/components/chat-v2/processGrouping.test.ts :: reports no retention summary when the boundary carried none"
-    ]
+
+  "test_runs": {
+    "root_suite_working_tree": "519 tests = 517 pass / 0 fail / 0 cancelled / 2 skipped (34.3 s, exit 0); run locally 2026-09-12",
+    "root_suite_ci_fresh_clone": "507 tests = 505 pass / 0 fail / 2 skipped (source: .github/workflows/ci.yml comment and README section 5; upstream's four tests/gateway/*.test.ts drafts, 10 cases, are git-ignored)",
+    "ui_chat_v2_suite": "13 files / 114 tests passed (cd ui && npx vitest run src/components/chat-v2/, 6.4 s); run locally 2026-09-12",
+    "note": "ui/ as a whole is not green (5 pre-existing unrelated failing files, README section 5), so only the chat-v2 directory is reported."
   },
+
   "live_proof": {
-    "method": "Playwright (headless chromium) drives the real server. A fresh chat receives large tool-style payloads until auto-compaction fires.",
+    "method": "Playwright (headless chromium) drives the real built UI at http://127.0.0.1:3001. A fresh chat receives large tool-style payloads until auto-compaction fires.",
     "compaction_fired_at_turn": 3,
     "pill_text": "Hippo kept 1 msgs verbatim (210 tok)",
     "pill_title_prefix": "Selective retention (ebbinghaus-pagerank) preserved these messages word-for-word instead of folding them into the summary.",
     "row_label": "Ran 1 command  Compacted context",
     "dom_selector_matched": "[title*=\"Selective retention\"]",
+    "answer_after_compaction": "us-east-2 has the highest total cost, at $95,025.00.",
     "screenshot": "media/badge-live.png",
     "video": "media/pilotdeck-compaction.webm"
   },
+
   "raw_boundary_record": {
     "note": "Verbatim boundary event emitted by the engine during the recorded session.",
     "session": "web:s_dd461fd5-e359-4168-a669-cdcf416fae66",
@@ -55,28 +90,28 @@
     "retainedMessages": 1,
     "retainedTokens": 507,
     "retentionBudgetTokens": 1612,
-    "retentionWeights": {
-      "wSim": 0.85,
-      "wTime": 0.15,
-      "wRank": 0
-    },
+    "retentionWeights": { "wSim": 0.85, "wTime": 0.15, "wRank": 0 },
     "retainedChars": 1275
   },
-  "test_runs": {
-    "ui_processGrouping": "24 passed",
-    "ui_chat_v2_suite": "13 files, 112 tests passed",
-    "root_repo_suite": "exit code 0"
-  },
+
   "honest_limits": [
+    "Every number on the page is author-self-run; none is a third-party review. The spot-check record says so explicitly.",
     "The recording is a scripted Playwright session, not a human typing by hand.",
-    "Compaction was made to fire early by lowering agent.maxContextTokens for the recording; the value was restored afterwards.",
-    "The retention policy itself (ebbinghaus-pagerank) is the project's existing policy, unchanged by this work."
+    "Compaction was made to fire early by lowering agent.maxContextTokens for the recording; the value was restored afterwards and no product code was changed for the recording.",
+    "The upstream 0/20 is a structural control from a fake summarizer that emits no FACT text, not the ceiling of real summarization; the real-LLM comparison is separate and small (16 questions per cell, 2 seeds, same model as summarizer and judge).",
+    "The gain is fidelity to the current task, not memory of abandoned topics; the old-topic advantage is a harness artifact and goes to zero under decorrelated wording.",
+    "Hippo costs more post-compaction tokens (about 1.11-1.20x structurally, about +5-24% in the real-LLM records)."
   ],
+
   "reproduce": {
+    "node_prefix": "/home/qiushuogeng/.local/lib/nodejs/node-v22.23.2-linux-x64/bin",
     "start_gateway": "node dist/src/cli/pilotdeck.js server",
     "start_ui": "cd ui && node server/webRuntimeSupervisor.js start-built",
-    "ui_test": "cd ui && npx vitest run src/components/chat-v2/processGrouping.test.ts",
     "root_test": "npm test",
-    "node": ">=22"
+    "ui_test": "cd ui && npx vitest run src/components/chat-v2/",
+    "no_regression": "npx tsx benchmarks/assertNoRegression.ts",
+    "holdout": "pnpm benchmark:holdout",
+    "extraction": "pnpm benchmark:extraction",
+    "reseed_holdout": "PILOTDECK_HOLDOUT_SEED_BASE=20270101 pnpm benchmark:holdout"
   }
 }

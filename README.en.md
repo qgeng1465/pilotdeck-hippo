@@ -499,8 +499,7 @@ Repo:          https://github.com/qgeng1465/pilotdeck-hippo
 Upstream:      https://github.com/OpenBMB/PilotDeck
 Base full SHA: 85be774751e496501370d7cf95ed45388f407c93
 Base prefix:   85be774 (a golden fixture locks its behavior)
-Branch:        main
-main HEAD:     26b329599a216afe9fd4193d2527c8bb234171b7
+Branch:        main (HEAD as shown on the repository page)
 ```
 
 The change is confined to upstream's context-compaction module and the rendering of the compaction divider in chat-v2; nothing else in upstream is touched. Upstream copyright notices are retained; third-party dependencies and assets are credited in `NOTICE`.

@@ -6,9 +6,9 @@
 
 > **PilotDeck 创造计划 · Direction 3 (Harness / Memory / Architecture Optimization)**
 
-> **Navigation:** [中文](README.md) · English
+> **Navigation:** [中文](README.md) · English · **Live demo:** <https://qgeng1465.github.io/pilotdeck-hippo/>
 
-> **Pre-submission checklist** is in [§6](#6-fresh-code-and-source-notes-confirm-before-submission). Direction 3's deliverable is a public GitHub repo, an interactive demo and a poster.
+> **Pre-submission checklist** is in [§6](#6-fresh-code-and-source-notes-confirm-before-submission). Direction 3's deliverable is a public GitHub repo (this one), a live demo ([qgeng1465.github.io/pilotdeck-hippo](https://qgeng1465.github.io/pilotdeck-hippo/), showing the two retention/rendering defects fixed on 2026-09-12 running on the real build) and a poster.
 
 Navigation: [Core Idea](#core-idea) · [What It Does (real data)](#what-it-solves-with-real-data) · [Benchmarks & Results](#4-benchmark-approaches-and-results) · [Quick Start](#3-quick-start-from-source) · [Known Limits](#5-compatibility-tests-and-known-limits) · [Upstream Bug Fixes](#51-three-upstream-bugs-fixed-along-the-way) · [Submission Checklist](#7-direction-3-submission-checklist) · [License](#license)
 

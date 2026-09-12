@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PilotDeck — two retention bugs fixed, with a live run</title>
+<style>
+  :root {
+    --bg: #0d1117; --panel: #161b22; --line: #262d36;
+    --fg: #e6edf3; --dim: #8b949e; --accent: #3fb950; --accent-dim: #2ea043;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 24px 80px; }
+  header { border-bottom: 1px solid var(--line); padding-bottom: 24px; margin-bottom: 32px; }
+  .kicker { color: var(--accent); font: 600 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+  h1 { font-size: 30px; line-height: 1.25; margin: 12px 0 8px; letter-spacing: -.02em; }
+  .sub { color: var(--dim); font-size: 16px; margin: 0; max-width: 76ch; }
+  h2 { font-size: 15px; letter-spacing: .06em; text-transform: uppercase; color: var(--dim);
+       margin: 44px 0 14px; font-weight: 600; }
+  h3 { font-size: 17px; margin: 26px 0 6px; }
+  video { width: 100%; display: block; border: 1px solid var(--line); border-radius: 10px; background: #000; }
+  .cap { color: var(--dim); font-size: 13px; margin: 10px 0 0; }
+  ul { padding-left: 20px; margin: 0; }
+  li { margin: 8px 0; }
+  code, pre { font-family: var(--mono); }
+  code { background: #0b0f14; border: 1px solid var(--line); border-radius: 5px; padding: 1px 5px; font-size: 13px; }
+  pre {
+    background: #0b0f14; border: 1px solid var(--line); border-radius: 10px;
+    padding: 16px 18px; overflow-x: auto; font-size: 12.5px; line-height: 1.55; color: #c9d1d9;
+  }
+  .note {
+    background: rgba(210,153,34,.07); border: 1px solid rgba(210,153,34,.35);
+    border-left: 3px solid #d29922; border-radius: 8px; padding: 14px 18px; font-size: 14.5px;
+  }
+  .note b { color: #e3b341; }
+  .ok { color: var(--accent); font-weight: 600; }
+  .bad { color: #f85149; font-weight: 600; }
+  figure { margin: 0; }
+  figure img { width: 100%; border: 1px solid var(--line); border-radius: 10px; display: block; }
+  figcaption { color: var(--dim); font-size: 13px; margin-top: 8px; }
+  .pill {
+    display: inline-block; font: 500 12px/1.4 var(--mono); color: #7ee0a0;
+    border: 1px solid var(--accent-dim); border-radius: 999px; padding: 2px 10px; white-space: nowrap;
+  }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 760px) { .row { grid-template-columns: 1fr; } }
+  footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line);
+           color: var(--dim); font-size: 13px; }
+  a { color: #58a6ff; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">PilotDeck · bug fix · 2026-09-12</div>
+  <h1>Two retention bugs, fixed and shown running</h1>
+  <p class="sub">
+    PilotDeck compresses long agent conversations. Its Hippo policy keeps a few messages
+    word-for-word instead of folding everything into a summary. Two defects in the selection and
+    rendering path were fixed today; this page states them and shows the live run that proves both.
+  </p>
+</header>
+
+<h2>1 — The defects</h2>
+
+<h3>Defect 1: a "kept" message could carry no visible text</h3>
+<p>
+  An assistant turn can contain only a <code>thinking</code> block. On replay that becomes an empty
+  assistant message (<code>content: ""</code>), with the text riding in <code>reasoning_content</code>,
+  which an OpenAI-compatible endpoint may ignore. The thinking text often sits near the user's
+  question, so such a candidate scored high and was selected: it spent retention budget and was
+  reported as kept while delivering nothing. The fix is in
+  <code>src/context/compaction/retention/EbbinghausPageRankPolicy.ts</code>, inside <code>pickRetained</code>:
+</p>
+<pre>    for (const entry of scored) {
+      const tokens = input.estimateTokens([entry.message]);
+      if (tokens &lt;= 0) continue;
+      // A candidate with no visible text (e.g. an assistant turn that carries
+      // only a `thinking` block) would be charged against the retention budget
+      // and replayed as an empty message. Keeping it spends budget to deliver
+      // nothing, so it must not be retained -- fall through to the next one.
+      if (messageVisibleText(entry.message).length === 0) continue;
+      if (usedTokens + tokens > input.retentionBudgetTokens) continue;
+      retained.push(entry.message);
+      usedTokens += tokens;</pre>
+<p>
+  Paired change in <code>src/context/compaction/retention/MessageText.ts</code>: the
+  <code>thinking</code> case no longer contributes to the "visible text" used for scoring. Scoring and
+  replayability now agree.
+</p>
+
+<h3>Defect 2: the retention summary never reached the screen</h3>
+<p>
+  The UI has two chat panes. The rendered one is v2. Its grouping code folds the compaction boundary
+  into a synthetic "process" row and drops the boundary itself from <code>detailMessages</code> before
+  rendering, so the boundary's retention summary was lost before any component could draw it. The v1
+  pane read the boundary directly and drew it fine; v2 never did.
+</p>
+<p>
+  Fix, across three files: <code>ui/src/components/chat-v2/processGrouping.ts</code> copies
+  <code>compactRetention</code> onto the synthetic summary; <code>ui/src/components/chat-v2/ProcessTrace.tsx</code>
+  gained an optional <code>badge</code> slot; <code>ui/src/components/chat-v2/MessageRowV2.tsx</code>
+  renders the pill. The pill renders nothing when the policy kept zero messages, so an upstream engine
+  never claims a badge.
+</p>
+
+<h2>2 — The live proof</h2>
+<figure>
+  <img src="media/badge-live.png" alt="Retention pill next to the Compacted context row in the built UI">
+  <figcaption>
+    Captured by a Playwright script driving the real built UI at <code>http://127.0.0.1:3001</code>.
+  </figcaption>
+</figure>
+<p class="cap" style="margin-top:16px">
+  Pill text, exactly: <span class="pill">Hippo kept 1 msgs verbatim (210 tok)</span><br>
+  It appeared next to the row <code>Ran 1 command&nbsp;&nbsp;Compacted context</code>.
+</p>
+<p class="cap">
+  Tooltip, exactly (budget value shown in the tooltip):
+  <code>Selective retention (ebbinghaus-pagerank) preserved these messages word-for-word instead of folding them into the summary.</code>
+</p>
+<video controls preload="metadata" src="media/pilotdeck-compaction.webm">
+  <source src="media/pilotdeck-compaction.webm" type="video/webm">
+</video>
+<p class="cap">
+  <code>media/pilotdeck-compaction.webm</code> — a real session: large tool-style payloads across several
+  turns, compaction fires, and the pill is on screen at the end.
+</p>
+
+<h2>3 — Tests</h2>
+<ul>
+  <li><code>tests/context/hippo-retention.spec.ts</code> (new):
+      <code>messageVisibleText ignores thinking blocks</code>,
+      <code>pickRetained never keeps a candidate with no visible content</code>.</li>
+  <li><code>ui/src/components/chat-v2/processGrouping.test.ts</code> (new):
+      <code>carries the retention summary off the folded boundary onto the process row</code>,
+      <code>reports no retention summary when the boundary carried none</code> — file total 24 passed.</li>
+</ul>
+<p class="cap">
+  On the old code the two retention-spec tests fail and the "carries the retention summary" test fails:
+  the retained-set assertions reject the thinking-only turn, and the folded process row has no
+  <code>compactRetention</code> to compare. The fourth test is a no-regression guard — it passes either way.
+</p>
+<p class="cap">
+  Suite counts: <code>ui</code> chat-v2 suite 13 files, 114 tests passed. Root repo suite exit code 0
+  (517 passed, 2 skipped, 0 failed).
+</p>
+
+<h2>4 — Reproduce</h2>
+<pre># Node 22
+node dist/src/cli/pilotdeck.js server        # gateway  -> 127.0.0.1:18789
+cd ui &amp;&amp; node server/webRuntimeSupervisor.js start-built   # UI -> 127.0.0.1:3001</pre>
+<pre># the tests that pin the fixes
+npx vitest run src/components/chat-v2/processGrouping.test.ts   # in ui/, 24 passed
+npm test                                                        # repo root, exit 0</pre>
+
+<div class="note">
+  <b>Context budget.</b> Compaction only fires when the live context crosses the threshold, so a demo
+  needs a small budget. A temporary <code>agent.maxContextTokens</code> was set for this recording
+  (in <code>~/.pilotdeck/pilotdeck.yaml</code>) and restored afterwards. The demo forces compaction
+  early by lowering the budget; under the normal budget the same path runs, only later. No product code
+  was changed to produce the recording.
+</div>
+
+<h2>5 — What this does not show</h2>
+<ul>
+  <li>The recording is a scripted UI session — Playwright typing into the app — not a human. It is the
+      real built UI and a real model, but the input is automated.</li>
+  <li>The retention policy itself is the project's existing ebbinghaus-pagerank policy, unchanged by this
+      work. These fixes change which messages are eligible and whether the summary renders, not how
+      messages are scored or ranked.</li>
+</ul>
+
+<footer>
+  Branch <code>fix/retention-replayable</code>, based on public <code>main</code> = commit <code>79e56b4</code>.
+</footer>
+
+</div>
+</body>
+</html>

@@ -26,7 +26,7 @@ Same "shipped default vs upstream (no retention)", but on seeds 20261001–20261
 
 **Conclusion**: all four means match the headline **in direction, within 0.2**, and **every cell is 10 wins / 0 ties / 0 losses**. The numbers do drift slightly with seed (9.4→9.2, 17.9→18.0), so this is not a hard constant; but the direction and significance reproduce completely.
 
-> Metric caveat (same as the README): this is a **"verbatim-retention recall proxy" under a fake summarizer**, not answer accuracy. Upstream's 0 comes from the fake summarizer not emitting FACT text (a structural design), not from the ceiling of real summarization — see README §4.3 for the real-QA comparison.
+> Metric caveat (same as the README): this is a **"verbatim-retention recall proxy" under a fake summarizer**, not answer accuracy. Upstream's 0 comes from the fake summarizer not emitting FACT text (a structural design), not from the ceiling of real summarization — see [the evaluation record §4.3](./evaluation.en.md#43-real-llm-closed-loop-two-rounds-with-sensitivity) for the real-QA comparison.
 
 ## 2. Extraction precision: fresh-seed re-run (`benchmarks/extractionPrecision.ts`)
 
@@ -78,4 +78,4 @@ PILOTDECK_EVAL_SEED_BASE=20270101 PILOTDECK_EVAL_SEEDS=5 pnpm benchmark:extracti
 - **Not a third-party review** — authors' own run; it only tests "does it survive a seed change", and does not replace a real QA evaluation.
 - Still **synthetic, templated facts** (fake summarizer); still short of real long-conversation noise and topic drift.
 - The identical cells in §2 **do not** mean precision is seed-robust (see that section).
-- The known biases of the real-LLM closed loop (judge = summarizer model, 16 questions × 2 seeds per cell) are **not** removed by this spot-check and remain as stated in README §4.3.
+- The known biases of the real-LLM closed loop (judge = summarizer model, 16 questions × 2 seeds per cell) are **not** removed by this spot-check and remain as stated in [the evaluation record §4.3](./evaluation.en.md#43-real-llm-closed-loop-two-rounds-with-sensitivity).

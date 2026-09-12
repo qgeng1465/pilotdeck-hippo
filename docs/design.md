@@ -1,0 +1,79 @@
+# 设计与架构参考
+
+本文是 [README](../README.md) 的参考细节，收录「1. 问题与设计取舍」与「2. 架构与数据流」两节的完整内容：特征选择理由、评分公式、默认权重的取舍依据、mermaid 数据流图、核心接口与建议查阅的文件清单。正文只保留结论与指针，细节以本文为准。English: [design.en.md](./design.en.md)
+
+## 1. 问题与设计取舍
+
+上游策略可以概括为"保留最近 tail，其余内容压成摘要"。它对短对话足够有效，但在上下文压力上升时会丢掉不在 tail 中的精确事实。Hippo 只增加一个可开关的保留块：摘要仍负责压缩，保留块负责把少量高价值原文带回上下文。
+
+我们选择本地可计算的特征，避免每次压缩再调用一个大模型：
+
+- **语义相关性**：`sim(q, m)` 中 `q` 是尾部最近一条真实 user 请求。默认 BM25（内部自带 IDF）；设置 `PILOTDECK_BGE_MODEL` 后可切换本地 embedding cosine（`Xenova/bge-small-zh-v1.5`，可离线运行）。
+- **位置衰减**：当前没有可靠消息时间戳，因此按消息位置计算衰减；它是位置启发式，不等同于真实时间上的艾宾浩斯曲线。
+- **实体图核心度**：从消息抽取实体、建共现图、跑 PageRank，再乘 `log(1 + M / df)` 的 IDF，压低在多数消息重复出现的枢纽词。实体抽取双语：ASCII 抽大写驼峰记号，中文用滑动 bigram 免分词抽取 + 高频功能词文档频率剪枝。
+- **预算约束**：保留块预算为 `tailTokenBudget × 0.2`，至少 256 tokens；超预算按确定性 tie-break 截断。
+
+默认分数（权重常量 `EBBINGHAUS_DEFAULT_WEIGHTS`，由消融 + 网格搜索重锚，并在**未见 seed** 上复核，见 [4.2](./evaluation.md#42-组件消融)）：
+
+```text
+S(m) = 0.85 × sim(q, m)
+     + 0.15 × position_decay(m)
+     + 0.00 × idf_pagerank(m)     # 权重 0，公式项仍保留、可配置
+```
+
+第三项默认权重为 **0**：网格搜索的最优点是 `0.85/0.15/0.00`，而 rank 项在留出集上一对一比较 **7 胜 / 33 平 / 0 负，四个格子无一显著**（p = 1 / 0.5 / 1 / 0.125）——去掉它不吃亏，但也没带来可测量的收益，所以不占权重，但代码与配置项保留，供其他分布启用。该权重是当前合成协议上的调参结果，不能直接视为所有真实任务的全局最优；**我们不宣称"权重优化带来了提升"**，换默认值的依据是对齐调参 argmax 且少一项（三项变两项），真正的主效应是"逐字保留 vs 不做保留"（[§4.5](./evaluation.md#45-留出集验证选过参数的-seed-一律不用)）。
+
+没有 query 时 `sim` 退化为常数 `0.5`、对排序没有贡献；此时默认权重下 `wRank` 同样是 0，于是排序**只由时近度决定**——这正是无 query 场景各项指标都接近地板的原因。所以 CompactionEngine 现在做的是**避免误入该场景**而不是给 rank 加权兜底：尾部取不到用户请求时，回退到全对话中最近的一条真实用户请求（[§4.2](./evaluation.md#42-组件消融) 第 4 条）。
+
+## 2. 架构与数据流
+
+```mermaid
+flowchart LR
+  A[CompactionEngine] --> B[待摘要消息]
+  B --> C[候选消息抽取]
+  C --> D1[BM25 / 本地 embedding]
+  C --> D2[位置衰减]
+  C --> D3[实体共现图]
+  D3 --> D4[PageRank × IDF]
+  D1 --> E[加权评分]
+  D2 --> E
+  D4 --> E
+  E --> F[按 token 预算选择 Top-K]
+  B --> G[上游 summarizer]
+  F --> H[逐字保留块]
+  G --> I[摘要块]
+  H --> J[合并后的上下文]
+  I --> J
+```
+
+核心接口（与代码一致）：
+
+```ts
+const engine = new CompactionEngine({
+  model, // 你的摘要模型适配器
+  scorePolicy: buildEbbinghausPageRankPolicy({
+    wSim: 0.85, wTime: 0.15, wRank: 0, // 缺省即该值；wRank>0 可重新启用实体图项
+  }),
+});
+const result = await engine.run({ trigger: "auto", messages, keepTailRatio: 0.18 });
+```
+
+不传 `scorePolicy` 时走上游路径。App 侧由配置解析成同一个策略，无需改代码：
+
+```ts
+// src/context/compaction/retention/EbbinghausPageRankPolicy.ts
+resolveRetentionScorePolicy({ retention: "hippo" }) // → EbbinghausPageRankPolicy
+resolveRetentionScorePolicy({ retention: "off" })   // → undefined（纯上游）
+```
+
+建议在评审时查看以下文件：
+
+- `src/context/compaction/CompactionEngine.ts`：接入开关、候选消息、保留块与合并顺序。
+- `src/context/compaction/retention/RetentionTypes.ts`：策略与评分类型。
+- `src/context/compaction/retention/MessageText.ts`：统一消息文本化。
+- `src/context/compaction/retention/LocalEmbedding.ts`：本地 embedding 与 BM25 fallback。
+- `src/context/compaction/retention/EntityGraph.ts`：中英文实体抽取、DF 剪枝、IDF-PageRank。
+- `src/context/compaction/retention/EbbinghausScore.ts`、`EbbinghausPageRankPolicy.ts`：评分和预算选择。
+- `src/context/compaction/toolPairIntegrity.ts` 的 `isSyntheticPseudoMessage`：snip/compact 边界标记、续写哨兵、`metadata.synthetic` 之类的簿记消息不进保留候选——否则一个 26-token 的 `<snip-boundary/>` 标记就能吃满整个保留预算。
+- `tests/context/hippo-retention.spec.ts`：专项单测。
+- `benchmarks/`：A/B、消融、调参和真 LLM 评测脚本。

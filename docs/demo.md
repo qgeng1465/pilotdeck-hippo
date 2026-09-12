@@ -27,7 +27,7 @@ hippo    postTokens: 5283   facts=18/20
 
 1. 上游把前文整体压成一段摘要，**精确事实 0 条**回到上下文。
 2. Hippo 多付约 1.13× token，换来 **18/20 条逐字保留**。
-3. 这一行是"逐字保留可用"的召回代理，不是回答正确率——真 LLM 下的回答准确率口径见 README §4.3（中文、摘要预算吃紧时优势稳定）。
+3. 这一行是"逐字保留可用"的召回代理，不是回答正确率——真 LLM 下的回答准确率口径见[评测记录 §4.3](./evaluation.md#43-真-llm-闭环两轮记录含敏感性)（中文、摘要预算吃紧时优势稳定）。
 
 ## 入口 B：Web UI 真实压缩 + 徽章
 
@@ -47,7 +47,7 @@ hippo    postTokens: 5283   facts=18/20
 |---|---|---|
 | `pnpm benchmark:demo` | ~2 s | 主演示 |
 | `pnpm benchmark:holdout` | ~109 s | 留出集配对检验（主表来源）。**别让评委干等**：先讲机制，跑完再指表。所有指标逐位重现 |
-| `pnpm benchmark:topic-switch` | ~4 s | 话题切换（旧话题列是 harness 假象，见 README §4.6） |
+| `pnpm benchmark:topic-switch` | ~4 s | 话题切换（旧话题列是 harness 假象，见[评测记录 §4.6](./evaluation.md#46-话题切换旧话题还剩多少回答中途换话题)） |
 | `pnpm benchmark:extraction` | ~1 s | "怎么保证提取得准"→ 逐消息精/召回，89–100%、2.7–11× |
 | `pnpm benchmark:ablation` | ~64 s | 消融原始输出 |
 | `pnpm benchmark:no-regression` | CI | 不启用 scorePolicy 时与上游逐字节一致 |

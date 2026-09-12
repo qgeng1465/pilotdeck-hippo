@@ -10,8 +10,8 @@ Copyright (c) THUNLP / ModelBest / OpenBMB / AI9Stars contributors
 Source: https://github.com/OpenBMB/PilotDeck
 License: AGPL-3.0 (see LICENSE)
 
-Fork baseline: upstream commit 85be774 (see README "Fresh Code" section for
-the full SHA once this repository is git-initialized).
+Fork baseline: upstream commit 85be774751e496501370d7cf95ed45388f407c93
+(see README section 6, "Sources and Repository Hygiene").
 
 Hippo modifications (this fork)
 -------------------------------

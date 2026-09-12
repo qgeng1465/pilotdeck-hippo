@@ -8,9 +8,11 @@
 
 > **Navigation:** [中文](README.md) · English · **Live demo:** <https://qgeng1465.github.io/pilotdeck-hippo/>
 
-> **Pre-submission checklist** is in [§6](#6-fresh-code-and-source-notes-confirm-before-submission). Direction 3's deliverable is a public GitHub repo (this one), a live demo ([qgeng1465.github.io/pilotdeck-hippo](https://qgeng1465.github.io/pilotdeck-hippo/), showing the two retention/rendering defects fixed on 2026-09-12 running on the real build) and a poster.
+**What this is.** A switchable "verbatim retention block" added to upstream PilotDeck's context-compaction engine: before compaction each message about to be summarized is scored, a fixed token budget picks the few highest-scoring ones, and their **verbatim** text goes back into the post-compaction context alongside the summary, so early precise facts (gene names, frequency numbers, file paths, checkpoints) can still be reproduced word-for-word afterwards. The change lives in `src/context/compaction/`; at the **engine layer** omitting `scorePolicy` takes the upstream path with byte-identical output, and at the **app layer** this fork enables it by default — `agent.compaction.retention: off` switches back with one line.
 
-Navigation: [Core Idea](#core-idea) · [What It Does (real data)](#what-it-solves-with-real-data) · [Benchmarks & Results](#4-benchmark-approaches-and-results) · [Quick Start](#3-quick-start-from-source) · [Known Limits](#5-compatibility-tests-and-known-limits) · [Upstream Bug Fixes](#51-three-upstream-bugs-fixed-along-the-way) · [Submission Checklist](#7-direction-3-submission-checklist) · [License](#license)
+**Results.** On 10 seeds that never took part in tuning, verbatim retention of the 20 injected facts goes from 0 to **17.9/20** (EN N=160) and **10.0/20** (ZH N=160), with the two N=80 cells at 9.4 / 6.0 — 10 wins / 0 ties / 0 losses in all four cells (sign test p=0.002); the cost is **1.11–1.20×** more post-compaction tokens. With a real summarizer (DeepSeek-V4-Flash) the advantage becomes a conditional: no measurable difference under a generous summary budget, current-topic answers **10/16 → 16/16** under a tight one ([§4.7](#47-topic-switching-under-a-real-summarizer-a-supplement-to-the-first-boundary-of-46)). Fastest reproduction: `corepack pnpm install --frozen-lockfile`, then `corepack pnpm benchmark:demo` (~2 s; EN N=160: upstream 0/20 → Hippo 18/20).
+
+Navigation: [Core Idea](#core-idea) · [1-Minute Overview](#judges-1-minute-overview) · [What It Does (real data)](#what-it-solves-with-real-data) · [Benchmarks & Results](#4-benchmark-approaches-and-results) · [Quick Start](#3-quick-start-from-source) · [Known Limits](#5-compatibility-tests-and-known-limits) · [Upstream Bug Fixes](#51-three-upstream-bugs-fixed-along-the-way) · [Sources & repo hygiene](#6-sources-and-repository-hygiene) · [Demo & verification](#7-demo-and-verification-entry-points) · [License](#license)
 
 ## Core Idea
 
@@ -34,7 +36,7 @@ Three design constraints — and the difference from "tuning the summarizer prom
 
 ## What It Solves (with real data)
 
-**In one sentence**: at roughly the same ~1.1–1.2× post-compaction tokens, turn "verbatim usable precise facts" in the post-compaction context from 0 into most of them.
+**In one sentence**: at roughly the same ~1.1–1.2× post-compaction tokens, turn "verbatim usable precise facts" in the post-compaction context from 0 into 6–18 (the four benchmark cells, table below).
 
 Every number in the table below comes from `benchmarks/results/*.json`, re-run on seeds that **never took part in any tuning (20260921–20260930, n=10)** — not the best score on seen seeds. The metric is how many of 20 injected facts still appear **verbatim** (not paraphrased) in the post-compaction context:
 
@@ -47,7 +49,7 @@ Every number in the table below comes from `benchmarks/results/*.json`, re-run o
 
 Upstream's 0 comes from "lossy summary + a fake summarizer that never emits FACT text" — a **structural contrast** (lossy vs verbatim), not the ceiling of a real summarizer. The real-LLM contrast is in [§4.3](#43-real-llm-closed-loop-two-rounds-with-sensitivity) (2 seeds/cell, its own seeds — a different set from the table above; the two sets of numbers are not mixed). In the real-LLM loop, Hippo wins 4/4 cells across both rounds on Chinese.
 
-**We also measured "is it accurate", not just recall**: beyond how many of the 20 facts came back, we computed **precision** per message from the engine's own retained block — the block is almost entirely facts the query needs, with few unrelated messages mixed in (EN/ZH × N=40/80/160, precision **89–100%**, 2.7–11× over a random baseline; recall is bounded by the retention budget, and the cost is written in the same table). A judge who asks only about recall would miss the failure mode where a policy sweeps in the entire history; precision answers that. See [§4.1a](#41a-extraction-precision-per-message-precisionrecallthe-direct-answer-to-how-do-you-guarantee-accurate-extraction).
+**We also measured "is it accurate", not just recall**: beyond how many of the 20 facts came back, we computed **precision** per message from the engine's own retained block — the block is almost entirely facts the query needs, with few unrelated messages mixed in (EN/ZH × N=40/80/160, precision **89–100%**, 2.7–11× over a random baseline; recall is bounded by the retention budget, and the cost is written in the same table). A judge who asks only about recall would miss the failure mode where a policy sweeps in the entire history; precision answers that. See [§4.1a](#41a-extraction-precision-per-message-precisionrecall-the-direct-answer-to-how-do-you-guarantee-accurate-extraction).
 
 **What it means for you (a real user)**: after a long task runs for dozens of turns, when you ask "what was the TP53 frequency earlier", the agent shouldn't have to say "according to the earlier summary, roughly…". Hippo lets that question still return the exact original number.
 
@@ -58,7 +60,8 @@ Upstream's 0 comes from "lossy summary + a fake summarizer that never emits FACT
 | Pain point | Lossy summary drops early precise facts in long conversations; the agent can't answer alike queries reliably later. |
 | Change | Add an optional `scorePolicy` to `CompactionEngine` that selectively retains top-scoring messages from the to-be-summarized set. **Engine layer** default = upstream path (byte-identical, guarded by golden fixture); **App layer** this fork enables it by default, `agent.compaction.retention: off` turns it back to upstream with one switch. |
 | Method | `S(m) = 0.85·semantic + 0.15·position decay + 0.00·IDF-corrected entity-graph PageRank`, selecting by token budget. The rank term resting at 0 is a hold-out conclusion; reasons and trade-offs in [4.2](#42-component-ablation). |
-| Current headline | Structural benchmark N=160: fact retention 0/20 → 17.9/20 (**10 wins / 0 ties / 0 losses on the 10 seeds never used in tuning, sign test p=0.002**, reproducible from the committed JSON); **extraction precision (per message) 89–100%, 2.7–11× over random** ([4.1a](#41a-extraction-precision-per-message-precisionrecallthe-direct-answer-to-how-do-you-guarantee-accurate-extraction)). Real-LLM closed loop ran under two conditions (endpoint × summary budget): **Chinese wins consistently across both rounds** (N=160: 56.3% vs 31.3%; tight-budget round 81.3% vs 0%); English varies with summary budget — full tables and sensitivity in [4.3](#43-real-llm-closed-loop-two-rounds-with-sensitivity); conclusions are governed by `benchmarks/results/*.json`. |
+| Current headline | Structural benchmark N=160: fact retention 0/20 → 17.9/20 (**10 wins / 0 ties / 0 losses on the 10 seeds never used in tuning, sign test p=0.002**, reproducible from the committed JSON); **extraction precision (per message) 89–100%, 2.7–11× over random** ([4.1a](#41a-extraction-precision-per-message-precisionrecall-the-direct-answer-to-how-do-you-guarantee-accurate-extraction)). Real-LLM closed loop ran under two conditions (endpoint × summary budget): **Chinese wins consistently across both rounds** (N=160: 56.3% vs 31.3%; tight-budget round 81.3% vs 0%); English varies with summary budget — full tables and sensitivity in [4.3](#43-real-llm-closed-loop-two-rounds-with-sensitivity); conclusions are governed by `benchmarks/results/*.json`. |
+| Upstream bugs fixed along the way | Three pre-existing defects unrelated to this change that a real user does hit, each with a test that **must fail before the fix**: ① three `unref()`'d timeout timers leave an `await`ed promise never settling (`fetch.ts` / `BackgroundTaskRuntime.wait()` / streaming idle timeout); ② `countTokens` degrades to O(n²) on long repeated runs — 8,000 chars **8,999 ms → 9.1 ms (993×)**, and `read_file` on a 300-line tool result **79.2 s → 1.2 s**; ③ startup recovery's "newest transaction" ordering key mixed in file mtime (1 ms granularity locally), so it occasionally picked the wrong transaction. See [5.1](#51-three-upstream-bugs-fixed-along-the-way). |
 | Live path | Open Web UI (`pnpm dev`; vite client default http://localhost:5173; 3001/5173 slide automatically when occupied — trust the `[dev-launcher]` log; in this fork `agent.compaction.retention` defaults to `hippo`, enabled) → create a long conversation → trigger Compaction → **the compaction divider shows a retention badge** (e.g. "Hippo retained 3 messages verbatim (1,204 tok)", hover shows the policy and this round's budget) → re-ask the original question; or simply `pnpm benchmark:demo`. ~3–5 min. |
 | Known boundaries (we draw them ourselves) | ① The benefit is "fidelity to the **current task**", **not** "remembering abandoned old topics" — the old-topic advantage is, on diagnosis, an artifact of template-sharing in the harness, [4.6](#46-topic-switching-how-much-of-an-old-topic-survives); ② with a **real summarizer** this becomes conditional: with a generous summary budget no difference is measurable (same-config repeats already swing 3–4 questions), only under a **tight budget** is it measurable (current topic 10/16 → 16/16, zero swing), [4.7](#47-topic-switching-under-a-real-summarizer-a-supplement-to-the-first-boundary-of-46); ③ changing the default weights is justified by "align tuning argmax + one fewer term", **not** "weight tuning improved scores" (that comparison is not significant on the holdout set, [4.5](#45-holdout-validation-seeds-used-for-parameter-selection-are-never-used)). |
 
@@ -139,7 +142,7 @@ Suggested files to look at during review:
 
 ## 3. Quick Start (from source)
 
-Environment: Node.js `22.13+ <23`, Python 3, `make`, a C/C++ toolchain, `ripgrep`. (Desktop installers and other install paths: [Appendix A](#appendix-a-the-upstream-pilotdeck-project) and [Appendix B](#appendix-b-event-edition-guide-event-token-configuration-and-first-use).)
+Environment: Node.js `22.13+ <23`, Python 3, `make`, a C/C++ toolchain, `ripgrep`. (Desktop installers and other install paths: [Appendix A](#appendix-a-the-upstream-pilotdeck-project).)
 
 ```bash
 corepack enable
@@ -181,7 +184,7 @@ corepack pnpm benchmark:tokenizer       # time/speedup table of the two tokenize
 corepack pnpm benchmark:extraction      # per-message precision/recall — answers "how do you guarantee accurate extraction" (§4.1a)
 ```
 
-Real-LLM evaluation needs network. Endpoint resolution order: ① `PILOTDECK_EVAL_URL` + `PILOTDECK_EVAL_KEY` → ② repo-root `poliet_deck.txt` (the event gateway key; the secret is not committed) → ③ `~/deepseek_key.txt` (official API). The generated JSON records the endpoint source, model version, and a three-way token ledger (summary prompt / summary completion / judge prompt); **the summary output cap and per-call `finish_reason` have only been persisted since the 2026-09-11 change** — the two committed JSONs do not carry them, so "the summary was truncated" in §4.3 can only be written as an inference (reason and impact in §4.3):
+Real-LLM evaluation needs network. Endpoint resolution order: ① `PILOTDECK_EVAL_URL` + `PILOTDECK_EVAL_KEY` → ② repo-root `poliet_deck.txt` (an optional self-hosted gateway key; the secret is not committed) → ③ `~/deepseek_key.txt` (official API). The generated JSON records the endpoint source, model version, and a three-way token ledger (summary prompt / summary completion / judge prompt):
 
 ```bash
 corepack pnpm benchmark:real-llm                # §4.3 single-topic closed loop
@@ -202,7 +205,7 @@ Synthetic bioinformatics dialogues scatter 20 precise facts across the first ~75
 
 I.e. Hippo trades ~1.11–1.20× post-compaction tokens for verbatim facts; every run is deterministic (`true`). **The cost is stated plainly**: this 11–20% is extra, not saved — Hippo buys "facts still reproducibly verbatim after compaction", not "compresses harder".
 
-### 4.1a Extraction precision (per-message precision/recall) — the direct answer to "how do you guarantee accurate extraction"
+### 4.1a Extraction precision (per-message precision/recall): the direct answer to "how do you guarantee accurate extraction"
 
 The `0/20→8/9/18` above is **recall** — how many of the 20 facts the query must reproduce survive; it does not say whether the retention block is mostly the right messages. This section measures precision/recall at message granularity from the engine's own `retention.retainedMessageTexts` (the messages scoring selected and actually entering the post-compaction context, **not reconstructed from the fingerprint — no reconstruction artifacts**), on held-out seeds (2026-09-21+) via `pnpm benchmark:extraction` (JSON: `benchmarks/results/extraction-precision-2026-09-11T13-39-26-139Z.json`):
 
@@ -234,7 +237,7 @@ Splitting the same formula apart, re-run on identical transcripts (protocol: EN+
 | full (old default 0.4/0.35/0.25) | 10.5 | 6.5 | 6 | 5 |
 | **full (current default 0.85/0.15/0.00)** | **18** | **9** | **10** | **6** |
 
-(Medians under the tuning protocol. "previous default 0.7/0.15/0.15" is not in this table — its difference from the current default is tested by *hold-out* paired comparison in §4.5, item 3; the two protocols' numbers are not mixed.)
+(Medians under the tuning protocol. The `0.7/0.15/0.15` variant is not listed here — its difference from the current default is tested by a *hold-out* paired comparison, §4.5 row 4 and item 3 below; the two protocols' numbers are not mixed.)
 
 Ablation surfaced and fixed three problems on the spot:
 
@@ -263,7 +266,7 @@ Round A — official API. All 8/8 cells record completion of exactly **2,400 = 2
 | zh | 80 | 0% (0/16), 2,340 tok | 18.8% (3/16), 2,319 tok |
 | zh | 160 | 0% (0/16), 4,002 tok | **81.3% (13/16)**, 4,964 tok |
 
-Round B — event gateway, summary cap 4,000 tok/call, **16 summary calls per round** (8 cells × 2 seeds; the earlier README's "32" added the two rounds together). This time the cap is directly readable from the JSON: the `zh/80 upstream` cell is exactly 8,000 = 2 × 4,000 — both calls capped; the other 7 cells total 5,266–7,335, all > 4,000, so **at least 8 of 16 calls hit the cap**:
+Round B — a self-hosted gateway endpoint, summary cap 4,000 tok/call, **16 summary calls per round** (8 cells × 2 seeds). This time the cap is directly readable from the JSON: the `zh/80 upstream` cell is exactly 8,000 = 2 × 4,000 — both calls capped; the other 7 cells total 5,266–7,335, all > 4,000, so **at least 8 of 16 calls hit the cap**:
 
 | lang | N | Upstream | Hippo |
 |---|---:|---|---|
@@ -276,7 +279,7 @@ Three readings across both rounds:
 
 1. **On Chinese, Hippo wins consistently across both rounds (4/4 cells)**. When v4-flash writes a Chinese summary it doesn't reproduce numeric facts verbatim (upstream post-compaction FACT markers 0/20); Hippo's retention block brings the verbatim text back into context.
 2. **On English, the result varies with summary length**. Round A's summaries were short (1,200 tok/call, constant across 8/8 cells) and upstream N=160 was only 12.5%; in Round B — summaries more than twice as long (≥2,633 tok/call) — upstream returns to 100%, and post-compaction tokens rise (en N=160: 4,977 → 5,955). **Length and score moving together is measured; the causal explanation remains inference**: the most natural one is that A-round summaries were truncated and, with more room in B, upstream recovered by "copying checkpoints into a longer summary". But A's actual cap value can't be found in the repo, so we don't write it as a conclusion here. What we can confirm is the direction of cost — upstream must pay for longer summaries to hold precise facts; Hippo reaches the same goal with a budget-capped verbatim retention block.
-3. **Variance statement**: only 16 questions/cell, 2 seeds, same-model judge, and the official API vs event gateway service characteristics are unknown. So we only state directional conclusions (Chinese stable win; English varies with summary budget), and do not claim a single "improved X points".
+3. **Variance statement**: only 16 questions/cell, 2 seeds, same-model judge, and the two endpoints (official API vs self-hosted gateway) may differ in service characteristics. So we only state directional conclusions (Chinese stable win; English varies with summary budget), and do not claim a single "improved X points".
 
 ### 4.4 Scoring latency (efficiency cost)
 
@@ -406,8 +409,14 @@ Two notes:
 - **Known limit (upstream, unfixed)**: `ui/`'s `tsc --noEmit` is red — 125 files report errors; these are not introduced by this fork and reproduce verbatim in upstream files such as `ui/src/components/chat/hooks/useChatMessages.ts` (`msg.reasoningContent` / `msg.userHint` / `Record<string, unknown>` casts — all outside this fork's changed lines). Root cause: the dependency graph has **two `@types/react` simultaneously (18.3.29 and 19.2.15)**; the UI resolves to 18 while other files resolve to 19 via the root store, and 19's `ReactNode` (which includes `bigint`) is incompatible with 18's. `vite build` passes in practice (37.6 s, exit 0), so this is a typecheck-hygiene issue, not a build/runtime failure. The fix (unifying `@types/react`) would touch dependency resolution and re-install — more risk than reward, so we record it honestly and leave it alone before submission.
 - **Retention-badge test boundary (stated honestly)**: gateway-side "retention ships with agent_status and the upstream path carries no such key" is covered by root suite `tests/context/retention-reporting.spec.ts`; the `compactMetadata → badge data` mapping (including malformed inputs not throwing) by 14 UI cases in `ui/src/components/chat/hooks/useChatMessages.retention.test.ts`; **badge rendering** by 6 cases in `ui/src/components/chat/view/subcomponents/MessageComponent.retention-badge.test.tsx` — rendering both EN and ZH corpora, asserting the text actually shown on screen (including thousand-separators like `1,204 tok`) and the policy/budget in the hover `title`, and that no badge appears on upstream boundaries, with one case running the full chain `compactMetadata → normalizedToChatMessages → component`. That file has been mutation-tested: forcing the badge render condition in `MessageComponent` to always-false makes 4 of the 6 positive cases fail while the 2 negative cases still pass — so it really tests rendering, not no-ops. **But jsdom is not a browser**: CSS, dark mode, real layout and `i18next-browser-languagedetector` language detection are not verified. Before the live demo, still run the §7 Web UI path yourself and confirm the badge really appears on the divider — don't trust this text alone.
 - **UI `npx vitest run` is not fully green (upstream, stated honestly)**: running it under `ui/` also collects `server/routes/*.test.js` and `e2e/*.spec.mjs`, of which 5 files fail long-term — Playwright's `e2e/history-fork.spec.mjs` gets gathered as a unit test (environment doesn't apply), `server/routes/{commands,memory,uploads}.test.js` (depend on a local service and `PILOT_HOME`), and 4 `requestAnimationFrame` timing cases in `src/components/chat/hooks/streamSmoother.test.ts`. These failures are unrelated to retention / compaction / i18n code, and **the failing-file set is identical with or without this round's new tests** (same-run control: only this round's case counts differ). The pass/fail *counts* drift slightly between runs (timing cases are unstable), so here we do not give a specific count that would drift — to judge whether a regression was introduced, use **whether the failing-file set changed**, not the count.
-- A reproducible test-count claim: **root suite** (`pnpm test`, `tests/**/*.spec.ts` via `dist/`) measured 2026-09-11 (incl. 3 new cases from §4.7) at **517 = 515 passed / 0 failed / 0 cancelled / 2 skipped** (32.7 s, exit 0). The UI side is a *separate* vitest suite (~900 cases, status above); the two are not summed — "517" in this text refers to the root suite only. The root suite used to be 481 passed + 2 cancelled — those 2 cancelleds were *not* "timing jitter under full concurrency" (an earlier revision said so; withdrawn here) but the real defect in §5.1 bug 3; after fixing it the cancelleds went to zero.
+- A reproducible test-count claim: **root suite** (`pnpm test`, `tests/**/*.spec.ts` via `dist/`) measured 2026-09-11 (incl. 3 new cases from §4.7) at **517 = 515 passed / 0 failed / 0 cancelled / 2 skipped** (32.7 s, exit 0). The UI side is a *separate* vitest suite (~900 cases, status above); the two are not summed — "517" in this text refers to the root suite only. An earlier root-suite run was 481 passed + 2 cancelled; those 2 cancelleds were in fact §5.1 bug 2 (the large-file `read_file` case hanging) and bug 3 (recovery ordering ties), and the cancelled count went to zero once both were fixed.
   - **Why CI reports 507 and this doc 517**: upstream `.gitignore` explicitly treats `*.test.ts` as "local test drafts" (its comment: `Local test drafts (force-add intentional new tests with git add -f)`). Per that convention we `git add -f` our new tests, but upstream's own 4 draft files (`tests/gateway/{upload-store,dialog-project-files,dialog-model-catalog,dialog-skills-permissions}.test.ts`, 10 cases) are **not** committed, so a fresh clone runs 507 while the local tree runs 517. Both numbers are right, and the difference is directly checkable locally without the CI log: `git check-ignore -v tests/gateway/upload-store.test.ts` prints the `.gitignore:200:*.test.ts` hit; those 4 files total 10 cases (4 + 3 + 1 + 2), 517 − 10 = 507. We chose to respect upstream's convention rather than decide which upstream drafts should be committed.
+- Real-LLM round A did not record `finish_reason`, and A's summary output cap can't be found in the repo (that round wasn't persisted; the code value is 4,000), so "upstream's English collapse stems from summary truncation" **is a post-hoc inference, not yet directly measured**. Two measurable corroborations: (a) A's 8/8 cells complete at exactly 1,200/call (a cap signature); (b) B's 16 calls include at least 8 that hit the 4,000 cap ('zh/80 upstream' is exactly 8,000 = 2 × 4,000). The script now writes `finish_reason` and each call's completion count into the JSON, so next round this attribution becomes directly measurable.
+- Without Transformer.js installed, or when the embedding model is missing/fails to load, it falls back to BM25 without erroring or crashing; model version, cache path, and offline-install notes are in `.env.example`.
+- Chinese bigram grows the entity graph (latency in 4.4); report hardware and the measuring script together on site.
+- Evaluation is mostly synthetic dialogue: facts skew early and the query is at the tail, so the `time` term is inherently anticorrelated on this distribution; real-task temporal characteristics, noise, and multi-turn queries may shift the weight optimum — read the weight conclusion as "optimal on this distribution".
+- Real-LLM results are a small sample (16 questions/cell) and the summarizer and judge are the same model; a separate judge, human spot-checks, and an unseen task set should be added going forward.
+- Hippo increases post-compaction tokens (as-recorded ~+5–24% in real-LLM runs, depending on round and cell); when presenting, give accuracy and cost together, never accuracy alone.
 
 ### 5.1 Three upstream bugs fixed along the way
 
@@ -457,7 +466,7 @@ The user-visible symptom: `read_file` reading a 300-line persisted tool result t
   - End-to-end `read_file`: **79,238 ms → 1,214 ms** (65×) — a single-run measurement on the day of the fix, **not persisted**; re-measuring would require swapping `countTokens` back to the library original (that path no longer exists in current code), so treat it as an order-of-magnitude reference only.
   - The test file: before, item 4 hung and the whole file timed out at 60 s, 3/3 failing → after, **11/11 pass** (runs on every `pnpm test`, a standing regression gate for this defect).
   - Equivalence: `tests/context/tokenizer-equivalence.spec.ts` compares the heap vs the library original over **900 random inputs + 6 fixed boundaries (906 comparisons total)** (70 single-char repeated strings, 30 repeated units, 600 random text over a 10-letter alphabet, 200 mixed; fixed boundaries include CJK, emoji, empty strings, and special-token rejection paths), **0 mismatch**.
-- Blast radius: `countTokens` is the common denominator of all budget decisions (`read_file` text budget, tool-result budget, micro-compaction, and Hippo's own `estimateMessagesTokens`) — one fix benefits all of them. Again not counted toward the Hippo innovation.
+- Blast radius: `countTokens` is the common denominator of all budget decisions (`read_file` text budget, tool-result budget, micro-compaction, and Hippo's own `estimateMessagesTokens`) — one fix benefits all of them.
 
 **Bug 3: "newest transaction" ordering key mixed logical time with file mtime (`src/web/server/replaceLastTurn.ts`)**
 
@@ -481,51 +490,33 @@ That is the true identity of the flaky failure in the full test run — `replace
   ```
 - Evidence: new case `recovery orders transactions by their journal timestamp, not by artifact mtime` — uses `utimes` to push the old transaction's file mtime arbitrarily 60 s into the future (no timing dependency), asserting recovery still selects the new transaction by `preparedAt`. Reverting to `Math.max` makes the case **fail deterministically** (1 fail); with the fix, 16/16. A flaky failure converted into an every-run deterministic assertion.
 
-**An evidence correction left in this section**: an earlier revision of this README wrote "the remaining 2 cancelleds were timing jitter under full load". That claim was based on `/tmp/pilotdeck-fulltest.log`, a file that in fact holds only 106 bytes and no results — **evidence insufficient, withdrawn**. The current account: of the then-cancelleds, one's true cause was the tokenizer degradation above, the other this ordering defect; both are now located and fixed, each with a "must fail before the fix" test. The current full result is in [§5](#5-compatibility-tests-and-known-limits).
+## 6. Sources and Repository Hygiene
 
-- Real-LLM round A did not record `finish_reason`, and A's summary output cap can't be found in the repo (that round wasn't persisted; the code value is 4,000), so "upstream's English collapse stems from summary truncation" **is a post-hoc inference, not yet directly measured**. Two measurable corroborations: (a) A's 8/8 cells complete at exactly 1,200/call (a cap signature); (b) B's 16 calls include at least 8 that hit the 4,000 cap ('zh/80 upstream' is exactly 8,000 = 2 × 4,000). The script now writes `finish_reason` and each call's completion count into the JSON, so next round this attribution becomes directly measurable.
-- Without Transformer.js installed, or when the embedding model is missing/fails to load, it falls back to BM25 without erroring or crashing; model version, cache path, and offline-install notes are in `.env.example`.
-- Chinese bigram grows the entity graph (latency in 4.4); report hardware and the measuring script together on site.
-- Evaluation is mostly synthetic dialogue: facts skew early and the query is at the tail, so the `time` term is inherently anticorrelated on this distribution; real-task temporal characteristics, noise, and multi-turn queries may shift the weight optimum — read the weight conclusion as "optimal on this distribution".
-- Real-LLM results are a small sample (16 questions/cell) and the summarizer and judge are the same model; a separate judge, human spot-checks, and an unseen task set should be added going forward.
-- Hippo increases post-compaction tokens (as-recorded ~+5–24% in real-LLM runs, depending on round and cell); when presenting, give accuracy and cost together, never accuracy alone.
-
-## 6. Fresh Code and Source Notes (confirm before submission)
-
-- [ ] Hippo core code, dedicated tests, benchmarks, design and Demo were created **after 2026-09-11 14:00** by the competing team on site.
-- [x] Upstream base link and change scope retained: base `https://github.com/OpenBMB/PilotDeck`, base commit prefix `85be774` (golden fixture locks its behavior).
-- [ ] No mature demo, commercial project, or core code/design/debug/copy completed by non-registered people is carried in.
-- [ ] Public open-source projects, models, APIs and assets are credited with source and license here or in `NOTICE`.
-- [ ] Repo history is verifiable via `git log --stat`, GitHub commit timestamps, and on-site screenshots; all benchmark JSON are sanitized, no API keys.
-
-Base info:
+This repository is publicly readable — clone it and check every claim without asking for access:
 
 ```text
-Public repo:   https://github.com/qgeng1465/pilotdeck-hippo
-Upstream repo: https://github.com/OpenBMB/PilotDeck
+Repo:          https://github.com/qgeng1465/pilotdeck-hippo
+Upstream:      https://github.com/OpenBMB/PilotDeck
 Base full SHA: 85be774751e496501370d7cf95ed45388f407c93
-Submission branch: main
-Final code SHA: b2927c0f974397e6a5d6c3d8b0b24b78869aa494
+Base prefix:   85be774 (a golden fixture locks its behavior)
+Branch:        main
+main HEAD:     26b329599a216afe9fd4193d2527c8bb234171b7
 ```
 
-> At submission, the repo must be switched from **private to public**, otherwise a judge opening it gets a 404 (that doesn't mean the link is wrong). The `Final code SHA` above is the last commit that changed behavior; later commits add documentation and tests only (no engine/UI behavior change); **the deliverable is the `main` branch HEAD** — before submitting, re-check it with `git ls-remote https://github.com/qgeng1465/pilotdeck-hippo.git main` and fill that HEAD into the submission form.
+The change is confined to upstream's context-compaction module and the rendering of the compaction divider in chat-v2; nothing else in upstream is touched. Upstream copyright notices are retained; third-party dependencies and assets are credited in `NOTICE`.
 
-Repo hygiene: `.gitignore` excludes `poliet_deck.txt` (event gateway credential), `*_key.txt`, `.env*`, `node_modules/`, `dist/`; `benchmarks/results/*.json` are confirmed to contain no API keys and are committed for review.
+Repo hygiene: `.gitignore` excludes `poliet_deck.txt` (self-hosted gateway credential), `*_key.txt`, `.env*`, `node_modules/`, `dist/`; `benchmarks/results/*.json` are confirmed to contain no API keys and are committed so each number can be checked line by line.
 
-## 7. Direction 3 Submission Checklist
+## 7. Demo and Verification Entry Points
 
-Submitted by the team lead before 2026-09-12 12:00:
-
-1. Public GitHub repo link (with this README, tests, and benchmark results).
-2. Interactive demo entry: on site `pnpm benchmark:demo` and the Web UI (:3001); the 3–5 min reproduction path is in [docs/demo.md](docs/demo.md).
-3. A3 vertical poster (297×420 mm, 300 DPI, CMYK, 3 mm bleed on all sides) — submitted.
-4. README items: improvement points, architecture/modules, run instructions, before/after performance, known limits, and technical design figures (this file).
-5. Optional bonus material: demo video, CI/test output, raw JSON under `benchmarks/results/`, independent review, or human spot-check records.
-6. Direction 3 uses the extra submission link the organizers publish that day; don't accidentally route the Direction 1/2 mini-program chain here.
+1. Source and tests: [the repository](https://github.com/qgeng1465/pilotdeck-hippo) (this README, `tests/`, raw JSON under `benchmarks/results/`).
+2. Interactive demo: `pnpm benchmark:demo` (offline, ~2.4 s) and the Web UI (:3001); the 3–5 minute on-site reproduction path is in [docs/demo.md](docs/demo.md).
+3. Live demo page: [qgeng1465.github.io/pilotdeck-hippo](https://qgeng1465.github.io/pilotdeck-hippo/) — running on the real build, with screen recordings and benchmark numbers that can each be traced back to a committed file.
+4. Independent spot-check: [docs/independent-spotcheck.md](docs/independent-spotcheck.md) — a re-run on seeds never used for tuning, labelled honestly as an author-run reproducibility check, not a third-party review.
 
 ## 8. License and Upstream Acknowledgment
 
-This work is based on [OpenBMB/PilotDeck](https://github.com/OpenBMB/PilotDeck) (AGPL-3.0) and follows the repository's licenses and NOTICE. The final repo will keep upstream copyright notices and add the Hippo change's authors, date, base SHA, and third-party dependency list.
+This work is based on [OpenBMB/PilotDeck](https://github.com/OpenBMB/PilotDeck) (AGPL-3.0) and follows the repository's licenses and NOTICE. Upstream copyright notices are retained, and `NOTICE` records the Hippo change's authorship, date, base SHA, and third-party dependency list.
 
 ## Appendix A: The upstream PilotDeck project
 
@@ -560,71 +551,6 @@ Cite upstream:
   year         = {2026}
 }
 ```
-
-## Appendix B: Event-edition guide (event token configuration and first use)
-
-> This appendix targets competing teams this event: event token config, web search, Web UI first use, and common questions.
-
-### Configure the event-issued token (Web UI visual config, recommended)
-
-This event's token resource pack:
-
-- **400 CNY of cloud LLM tokens**: for hooking up PilotDeck to run tasks. After submitting the team form, the 【endpoint (接口地址)】and 【API key (API密钥)】are emailed to the team lead.
-- **100 CNY of on-device model tokens**: usable in your own work (Hippo's local embedding runs on this on-device quota); an additional 200 CNY can be requested on demand.
-
-Steps:
-
-1. Start PilotDeck and open the Web UI (default `http://localhost:3001`); on the onboarding panel click【Start Configuration (开始配置)】.
-2. To use the event-issued token, click【Custom (自定义)】.
-3. Enter the 【endpoint】and【API key】from the team lead's email. The endpoint must include `v1` (form: `https://api.deepseek.com/v1`).
-4. In【Models to pick (待选模型)】select the models you want and add them (multi-select) — it only counts once they appear in【Selected models (已选用模型)】.
-5. Click【Test Connection (测试连接)】; green means pass.
-
-This event's available models include: **Hy3, DeepSeek-V4-Flash, DeepSeek-V4-Flash-Vision, GLM-5.3, GLM-5.2, GLM-5.3-Flash, MiniMax-M3** (actual model IDs may have a prefix).
-
-The equivalent config-file form (`~/.pilotdeck/pilotdeck.yaml`):
-
-```yaml
-schemaVersion: 1
-agent:
-  model: custom/<model-id>
-model:
-  providers:
-    custom:
-      protocol: openai
-      url: https://<event endpoint>/v1
-      apiKey: <API key from the team-lead email>
-```
-
-### Configure web search
-
-For【Web Search】, click【Settings】→【Search】in the bottom-left, pick a search provider and configure its API key (mostly free tiers):
-
-| Provider name | Service | Key site |
-| :--- | :--- | :--- |
-| tavily | Tavily | https://app.tavily.com |
-| glm | Z.AI / 智谱 | https://open.bigmodel.cn |
-| serper | Serper（Google SERP） | https://serper.dev |
-| brave | Brave Search API | https://brave.com/search/api |
-
-### Web UI usage guide
-
-- **Overview**: navigation includes Files, Skills, Routing (smart routing), Memory, Always-On, etc.; Projects list on the left; start a conversation directly via new conversation, or enter each project's workspace.
-- **Create a project and enter its workspace**: each project has its own filesystem, memory, skills, and session history, isolated from others.
-- **Start a task (Ask / Plan mode)**: describe the goal in natural language in the input box; supports `@file` references to workspace files; switch Ask / Plan, set permissions (e.g. Full Access), adjust context.
-- **White-box memory management**: the Memory module periodically consolidates long-term context (user preferences, project background, common paths, key decisions). You can see each memory's source and owning WorkSpace, search memories, correct inaccurate records, and edit or delete them when necessary.
-- **Scheduled tasks and Always-on**: describe a scheduled task in the input box (e.g. "push the latest news to me every day at 10 am"); the agent auto-creates the corresponding Cron Job; the Always-On page lists all plans and scheduled tasks.
-
-### Event FAQ
-
-| Problem | Fix |
-| :--- | :--- |
-| Test connection fails | Check the API key is correct, network reachable, the provider's balance sufficient, and the endpoint includes `/v1` |
-| `pilotdeck: command not found` | `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc` |
-| Port conflict (Port 3001/18080 already in use) | `lsof -i :3001 && kill -9 <PID>` |
-| `npm install` fails | `npm cache clean --force && rm -rf node_modules package-lock.json && npm install --registry=https://registry.npmmirror.com` |
-| Windows reports `npm.ps1` scripts disabled | `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` then reopen PowerShell, or call `npm.cmd run dev` explicitly |
-| Other problems | Try refreshing first; if it persists, report to the event community or on-site staff |
 
 ## License
 

@@ -32,7 +32,7 @@ hippo    postTokens: 5283   facts=18/20
 ## 入口 B：Web UI 真实压缩 + 徽章
 
 1. 启动（未起时）：`cd ui && npm run start`，浏览器打开 `http://localhost:3001`（若被占用会自动滑动端口，看启动日志里的 `[dev-launcher]` 打印）。
-2. 选一个已配置的模型（见 README 附录 B 配置 token），新建一个长对话，把上下文谈到接近预算上限。
+2. 选一个已配置的模型（用你自己已配置好的任意模型），新建一个长对话，把上下文谈到接近预算上限。
 3. 触发 Compaction（自动触发，或输入框手动触发）。**压缩分隔线上应出现徽章**，形如：
    `Hippo 逐字保留 3 条（1,204 tok）`，悬停显示策略与本次预算。
 4. 用早先的问题复问，确认 Agent 能逐字答出（例如"TP53 的突变频率是多少"）。
@@ -48,7 +48,7 @@ hippo    postTokens: 5283   facts=18/20
 | `pnpm benchmark:demo` | ~2 s | 主演示 |
 | `pnpm benchmark:holdout` | ~109 s | 留出集配对检验（主表来源）。**别让评委干等**：先讲机制，跑完再指表。所有指标逐位重现 |
 | `pnpm benchmark:topic-switch` | ~4 s | 话题切换（旧话题列是 harness 假象，见 README §4.6） |
-| `pnpm benchmark:extraction` | ~1 s | "怎么保证提取得准"→ 逐消息精/召回，88–100%、2.7–11× |
+| `pnpm benchmark:extraction` | ~1 s | "怎么保证提取得准"→ 逐消息精/召回，89–100%、2.7–11× |
 | `pnpm benchmark:ablation` | ~64 s | 消融原始输出 |
 | `pnpm benchmark:no-regression` | CI | 不启用 scorePolicy 时与上游逐字节一致 |
 
@@ -56,7 +56,7 @@ hippo    postTokens: 5283   facts=18/20
 
 ## 端侧 / 断网说明
 
-打分（BM25 / 实体图）全部本地，`demo` 不需要外网；端侧 100 元额度足够本地 BGE embedding（设 `PILOTDECK_BGE_MODEL=Xenova/bge-small-zh-v1.5`）。只有真 LLM 评测（`benchmark:real-llm` / `benchmark:real-llm-topic-switch`）需要联网与 API，现场只引用其落库结论、不现场跑。
+打分（BM25 / 实体图）全部本地，`demo` 不需要外网；本地 BGE embedding 不占云端额度（设 `PILOTDECK_BGE_MODEL=Xenova/bge-small-zh-v1.5`）。只有真 LLM 评测（`benchmark:real-llm` / `benchmark:real-llm-topic-switch`）需要联网与 API，现场只引用其落库结论、不现场跑。
 
 ## 录屏（可选：对评委的备份）
 

@@ -213,3 +213,6 @@ poliet_deck.txt
 deepseek_key.txt
 # Local server logs
 pilotdeck-server.log
+
+# local demo recording scratch (Playwright scripts + captured videos)
+ui/.demo-tmp/

@@ -33,7 +33,7 @@ describe('useFileMentions conversation scope', () => {
   });
 
   it('does not reuse the previous conversation cursor for an external mention', () => {
-    const setInput = vi.fn() as Dispatch<SetStateAction<string>>;
+    const setInput = vi.fn<Dispatch<SetStateAction<string>>>();
     const { result, rerender } = renderHook(
       (props: { mentionScopeKey: string; input: string }) => useFileMentions({
         selectedProject: project,
@@ -70,7 +70,7 @@ describe('useFileMentions conversation scope', () => {
   });
 
   it('deletes a highlighted file mention as one token with Backspace', () => {
-    const setInput = vi.fn() as Dispatch<SetStateAction<string>>;
+    const setInput = vi.fn<Dispatch<SetStateAction<string>>>();
     const textarea = document.createElement('textarea');
     const localTextareaRef = { current: textarea } as RefObject<HTMLTextAreaElement>;
     const { result, rerender } = renderHook(

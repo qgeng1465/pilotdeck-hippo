@@ -1,4 +1,5 @@
 import type { CanonicalMessage } from "../../../model/index.js";
+import { isSyntheticPseudoMessage } from "../toolPairIntegrity.js";
 import { EntityGraph } from "./EntityGraph.js";
 import { bm25Relevance, ebbinghausScore } from "./EbbinghausScore.js";
 import { tryLoadTransformersEmbedding } from "./LocalEmbedding.js";
@@ -114,6 +115,13 @@ export class EbbinghausPageRankPolicy implements RetentionScorePolicy {
       // and replayed as an empty message. Keeping it spends budget to deliver
       // nothing, so it must not be retained -- fall through to the next one.
       if (messageVisibleText(entry.message).length === 0) continue;
+      // The same argument covers engine bookkeeping: a snip/compact boundary
+      // marker or other synthetic pseudo-message carries no turn the request
+      // can use, yet it is short and (being recent) scores well, so it wins
+      // the budget and is replayed verbatim -- observed in a live session
+      // where a 26-token `<snip-boundary>` absorbed a 1612-token budget. Score
+      // it away rather than keep it: the summary bucket still handles it.
+      if (isSyntheticPseudoMessage(entry.message)) continue;
       if (usedTokens + tokens > input.retentionBudgetTokens) continue;
       retained.push(entry.message);
       usedTokens += tokens;

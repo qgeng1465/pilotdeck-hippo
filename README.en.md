@@ -12,6 +12,12 @@
 
 > PilotDeck Creation Program · Track 3 (Harness / Memory / Architecture) · [中文](README.md) · **Live demo: <https://qgeng1465.github.io/pilotdeck-hippo/>**
 
+<a href="https://qgeng1465.github.io/pilotdeck-hippo/assets/demo.mp4">
+  <img src="https://qgeng1465.github.io/pilotdeck-hippo/assets/demo-poster.png" alt="The Hippo retention badge on a compaction boundary in a real session" width="760">
+</a>
+
+**60-second recording (click to play)**: the first half is the real terminal output of `benchmark:demo` — same input, upstream keeps 0 of 20 early facts verbatim, Hippo 16 of 20. The second half is the real Web UI, where one **continuing** task is compacted **twice** and both compaction boundaries carry the `Hippo kept N msgs verbatim` badge. Only the opening title card is synthetic; every compaction moment plays at 1×.
+
 **In one sentence.** When PilotDeck's context grows, it compacts: the recent tail is kept verbatim and everything older is summarised. A summary keeps the gist but drops the things that have to be exact — file names, numbers, checkpoints, decisions. Hippo scores the messages that are about to be summarised, picks a small batch of the most relevant ones, and lets their **original text** skip summarisation and stay in the compacted context.
 
 ## What problem it solves
@@ -20,7 +26,7 @@ After a few dozen turns you ask "what was that service's p99 again?". Post-compa
 
 | | Upstream (summarise only) | With Hippo |
 |---|---|---|
-| Early facts still **verbatim** in the compacted context (out of 20) | 0 | **6–18** (table below) |
+| Early facts still **verbatim** in the compacted context (out of 20) | 0 | **4–16** (table below) |
 | Compacted tokens | baseline | **1.11–1.20×** |
 
 The cost is out in the open: that extra 11–20% of tokens is not saved anywhere, it is what the fidelity costs.
@@ -31,10 +37,10 @@ The cost is out in the open: that extra 11–20% of tokens is not saved anywhere
 
 | Scenario | Upstream | Hippo | W / T / L |
 |---|---:|---:|---|
-| English, N=160 | 0 / 20 | **17.9 / 20** | 10 / 0 / 0 |
-| Chinese, N=160 | 0 / 20 | **10.0 / 20** | 10 / 0 / 0 |
-| English, N=80 | 0 / 20 | **9.4 / 20** | 10 / 0 / 0 |
-| Chinese, N=80 | 0 / 20 | **6.0 / 20** | 10 / 0 / 0 |
+| English, N=160 | 0 / 20 | **15.9 / 20** | 10 / 0 / 0 |
+| Chinese, N=160 | 0 / 20 | **8.0 / 20** | 10 / 0 / 0 |
+| English, N=80 | 0 / 20 | **7.4 / 20** | 10 / 0 / 0 |
+| Chinese, N=80 | 0 / 20 | **4.0 / 20** | 10 / 0 / 0 |
 
 All four cells won (two-sided exact sign test p = 0.002). The upstream 0 comes from a fake summariser that never emits the fact text — it is the structural "lossy summary vs verbatim retention" contrast, **not** the ceiling of a real summariser. For a real model, see below.
 
@@ -43,9 +49,24 @@ All four cells won (two-sided exact sign test p = 0.002). The upstream 0 comes f
 - Chinese tasks: Hippo wins 4 of 4 cells across two independently recorded rounds.
 - English tasks: no measurable difference when the summary budget is generous; the gap only opens when it is tight.
 
+**One task across several compactions (structural benchmark, `corepack pnpm benchmark:long-horizon`):** one continuing task is compacted 3 times in a row, each round taking the **actual output** of the previous one as its input (not a re-simulation), with facts injected throughout. Facts still present verbatim afterwards, mean over 80 seeds:
+
+| Injected | Upstream | Hippo |
+|---|---:|---:|
+| Oldest 5 (before round 1) | 0.0 | 0.0 |
+| Middle 5 (before round 2) | 0.0 | **1.8** |
+| Newest 5 (before round 3) | 1.0 | **4.97** |
+| Total / 15 | 1.0 | **6.8** |
+
+The boundary belongs in the same breath: the oldest 5 end up at essentially zero on both sides (upstream 0.00 / Hippo 0.00). **Retention is not memory** — once a fact has been through several compactions, it goes away however old the block is. Hippo does not fix that and does not claim to.
+
+**What changed for the cross-compaction case.** Retention used to be recomputed from scratch on every compaction: a message kept verbatim in round 1 got no credit in round 2, re-entered the summary bucket, and was re-scored against a request that had drifted. Messages a previous compaction kept verbatim now get a small **capped allowance** of their own (25% of the retention budget) to be re-selected first. Nothing is re-weighted — candidate order is untouched, so an old message cannot displace one the current request needs. Paired over 80 seeds: the middle bracket 1.36 → **1.80** (27 W / 53 T / 0 L), total 6.38 → **6.78** (25 / 54 / 1), newest 5.00 → 4.97 (2 seeds of 80 lose one fact each). It does **not** hold the oldest bracket (0.01 → 0.00), which was the point of the change — we measured that it fails, and say so. `PILOTDECK_CARRYOVER=off` turns it off so both arms can be compared directly.
+
 **Does it dump irrelevant history back in?** No. Counting message by message against the engine's own reported retention list, **89–100%** of what is retained is relevant to the current question (2.7–11× the random baseline).
 
 > The source, protocol, seed range and aggregation for every number above live in [docs/evaluation.en.md](docs/evaluation.en.md) ([中文](docs/evaluation.md)), each traced to a committed `benchmarks/results/*.json`. You can audit any figure there.
+>
+> Every figure here was re-measured on 2026-09-12: our own "is this fact still present" check used a substring match, so `FACT1` also hit `FACT10`–`FACT19` and `FACT2` also hit `FACT20`, inflating each cell by up to 2. Fixed in `benchmarks/factPresent.ts`; the table above is the corrected reading, and the old readings and the reason they were wrong are kept in [§4.10](docs/evaluation.en.md#410-measurement-fix-a-prefix-collision-between-fact-markers) and `benchmarks/results/superseded-pre-fix/`.
 
 ## How it works
 
@@ -74,7 +95,7 @@ The repo is public — no access needed:
 ```bash
 git clone https://github.com/qgeng1465/pilotdeck-hippo && cd pilotdeck-hippo
 corepack pnpm install --frozen-lockfile
-corepack pnpm benchmark:demo        # ~2 s; English N=160: upstream 0/20 → Hippo 18/20
+corepack pnpm benchmark:demo        # ~2 s; English N=160: upstream 0/20 → Hippo 16/20
 corepack pnpm benchmark:no-regression   # with retention off, output must match the upstream baseline byte for byte
 ```
 
@@ -120,6 +141,7 @@ corepack pnpm benchmark:no-regression   # with scorePolicy off, must equal the u
 corepack pnpm benchmark:smoke           # small smoke run
 corepack pnpm benchmark                 # full A/B (N=40/80/160)
 corepack pnpm benchmark:extraction      # message-level precision / recall
+corepack pnpm benchmark:long-horizon    # one task compacted 3 times in a row
 corepack pnpm benchmark:tokenizer       # the two tokenizer implementations, timed
 ```
 
@@ -136,18 +158,19 @@ Other installation paths, including the desktop app, are in [Appendix A](#append
 
 - **The gain is fidelity to the *current task*, not memory of abandoned topics.** The old-topic column turned out to be an artefact of shared phrasing in the test harness; it goes to zero under decorrelated wording. Do not claim "Hippo remembers old topics".
 - **With a real summariser the advantage is conditional.** With a generous summary budget there is no measurable difference (repeats of the same configuration swing by 3–4 questions); it only separates when the budget is tight.
-- **The default weights changed, but we do not call that an improvement.** They changed to match the tuning argmax with one fewer term; on the holdout set the rank term's effect is far smaller than the noise (7 W / 33 T / 0 L, nothing significant). The real effect is "verbatim retention vs none".
+- **The default weights changed, but we do not call that an improvement.** They changed to match the tuning result we had at the time and to drop one term; after the re-measurement the rank term's effect on the holdout set is far smaller than the noise (5 W / 35 T / 0 L, nothing significant), and the corrected tuning grid no longer supports "the current default comes first" either (see [§4.2](docs/evaluation.en.md#42-component-ablation)). The default was **not** changed this time — the evidence does not support a gain, and changing it would invalidate every measurement. The real effect is "verbatim retention vs none".
 - **The evaluation is mostly synthetic dialogue**, with facts skewed early and the question at the tail. Real temporal structure, noise and multi-turn questions may move the optimal weights.
 - **The real-LLM sample is small** (16 questions per cell, 2 seeds) and the summariser and the judge are the same model, so we state direction only, never "an X-point gain".
 - **Hippo increases post-compaction tokens** (~+5–24% in the recorded real-LLM runs). Present accuracy and cost together.
 
-## Three upstream bugs fixed along the way
+## Four upstream bugs fixed along the way
 
-None of these is related to Hippo, but all three hit real users, so they are fixed here — each with a test that fails before the fix:
+None of these is related to Hippo, but all four hit real users, so they are fixed here — each with a test that fails before the fix:
 
 1. **Three timeout timers that were `unref()`'d**: they exist to settle a promise that is being `await`ed, but `unref()` lets the event loop drain first, so the caller gets a promise that never settles instead of a timeout error. Affects `fetch.ts` (the base of every model/MCP network call), the background-task `wait()`, and the streaming idle timeout.
 2. **The tokenizer degrades to O(n²) on long repeated strings**: `countTokens` now uses a heap implementation of the same greedy merge — 8,000 characters 8,999 ms → 9.1 ms (993×), and `read_file` on a 300-line tool result 79.2 s → 1.2 s. Equivalence is verified by 906 comparisons with 0 mismatches.
 3. **Startup recovery ordered "newest transaction" by mixing logical time with file mtime**: mtime granularity is 1 ms here, so two transactions inside the same millisecond tie, and recovery picks the wrong one — that was the true identity of a long-standing flaky test. Ordering by the transaction's own timestamp turned the flake into a deterministic assertion.
+4. **When a summary fails, the compaction boundary marker is fed to the next summariser as a user message**: boundaries are paired positionally with the summary that follows them, and a failed summary leaves nothing behind — so the marker stays in the live messages. The summariser is asked "what did the user just ask?" and reads a `<compact-boundary/>`; if the kept tail covers it, it is re-emitted verbatim on every round. The marker carries no content, so dropping it costs nothing.
 
 Full evidence and reproduction commands: [docs/upstream-fixes.en.md](docs/upstream-fixes.en.md) ([中文](docs/upstream-fixes.md)).
 
@@ -156,7 +179,7 @@ Full evidence and reproduction commands: [docs/upstream-fixes.en.md](docs/upstre
 - Upstream baseline: [OpenBMB/PilotDeck](https://github.com/OpenBMB/PilotDeck) `85be774`; the fork point is byte-comparable (see `NOTICE`).
 - This fork's changes are confined to `src/context/compaction/` (policy and wiring), `benchmarks/` (evaluation scripts) and `tests/context/` (dedicated tests).
 - The repository has always been publicly readable, cloneable without any access grant. Every public number comes from the committed `benchmarks/results/*.json`; no third-party review.
-- Current test and typecheck state: root suite `pnpm test` 520 items / 518 passed / 0 failed; UI `npx vitest run` 118 files / 922 tests / 0 failed; `ui`'s `tsc --noEmit` exits 0.
+- Current test and typecheck state: root suite `pnpm test` 533 items / 531 passed / 0 failed (2 skipped); UI `npx vitest run` 118 files / 922 tests / 0 failed; `ui`'s `tsc --noEmit` exits 0.
 
 ## License and credits
 

@@ -1,0 +1,89 @@
+{
+  "protocol": "benchmarks/topicSwitch.ts",
+  "timestamp": "2026-09-12T05-37-18-650Z",
+  "seedBase": 20260921,
+  "seeds": 10,
+  "factsPerTopic": 10,
+  "rows": [
+    {
+      "factStyle": "shared",
+      "numPairsPerTopic": 80,
+      "variant": "upstream",
+      "aVerbatimMean": 0,
+      "bVerbatimMean": 5,
+      "aInSummaryOnly": 0,
+      "bInSummaryOnly": 0,
+      "postTokensMean": 1844
+    },
+    {
+      "factStyle": "shared",
+      "numPairsPerTopic": 80,
+      "variant": "hippo",
+      "aVerbatimMean": 1,
+      "bVerbatimMean": 10,
+      "aInSummaryOnly": 0,
+      "bInSummaryOnly": 0,
+      "postTokensMean": 2095
+    },
+    {
+      "factStyle": "shared",
+      "numPairsPerTopic": 160,
+      "variant": "upstream",
+      "aVerbatimMean": 0,
+      "bVerbatimMean": 5,
+      "aInSummaryOnly": 0,
+      "bInSummaryOnly": 0,
+      "postTokensMean": 3451
+    },
+    {
+      "factStyle": "shared",
+      "numPairsPerTopic": 160,
+      "variant": "hippo",
+      "aVerbatimMean": 4.9,
+      "bVerbatimMean": 10,
+      "aInSummaryOnly": 0,
+      "bInSummaryOnly": 0,
+      "postTokensMean": 3889
+    },
+    {
+      "factStyle": "decorrelated",
+      "numPairsPerTopic": 80,
+      "variant": "upstream",
+      "aVerbatimMean": 0,
+      "bVerbatimMean": 5,
+      "aInSummaryOnly": 0,
+      "bInSummaryOnly": 0,
+      "postTokensMean": 1798
+    },
+    {
+      "factStyle": "decorrelated",
+      "numPairsPerTopic": 80,
+      "variant": "hippo",
+      "aVerbatimMean": 0,
+      "bVerbatimMean": 10,
+      "aInSummaryOnly": 0,
+      "bInSummaryOnly": 0,
+      "postTokensMean": 2053
+    },
+    {
+      "factStyle": "decorrelated",
+      "numPairsPerTopic": 160,
+      "variant": "upstream",
+      "aVerbatimMean": 0,
+      "bVerbatimMean": 5,
+      "aInSummaryOnly": 0,
+      "bInSummaryOnly": 0,
+      "postTokensMean": 3398
+    },
+    {
+      "factStyle": "decorrelated",
+      "numPairsPerTopic": 160,
+      "variant": "hippo",
+      "aVerbatimMean": 0,
+      "bVerbatimMean": 10,
+      "aInSummaryOnly": 0,
+      "bInSummaryOnly": 0,
+      "postTokensMean": 3827
+    }
+  ]
+}

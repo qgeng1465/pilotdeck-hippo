@@ -30,6 +30,7 @@ import {
   generateZhTranscript,
   type SyntheticTranscript,
 } from "./syntheticTranscript.js";
+import { factPresent } from "./factPresent.js";
 
 const SEEDS = Number(process.env.PILOTDECK_EVAL_SEEDS ?? 3);
 // Held-out seeds, never used for tuning. `PILOTDECK_EVAL_SEED_BASE` lets a
@@ -55,7 +56,7 @@ async function measure(transcript: SyntheticTranscript) {
   // A retained message is "relevant" if its verbatim text carries a probe fact.
   const factMarkers = transcript.facts.map((fact) => fact.marker);
   const retainedRelevant = retainedTexts.filter((text) =>
-    factMarkers.some((marker) => text.includes(marker)),
+    factMarkers.some((marker) => factPresent(text, marker)),
   ).length;
   return {
     factsRetained: retainedRelevant,

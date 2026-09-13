@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { runEngine } from "./engineRunner.js";
 import { generateTranscript, type SyntheticTranscript } from "./syntheticTranscript.js";
+import { factPresent } from "./factPresent.js";
 
 export type CaseMetrics = {
   numPairs: number;
@@ -30,7 +31,7 @@ function hashText(text: string): string {
 }
 
 function countFacts(transcript: SyntheticTranscript, text: string): number {
-  return transcript.facts.filter((fact) => text.includes(fact.marker)).length;
+  return transcript.facts.filter((fact) => factPresent(text, fact.marker)).length;
 }
 
 export async function runCase(numPairs: number, seed: number): Promise<CaseMetrics> {

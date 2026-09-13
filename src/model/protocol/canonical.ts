@@ -146,6 +146,14 @@ export type CanonicalMessageMetadata = {
   compactReplacement?: boolean;
   /** Compaction id of the effective replacement snapshot persisted in the transcript. */
   compactSnapshotId?: string;
+  /**
+   * Hippo: set on the copy of a message the scored retention policy kept
+   * verbatim. It survives into the next compaction (the kept tail is what the
+   * next pass re-plans over), which is what lets a previously retained fact
+   * hold its place instead of being re-scored from zero against a query hint
+   * that has since drifted. See `retention/CarryOver.ts`.
+   */
+  hippoRetained?: boolean;
   purpose?: string;
   /** Stable queued-input id for a user message injected during an active turn. */
   queueItemId?: string;

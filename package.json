@@ -34,6 +34,7 @@
     "benchmark:ablation": "tsx benchmarks/ablation.ts",
     "benchmark:holdout": "tsx benchmarks/holdout.ts",
     "benchmark:topic-switch": "tsx benchmarks/topicSwitch.ts",
+    "benchmark:long-horizon": "tsx benchmarks/longHorizon.ts",
     "benchmark:topic-diagnosis": "tsx benchmarks/topicDiagnosis.ts",
     "benchmark:tune": "tsx benchmarks/tune.ts",
     "benchmark:real-llm": "tsx benchmarks/realLlmEval.ts",

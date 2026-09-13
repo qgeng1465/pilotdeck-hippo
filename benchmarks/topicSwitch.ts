@@ -6,6 +6,7 @@ import { TokenBudgetManager } from "../src/context/budget/TokenBudgetManager.js"
 import { messageVisibleText } from "../src/context/compaction/retention/MessageText.js";
 import { buildEbbinghausPageRankPolicy } from "../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
 import { fakeModel } from "./engineRunner.js";
+import { factPresent } from "./factPresent.js";
 import type { CanonicalMessage } from "../src/model/index.js";
 
 // What happens to the context when the user changes topic mid-conversation?
@@ -153,7 +154,7 @@ export function buildTranscript(options: {
 }
 
 function markersIn(facts: TopicFact[], text: string): Set<string> {
-  return new Set(facts.filter((fact) => text.includes(fact.marker)).map((fact) => fact.marker));
+  return new Set(facts.filter((fact) => factPresent(text, fact.marker)).map((fact) => fact.marker));
 }
 
 async function runVariant(messages: CanonicalMessage[], withHippo: boolean) {

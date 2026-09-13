@@ -35,4 +35,11 @@ export type EbbinghausPolicyOptions = {
   entityWindowSize?: number;
   /** Multiply PageRank by entity IDF before per-message max; set false for raw centrality. */
   idfCorrection?: boolean;
+  /**
+   * Fraction of the retention token budget that messages kept verbatim by a
+   * previous compaction may claim ahead of the score-ordered fill. Default
+   * `CARRYOVER_BUDGET_SHARE`; 0 disables the allowance without the global
+   * `PILOTDECK_CARRYOVER` switch.
+   */
+  carryOverBudgetShare?: number;
 };

@@ -6,6 +6,7 @@ import { TokenBudgetManager } from "../src/context/budget/TokenBudgetManager.js"
 import { messageVisibleText } from "../src/context/compaction/retention/MessageText.js";
 import { buildEbbinghausPageRankPolicy } from "../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
 import { buildTranscript, type FactStyle, type TopicFact } from "./topicSwitch.js";
+import { factPresent } from "./factPresent.js";
 import type { CanonicalMessage } from "../src/model/index.js";
 import {
   chat,
@@ -269,8 +270,8 @@ async function main() {
             const stat = counts[topic];
             stat.asked += 1;
             if (gradeView(judge.text, view)) stat.correct += 1;
-            if (outcome.bodyText.includes(fact.marker)) stat.markerInBody += 1;
-            else if (outcome.summaryText.includes(fact.marker)) stat.markerInSummaryOnly += 1;
+            if (factPresent(outcome.bodyText, fact.marker)) stat.markerInBody += 1;
+            else if (factPresent(outcome.summaryText, fact.marker)) stat.markerInSummaryOnly += 1;
           }
         }
         row.perRepeat.A.push(counts.A);

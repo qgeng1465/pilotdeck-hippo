@@ -200,6 +200,57 @@ test("the first rolling compaction collapses a legacy three-checkpoint prefix", 
   assert.match(prompt, /legacy-checkpoint-3/);
 });
 
+test("an orphan compact boundary is dropped instead of being re-fed as a user turn", async () => {
+  // A boundary marker whose summary never landed: the summarizer failed, so the
+  // checkpoint holds the boundary with status="summary_failed" and no summary
+  // after it. Matching boundary/summary pairs positionally used to leave such a
+  // marker in `liveMessages`, where the next pass presented it to the
+  // summarizer as a user turn -- a tag asking "what did the user just ask?" --
+  // and, whenever the kept tail happened to cover it, re-emitted it verbatim
+  // forever. It carries no content: only the trigger and token counts, both of
+  // which are reported through `CompactionResult`.
+  const summaryRequests: CanonicalModelRequest[] = [];
+  const engine = new CompactionEngine({
+    model: {
+      async *stream(request): AsyncIterable<CanonicalModelEvent> {
+        summaryRequests.push(request);
+        yield { type: "text_delta", text: "## Objective\nRecovered." };
+        yield { type: "message_end", finishReason: "stop" };
+      },
+    },
+    provider: "local",
+    model_: "local-chat",
+    maxOutputTokens: 1,
+  });
+  const orphan: CanonicalMessage = {
+    role: "user",
+    content: [{
+      type: "text",
+      text: `<compact-boundary trigger="auto" preTokens="4200" messagesSummarized="12" status="summary_failed" />`,
+    }],
+  };
+
+  const result = await engine.run({
+    trigger: "auto",
+    messages: [orphan, ...rollingWorkMessages("After failure")],
+    keepTailRatio: 0.05,
+  });
+
+  assert.equal(summaryRequests.length, 1);
+  assert.equal(
+    summaryRequests[0]!.messages.filter(isCompactBoundaryMessageForTest).length,
+    0,
+    "the orphan boundary must not be presented to the summarizer as conversation",
+  );
+  const snapshot = buildPostCompactMessages(result);
+  assert.equal(
+    snapshot.filter(isCompactBoundaryMessageForTest).length,
+    1,
+    "only the boundary this pass created may remain",
+  );
+  assert.equal(textFromMessages(snapshot).includes("summary_failed"), false);
+});
+
 test("auto full compaction retries without protected turns when protected output still blocks", async () => {
   const summaryRequests: CanonicalModelRequest[] = [];
   const engine = new CompactionEngine({

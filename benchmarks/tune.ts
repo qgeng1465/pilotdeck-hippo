@@ -9,6 +9,7 @@ import {
   generateZhTranscript,
   type SyntheticTranscript,
 } from "./syntheticTranscript.js";
+import { factPresent } from "./factPresent.js";
 
 // Fast weight sweep on a reduced protocol (N=80, 3 seeds, EN+ZH) plus a
 // no-query robustness probe. The sweep argmax re-anchors the default
@@ -38,7 +39,7 @@ for (const wSim of [0.55, 0.7, 0.85]) {
 
 function countFacts(transcript: SyntheticTranscript, texts: string[]): number {
   const blob = texts.join("\n");
-  return transcript.facts.filter((fact) => blob.includes(fact.marker)).length;
+  return transcript.facts.filter((fact) => factPresent(blob, fact.marker)).length;
 }
 
 function candidatesOf(transcript: SyntheticTranscript) {

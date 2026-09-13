@@ -1,8 +1,8 @@
 # Upstream Bug Fixes
 
-This is reference detail supporting the main [README](../README.en.md): the full record behind the README section "Three upstream bugs fixed along the way" — the site lists, symptom tables, and reproduce-then-fix evidence for each of the three pre-existing upstream defects. None of them counts toward the Hippo innovation; the README keeps only a one-line summary and a pointer. 中文: [upstream-fixes.md](./upstream-fixes.md)
+This is reference detail supporting the main [README](../README.en.md): the full record behind the README section "Four upstream bugs fixed along the way" — the site lists, symptom tables, and reproduce-then-fix evidence for each of the four pre-existing upstream defects. None of them counts toward the Hippo innovation; the README keeps only a one-line summary and a pointer. 中文: [upstream-fixes.md](./upstream-fixes.md)
 
-## Three upstream bugs fixed along the way
+## Four upstream bugs fixed along the way
 
 None of these three is introduced by this fork, none counts toward the Hippo innovation — but all are problems a real user hits, so we fix them and keep tests.
 
@@ -73,3 +73,20 @@ That is the true identity of the flaky failure in the full test run — `replace
     : Math.max(backupMtime ?? 0, journalMtime ?? 0)
   ```
 - Evidence: new case `recovery orders transactions by their journal timestamp, not by artifact mtime` — uses `utimes` to push the old transaction's file mtime arbitrarily 60 s into the future (no timing dependency), asserting recovery still selects the new transaction by `preparedAt`. Reverting to `Math.max` makes the case **fail deterministically** (1 fail); with the fix, 16/16. A flaky failure converted into an every-run deterministic assertion.
+
+**Defect 4: an orphan compaction boundary left behind by a failed summary is re-fed to the model as a user turn (`CompactionEngine.splitCheckpointPrefix`)**
+
+Upstream splits the transcript on the pair "boundary marker + the summary immediately after it", matched **positionally**: `messages[i]` is a boundary marker and `messages[i+1]` is the wrapped summary. The problem is what happens when the **summary fails** — `createBoundaryMarker` then writes `status="summary_failed"` and there is **no** summary message after it. The loop stops at the first boundary it cannot pair, and leaves that marker sitting in `liveMessages`.
+
+Two consequences, both measured:
+
+| Consequence | What happens |
+|---|---|
+| Fed to the next summariser | The `messages` array handed to `summarize()` now contains a user-role `<compact-boundary .../>`. The summariser is asked to read "what did the user just ask?" and finds a marker. The regression case added for this fix asserts exactly that: "the orphan boundary must not be presented to the summarizer as conversation" |
+| Re-emitted forever | If the kept tail happens to cover it, it is carried back verbatim on every subsequent round and never leaves the context |
+
+The marker itself carries no content — only the trigger and token counts, both of which are already reported through `CompactionResult` and diagnostics — so dropping it loses nothing the model could use.
+
+- Fix: the loop now consumes a boundary **only when it is paired** with a following summary, and otherwise drops the orphan; `stablePrefix` is built from matched pairs only (equivalent to the old `messages.slice(0, index)` in the paired case).
+- Evidence: new case `an orphan compact boundary is dropped instead of being re-fed as a user turn` in `tests/context/compaction-engine.spec.ts`. Reverting the fix gives `not ok 5`, failing on `the orphan boundary must not be presented to the summarizer as conversation` (18/19); with the fix, 19/19.
+- Hardening done at the same time: boundary markers now carry `metadata.synthetic: true` (plus `purpose`). **Stated plainly**: that part is *not* a bug fix. `toolPairIntegrity.ts`'s `INTERNAL_USER_TEXT_PREFIXES` already contains `<compact-boundary` and `<snip-boundary`, so `isSyntheticPseudoMessage` recognised them all along and we **could not construct** a reproducible misbehaviour. The field was added so the contract is structural rather than a re-parse of a text prefix, protecting future consumers. Its test does fail before the field is added, but what that verifies is that the new contract exists — not that the old behaviour was wrong.

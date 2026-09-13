@@ -1,8 +1,8 @@
 # 上游缺陷修复记录
 
-本文是 [README](../README.md) 的参考细节，收录主 README「顺带修掉的三个上游缺陷」一节的完整记录：三处上游既有缺陷各自的站点清单、症状表、复现与修复证据。这些修复都不计入 Hippo 创新点，正文只保留一句摘要与指针。English: [upstream-fixes.en.md](./upstream-fixes.en.md)
+本文是 [README](../README.md) 的参考细节，收录主 README「顺带修掉的四个上游缺陷」一节的完整记录：四处上游既有缺陷各自的站点清单、症状表、复现与修复证据。这些修复都不计入 Hippo 创新点，正文只保留一句摘要与指针。English: [upstream-fixes.en.md](./upstream-fixes.en.md)
 
-## 顺带修掉的三个上游缺陷
+## 顺带修掉的四个上游缺陷
 
 这三处都不是本 fork 引入的，也都不计入 Hippo 创新点——但都是真实用户会撞到的问题，所以一并修掉、留测试。
 
@@ -73,3 +73,20 @@ order: Math.max(preparedAt, backupMtime, journalMtime)   // 修复前
     : Math.max(backupMtime ?? 0, journalMtime ?? 0)
   ```
 - 证据：新增 `recovery orders transactions by their journal timestamp, not by artifact mtime`——用 `utimes` 把旧事务的文件 mtime 显式推到未来 60 秒（不依赖任何时序），断言恢复仍按 `preparedAt` 选中新事务。把 `Math.max` 改回去重跑，该用例**确定性失败**（1 fail）；修复后 16/16。这样把一个偶发 flake 变成了每次必检的确定性断言。
+
+**缺陷四：摘要失败留下的「孤儿压缩边界」会被当成用户发言重新喂回（`CompactionEngine.splitCheckpointPrefix`）**
+
+上游用「边界标记 + 紧随其后的摘要」这一对来切分历史，配对靠**位置**：只要 `messages[i]` 是边界标记、`messages[i+1]` 是摘要包装消息，就算一对。问题出在**摘要失败**的时候——`createBoundaryMarker` 这时写的是 `status="summary_failed"`，后面**没有**摘要消息，于是循环在第一个配不上的边界处停下，把它留在了 `liveMessages` 里。
+
+两个后果，都实测到：
+
+| 后果 | 现象 |
+|---|---|
+| 被喂给下一次摘要器 | `summarize()` 的 `messages` 数组里多了一条 user 角色的 `<compact-boundary .../>`。摘要器被要求读「用户刚刚问的是什么」，读到的是一个标记；本次修复的回归用例就是断言"孤儿边界不得作为对话内容呈现给摘要器" |
+| 永久复读 | 若保留的 tail 恰好覆盖到它，它会每轮都被逐字带回、永远留在上下文里 |
+
+边界标记本身不携带内容——只有 trigger 与 token 计数，而这两项已经通过 `CompactionResult` 和诊断信息报出——所以**丢掉它不会丢任何模型可用的信息**。
+
+- 修复：循环改为「配成对就消费这一对，配不上就丢掉这一条孤儿」，`stablePrefix` 只由成对的部分构成（与旧的 `messages.slice(0, index)` 在成对情形下等价）。
+- 证据：`tests/context/compaction-engine.spec.ts` 新增 `an orphan compact boundary is dropped instead of being re-fed as a user turn`。把修复回退后重跑，`not ok 5`，失败行正是 `the orphan boundary must not be presented to the summarizer as conversation`（18/19）；修复后 19/19。
+- 同时做的加固：边界标记现在带 `metadata.synthetic: true`（含 `purpose`）。**如实说明**：这条不是 bug 修复——《toolPairIntegrity.ts` 的 `INTERNAL_USER_TEXT_PREFIXES` 里本来就有 `<compact-boundary` / `<snip-boundary`，`isSyntheticPseudoMessage` 早已能识别它们，我们**构造不出**可复现的错误行为。加这个字段是为了让契约变成结构性的，而不是依赖对文本前缀的再解析，防的是将来的新消费者。它配的测试在加字段前会失败，但那验证的是新契约存在，不是旧行为有错。

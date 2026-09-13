@@ -3,8 +3,8 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { runEngine, type EngineVariant } from "./engineRunner.js";
-import { messageVisibleText } from "../src/context/compaction/retention/MessageText.js";
-import { isCarryOverEnabled } from "../src/context/compaction/retention/CarryOver.js";
+import { messageVisibleText, isCarryOverEnabled } from "hippo-retention";
+
 import { factPresent } from "./factPresent.js";
 import type { CanonicalMessage } from "../src/model/index.js";
 

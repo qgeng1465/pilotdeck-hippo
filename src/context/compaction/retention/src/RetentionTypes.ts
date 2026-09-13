@@ -1,6 +1,23 @@
-import type { CanonicalMessage } from "../../../model/index.js";
+import type { HippoMessage } from "./HippoMessage.js";
 
-export type RetentionScorePolicy = {
+/**
+ * The single additive hook the compaction engine offers.
+ *
+ * Parameterised by the caller's own message type, which defaults to this
+ * package's `HippoMessage`. A host that has a richer message type writes
+ * `RetentionScorePolicy<ItsMessage>` and gets that same type back out of
+ * `pickRetained`, so `messagesToKeep` keeps whatever type it always had
+ * without this package knowing that type by name.
+ *
+ * The parameter is on the *type*, not on the two methods, and that is
+ * deliberate. Generic methods would make the interface unimplementable by
+ * ordinary code: a class or object literal with a concrete
+ * `scoreMessages(input: { candidates: CanonicalMessage[] })` cannot satisfy
+ * `<I extends HippoMessage>(input: { candidates: I[] }) => …`, so every spy,
+ * recording wrapper and test double in the host would have to be written
+ * generically (and cast internally) just to type-check.
+ */
+export type RetentionScorePolicy<M extends HippoMessage = HippoMessage> = {
   id: string;
   /**
    * Optional self-description of the effective term weights. Surfaced in
@@ -10,15 +27,15 @@ export type RetentionScorePolicy = {
    */
   readonly weights?: { wSim: number; wTime: number; wRank: number };
   scoreMessages(input: {
-    candidates: CanonicalMessage[];
+    candidates: M[];
     queryHint?: string;
-  }): Promise<Map<CanonicalMessage, number>>;
+  }): Promise<Map<M, number>>;
   pickRetained(input: {
-    candidates: CanonicalMessage[];
+    candidates: M[];
     retentionBudgetTokens: number;
     queryHint?: string;
-    estimateTokens: (candidates: CanonicalMessage[]) => number;
-  }): Promise<CanonicalMessage[]>;
+    estimateTokens: (candidates: M[]) => number;
+  }): Promise<M[]>;
 };
 
 export type EbbinghausPolicyOptions = {

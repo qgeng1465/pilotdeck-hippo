@@ -1,0 +1,45 @@
+{
+  "name": "hippo-retention",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Verbatim-retention scoring policy for LLM agent context compaction.",
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qgeng1465/pilotdeck-hippo.git",
+    "directory": "src/context/compaction/retention"
+  },
+  "homepage": "https://github.com/qgeng1465/pilotdeck-hippo#readme",
+  "engines": {
+    "node": ">=22.13.0 <23"
+  },
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    }
+  },
+  "files": [
+    "src",
+    "lib"
+  ],
+  "scripts": {
+    "build": "node -e \"require('fs').rmSync('lib',{recursive:true,force:true})\" && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": [
+    "llm",
+    "context-compaction",
+    "agent",
+    "memory",
+    "retrieval",
+    "pagerank"
+  ],
+  "devDependencies": {
+    "@types/node": "^25.0.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { buildEbbinghausPageRankPolicy } from "../../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
-import { EntityGraph } from "../../src/context/compaction/retention/EntityGraph.js";
-import { messageVisibleText } from "../../src/context/compaction/retention/MessageText.js";
+import { buildEbbinghausPageRankPolicy, EntityGraph, messageVisibleText } from "hippo-retention";
+import type { RetentionScorePolicy } from "hippo-retention";
+
+
 import type { CanonicalMessage } from "../../src/model/protocol/canonical.js";
-import type { RetentionScorePolicy } from "../../src/context/compaction/retention/RetentionTypes.js";
+
 import { TokenBudgetManager } from "../../src/context/budget/TokenBudgetManager.js";
 import { generateTranscript, generateZhTranscript } from "../../benchmarks/syntheticTranscript.js";
 import { runEngine } from "../../benchmarks/engineRunner.js";
@@ -16,7 +17,7 @@ test("hippo score policy is deterministic and keeps key messages within the rete
   const lastMessage = transcript.messages.at(-1)!;
   const lastTextBlock = lastMessage.content.find((block) => block.type === "text");
   const queryHint = lastTextBlock?.text ?? "";
-  const policy = buildEbbinghausPageRankPolicy();
+  const policy = buildEbbinghausPageRankPolicy<CanonicalMessage>();
   const first = await policy.scoreMessages({ candidates, queryHint });
   const second = await policy.scoreMessages({ candidates, queryHint });
   assert.equal([...first.entries()].sort((a, b) => a[1] - b[1]).map(([message, score]) => `${message.role}:${score}`).join("\n"),
@@ -126,8 +127,8 @@ test("retention is still query-conditioned when the tail holds no user request",
   }
 
   const hinted: Array<string | undefined> = [];
-  const inner = buildEbbinghausPageRankPolicy();
-  const spy: RetentionScorePolicy = {
+  const inner = buildEbbinghausPageRankPolicy<CanonicalMessage>();
+  const spy: RetentionScorePolicy<CanonicalMessage> = {
     id: "test-spy",
     scoreMessages: (input) => {
       hinted.push(input.queryHint);
@@ -186,7 +187,7 @@ test("pickRetained never keeps a candidate with no visible content", async () =>
     { role: "user", content: [{ type: "text", text: "thanks" }] },
   ];
 
-  const policy = buildEbbinghausPageRankPolicy();
+  const policy = buildEbbinghausPageRankPolicy<CanonicalMessage>();
   const retained = await policy.pickRetained({
     candidates: messages,
     retentionBudgetTokens: 10_000,
@@ -234,7 +235,7 @@ test("pickRetained never keeps a synthetic boundary marker as conversation", asy
     }],
   };
 
-  const policy = buildEbbinghausPageRankPolicy();
+  const policy = buildEbbinghausPageRankPolicy<CanonicalMessage>();
   const retained = await policy.pickRetained({
     candidates: [questionMessage, answerMessage, boundaryMessage],
     retentionBudgetTokens: 10_000,

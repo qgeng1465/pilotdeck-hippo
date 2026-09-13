@@ -22,5 +22,8 @@
     "scripts/**/*.ts",
     "scripts/**/*.tsx",
     "benchmarks/**/*.ts"
+  ],
+  "exclude": [
+    "src/context/compaction/retention"
   ]
 }

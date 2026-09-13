@@ -1,8 +1,22 @@
 {
-  "name": "pilotdeck",
+  "name": "pilotdeck-hippo",
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "description": "Feature fork of PilotDeck adding Hippo: a scored selective-retention policy that keeps relevant messages verbatim across context compaction.",
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qgeng1465/pilotdeck-hippo.git"
+  },
+  "homepage": "https://qgeng1465.github.io/pilotdeck-hippo/",
+  "keywords": [
+    "pilotdeck",
+    "context-compaction",
+    "llm-agent",
+    "memory",
+    "retention"
+  ],
   "engines": {
     "node": ">=22.13.0 <23"
   },
@@ -16,7 +30,7 @@
     "check:runtime": "node scripts/check-node-runtime.mjs",
     "install:browser": "npx @playwright/mcp install-browser chrome-for-testing",
     "install:asr": "node scripts/install-asr.mjs",
-    "prebuild": "npm run check:runtime && node scripts/bootstrap-pilotdeck-config.mjs && cd src/context/memory/edgeclaw-memory-core && npm run build",
+    "prebuild": "npm run check:runtime && node scripts/bootstrap-pilotdeck-config.mjs && (cd src/context/memory/edgeclaw-memory-core && npm run build) && (cd src/context/compaction/retention && npm run build)",
     "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.json && node -e \"require('fs').cpSync('src/extension/plugins/builtin','dist/src/extension/plugins/builtin',{recursive:true})\"",
     "server": "npm run check:runtime && tsx src/cli/pilotdeck.ts server",
     "server:built": "npm run check:runtime && node dist/src/cli/pilotdeck.js server",
@@ -58,6 +72,7 @@
     "@vscode/ripgrep": "^1.18.0",
     "csv-parse": "^7.0.0",
     "edgeclaw-memory-core": "file:src/context/memory/edgeclaw-memory-core",
+    "hippo-retention": "workspace:*",
     "ink": "^7.0.2",
     "ink-text-input": "^6.0.0",
     "js-tiktoken": "^1.0.21",

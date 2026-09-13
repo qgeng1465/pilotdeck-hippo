@@ -1,9 +1,10 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { performance } from "node:perf_hooks";
-import { buildEbbinghausPageRankPolicy } from "../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
+import { buildEbbinghausPageRankPolicy, messageVisibleText } from "hippo-retention";
 import { TokenBudgetManager } from "../src/context/budget/TokenBudgetManager.js";
-import { messageVisibleText } from "../src/context/compaction/retention/MessageText.js";
+import type { CanonicalMessage } from "../src/model/index.js";
+
 import {
   generateTranscript,
   generateZhTranscript,
@@ -72,7 +73,7 @@ async function main() {
       let ms = 0;
       for (const transcript of transcripts.get(lang)!) {
         const { candidates, queryHint } = candidatesOf(transcript);
-        const policy = buildEbbinghausPageRankPolicy({
+        const policy = buildEbbinghausPageRankPolicy<CanonicalMessage>({
           wSim: config.wSim,
           wTime: config.wTime,
           wRank: config.wRank,
@@ -127,7 +128,7 @@ async function main() {
       let total = 0;
       for (const transcript of transcripts.get(lang)!) {
         const { candidates } = candidatesOf(transcript);
-        const policy = buildEbbinghausPageRankPolicy({
+        const policy = buildEbbinghausPageRankPolicy<CanonicalMessage>({
           wSim: config.wSim,
           wTime: config.wTime,
           wRank: config.wRank,

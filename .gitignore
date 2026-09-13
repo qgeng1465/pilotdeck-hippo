@@ -205,9 +205,6 @@ Auto-Research-Skills/
 # Local agent notes
 CLAUDE.md
 
-# --- PilotDeck-Hippo: never commit credentials ---
-# Competition-issued gateway credentials (【接口地址】/【API密钥】)
-poliet_deck.txt
 # Personal API keys occasionally dropped in the repo root
 *_key.txt
 deepseek_key.txt
@@ -216,3 +213,6 @@ pilotdeck-server.log
 
 # local demo recording scratch (Playwright scripts + captured videos)
 ui/.demo-tmp/
+
+# default output dir of benchmarks/demo/export*.ts (override with argv or *_OUT)
+demo-out/

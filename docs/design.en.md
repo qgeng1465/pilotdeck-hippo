@@ -61,7 +61,7 @@ const result = await engine.run({ trigger: "auto", messages, keepTailRatio: 0.18
 Omitting `scorePolicy` uses the upstream path. On the app side this config parses into the same policy with no code change:
 
 ```ts
-// src/context/compaction/retention/EbbinghausPageRankPolicy.ts
+// src/context/compaction/retention/src/EbbinghausPageRankPolicy.ts
 resolveRetentionScorePolicy({ retention: "hippo" }) // → EbbinghausPageRankPolicy
 resolveRetentionScorePolicy({ retention: "off" })   // → undefined (pure upstream)
 ```
@@ -70,7 +70,7 @@ resolveRetentionScorePolicy({ retention: "off" })   // → undefined (pure upstr
 
 A long task crosses several compaction boundaries. Round 2's input is round 1's **actual output**, and a message round 1 deliberately kept verbatim gets no credit in round 2: it re-enters the "about to be summarised" set and is scored, together with everything new, against the request that is current *now*. The moment the request drifts, the text pinned one round ago can be folded back into a summary — kept, dropped, kept again.
 
-`src/context/compaction/retention/CarryOver.ts` gives that batch a **capped allowance** of its own: 25% of the retention budget (`CARRYOVER_BUDGET_SHARE = 0.25`), filled best-current-score first until it is full. A message a previous round kept is stamped `metadata.hippoRetained: true` on the way out, and that is how the next round recognises it.
+`src/context/compaction/retention/src/CarryOver.ts` gives that batch a **capped allowance** of its own: 25% of the retention budget (`CARRYOVER_BUDGET_SHARE = 0.25`), filled best-current-score first until it is full. A message a previous round kept is stamped `metadata.hippoRetained: true` on the way out, and that is how the next round recognises it.
 
 The trade-off that matters is that **nothing is re-ranked**. The allowance adds no bonus to any message, so the candidates' relative order is exactly what it would be with carry-over off — an old message can never outrank one the pending request actually needs. `PILOTDECK_CARRYOVER=off` (or `0` / `false` / `no` / `disabled`) turns it off in one word so the two arms can be compared directly.
 
@@ -79,12 +79,12 @@ The two rejected designs are recorded in the file header together with their mea
 Suggested files to look at during review:
 
 - `src/context/compaction/CompactionEngine.ts`: the switch, candidates, retention block, and merge order.
-- `src/context/compaction/retention/CarryOver.ts`: cross-round re-selection — the switch, the budget share, and both rejected designs with their measured numbers in the header comment.
-- `src/context/compaction/retention/RetentionTypes.ts`: policy and scoring types.
-- `src/context/compaction/retention/MessageText.ts`: uniform message textification.
-- `src/context/compaction/retention/LocalEmbedding.ts`: local embedding and BM25 fallback.
-- `src/context/compaction/retention/EntityGraph.ts`: bilingual entity extraction, DF pruning, IDF-PageRank.
-- `src/context/compaction/retention/EbbinghausScore.ts`, `EbbinghausPageRankPolicy.ts`: scoring and budget selection.
+- `src/context/compaction/retention/src/CarryOver.ts`: cross-round re-selection — the switch, the budget share, and both rejected designs with their measured numbers in the header comment.
+- `src/context/compaction/retention/src/RetentionTypes.ts`: policy and scoring types.
+- `src/context/compaction/retention/src/MessageText.ts`: uniform message textification.
+- `src/context/compaction/retention/src/LocalEmbedding.ts`: local embedding and BM25 fallback.
+- `src/context/compaction/retention/src/EntityGraph.ts`: bilingual entity extraction, DF pruning, IDF-PageRank.
+- `src/context/compaction/retention/src/EbbinghausScore.ts`, `EbbinghausPageRankPolicy.ts`: scoring and budget selection.
 - `isSyntheticPseudoMessage` in `src/context/compaction/toolPairIntegrity.ts`: bookkeeping messages — snip/compact boundary markers, the continuation sentinel, anything with `metadata.synthetic` — never become retention candidates. Otherwise a single 26-token `<snip-boundary/>` marker can swallow the whole budget.
 - `tests/context/hippo-retention.spec.ts`: dedicated unit tests.
 - `benchmarks/`: A/B, ablation, tuning and real-LLM evaluation scripts.

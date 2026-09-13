@@ -44,20 +44,18 @@
  */
 
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { buildPostCompactMessages, CompactionEngine } from "../../src/context/compaction/CompactionEngine.js";
 import { TokenBudgetManager } from "../../src/context/budget/TokenBudgetManager.js";
-import { messageVisibleText } from "../../src/context/compaction/retention/MessageText.js";
+import { messageVisibleText, buildEbbinghausPageRankPolicy, EBBINGHAUS_DEFAULT_WEIGHTS, defaultEmbeddingModelPath } from "hippo-retention";
+import type { RetentionScorePolicy } from "hippo-retention";
 import { isSyntheticPseudoMessage } from "../../src/context/compaction/toolPairIntegrity.js";
-import {
-  buildEbbinghausPageRankPolicy,
-  EBBINGHAUS_DEFAULT_WEIGHTS,
-} from "../../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
-import { defaultEmbeddingModelPath } from "../../src/context/compaction/retention/LocalEmbedding.js";
-import type { RetentionScorePolicy } from "../../src/context/compaction/retention/RetentionTypes.js";
+
+
+
 import type { CanonicalMessage } from "../../src/model/index.js";
 import { fakeModel } from "../engineRunner.js";
 import { factPresent } from "../factPresent.js";
@@ -76,19 +74,19 @@ const RETENTION_BUDGET_RATIO = 0.2;
 const RETENTION_BUDGET_FLOOR = 256;
 const PREVIEW_CHARS = 180;
 
-const PREVIEW_DEFAULT_OUT =
-  "/data/qiushuogeng/pilotdeck-demo-0912/sections/flow.json";
+/** Default output, relative to wherever the script is run from. */
+const PREVIEW_DEFAULT_OUT = resolve(process.cwd(), "demo-out/flow.json");
 
 const UNBOUNDED_BUDGET = Number.MAX_SAFE_INTEGER;
 
 /** Source files whose exact revision produced the exported numbers. */
 const FINGERPRINTED_SOURCES = [
   "src/context/compaction/CompactionEngine.ts",
-  "src/context/compaction/retention/EbbinghausPageRankPolicy.ts",
-  "src/context/compaction/retention/EbbinghausScore.ts",
-  "src/context/compaction/retention/EntityGraph.ts",
-  "src/context/compaction/retention/LocalEmbedding.ts",
-  "src/context/compaction/retention/MessageText.ts",
+  "src/context/compaction/retention/src/EbbinghausPageRankPolicy.ts",
+  "src/context/compaction/retention/src/EbbinghausScore.ts",
+  "src/context/compaction/retention/src/EntityGraph.ts",
+  "src/context/compaction/retention/src/LocalEmbedding.ts",
+  "src/context/compaction/retention/src/MessageText.ts",
   "src/context/compaction/toolPairIntegrity.ts",
 ];
 
@@ -114,12 +112,12 @@ type CapturedCall = {
   retained: CanonicalMessage[];
 };
 
-class RecordingPolicy implements RetentionScorePolicy {
+class RecordingPolicy implements RetentionScorePolicy<CanonicalMessage> {
   readonly id: string;
   captured: CapturedCall | undefined;
   estimateTokens: ((messages: CanonicalMessage[]) => number) | undefined;
 
-  constructor(private readonly inner: RetentionScorePolicy) {
+  constructor(private readonly inner: RetentionScorePolicy<CanonicalMessage>) {
     this.id = inner.id;
   }
 
@@ -172,7 +170,7 @@ function fail(message: string): never {
 }
 
 /** Engine construction, copied from benchmarks/engineRunner.ts's runEngine. */
-function buildEngine(scorePolicy: RetentionScorePolicy | undefined): CompactionEngine {
+function buildEngine(scorePolicy: RetentionScorePolicy<CanonicalMessage> | undefined): CompactionEngine {
   return new CompactionEngine({
     model: fakeModel,
     provider: "benchmark",
@@ -182,7 +180,7 @@ function buildEngine(scorePolicy: RetentionScorePolicy | undefined): CompactionE
   });
 }
 
-async function runArm(messages: CanonicalMessage[], scorePolicy?: RetentionScorePolicy) {
+async function runArm(messages: CanonicalMessage[], scorePolicy?: RetentionScorePolicy<CanonicalMessage>) {
   const result = await buildEngine(scorePolicy).run({
     trigger: "auto",
     messages,
@@ -222,7 +220,7 @@ async function main(): Promise<void> {
   const upstream = await runArm(messages, undefined);
 
   // ---- Arm 2: Hippo (real policy behind a recording proxy) --------------
-  const realPolicy = buildEbbinghausPageRankPolicy();
+  const realPolicy = buildEbbinghausPageRankPolicy<CanonicalMessage>();
   const recorder = new RecordingPolicy(realPolicy);
   const hippo = await runArm(messages, recorder);
 
@@ -260,7 +258,7 @@ async function main(): Promise<void> {
 
   // ---- Component probes (the policy's own scoring code, one term each) --
   const probe = async (wSim: number, wTime: number, wRank: number) => {
-    const policy = buildEbbinghausPageRankPolicy({ wSim, wTime, wRank });
+    const policy = buildEbbinghausPageRankPolicy<CanonicalMessage>({ wSim, wTime, wRank });
     const map = await policy.scoreMessages({ candidates, queryHint });
     return candidates.map((message) => map.get(message) ?? 0);
   };
@@ -571,6 +569,7 @@ async function main(): Promise<void> {
   };
 
   const json = `${JSON.stringify(flow, null, 1)}\n`;
+  mkdirSync(dirname(outPath), { recursive: true });
   writeFileSync(outPath, json, "utf8");
   const bytes = Buffer.byteLength(json, "utf8");
 

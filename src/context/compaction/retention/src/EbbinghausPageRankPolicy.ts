@@ -1,5 +1,5 @@
-import type { CanonicalMessage } from "../../../model/index.js";
-import { isSyntheticPseudoMessage } from "../toolPairIntegrity.js";
+import type { HippoMessage } from "./HippoMessage.js";
+import { isSyntheticPseudoMessage } from "./PseudoMessage.js";
 import { CARRYOVER_BUDGET_SHARE, isCarryOverEnabled, isHippoRetained } from "./CarryOver.js";
 import { EntityGraph } from "./EntityGraph.js";
 import { bm25Relevance, ebbinghausScore } from "./EbbinghausScore.js";
@@ -72,7 +72,8 @@ export const EBBINGHAUS_DEFAULT_WEIGHTS = {
   wRank: 0,
 } as const;
 
-export class EbbinghausPageRankPolicy implements RetentionScorePolicy {
+export class EbbinghausPageRankPolicy<M extends HippoMessage = HippoMessage>
+  implements RetentionScorePolicy<M> {
   readonly id = "ebbinghaus-pagerank";
 
   constructor(private readonly options: EbbinghausPolicyOptions = {}) {}
@@ -89,27 +90,27 @@ export class EbbinghausPageRankPolicy implements RetentionScorePolicy {
   }
 
   async scoreMessages(input: {
-    candidates: CanonicalMessage[];
+    candidates: M[];
     queryHint?: string;
-  }): Promise<Map<CanonicalMessage, number>> {
+  }): Promise<Map<M, number>> {
     const scores = await this.score(input.candidates, input.queryHint);
-    return new Map(scores.map(({ message, score }) => [message, score]));
+    return new Map<M, number>(scores.map(({ message, score }) => [message, score]));
   }
 
   async pickRetained(input: {
-    candidates: CanonicalMessage[];
+    candidates: M[];
     retentionBudgetTokens: number;
     queryHint?: string;
-    estimateTokens: (candidates: CanonicalMessage[]) => number;
-  }): Promise<CanonicalMessage[]> {
+    estimateTokens: (candidates: M[]) => number;
+  }): Promise<M[]> {
     if (input.candidates.length === 0 || input.retentionBudgetTokens <= 0) return [];
     const scored = await this.score(input.candidates, input.queryHint);
     scored.sort((left, right) => right.score - left.score);
 
-    const retained: CanonicalMessage[] = [];
-    const retainedSet = new Set<CanonicalMessage>();
+    const retained: M[] = [];
+    const retainedSet = new Set<M>();
     let usedTokens = 0;
-    const eligible = (message: CanonicalMessage): number | undefined => {
+    const eligible = (message: M): number | undefined => {
       const tokens = input.estimateTokens([message]);
       if (tokens <= 0) return undefined;
       // A candidate with no visible text (e.g. an assistant turn that carries
@@ -164,9 +165,9 @@ export class EbbinghausPageRankPolicy implements RetentionScorePolicy {
   }
 
   private async score(
-    candidates: CanonicalMessage[],
+    candidates: M[],
     queryHint: string | undefined,
-  ): Promise<Array<{ message: CanonicalMessage; score: number }>> {
+  ): Promise<Array<{ message: M; score: number }>> {
     const candidateTexts = candidates.map(messageVisibleText);
     const textsWithIndices = candidateTexts.map((text, index) => ({ text, index }));
     const queryText = queryHint?.trim() || "";
@@ -226,10 +227,10 @@ export class EbbinghausPageRankPolicy implements RetentionScorePolicy {
   }
 }
 
-export function buildEbbinghausPageRankPolicy(
+export function buildEbbinghausPageRankPolicy<M extends HippoMessage = HippoMessage>(
   options: EbbinghausPolicyOptions = {},
-): EbbinghausPageRankPolicy {
-  return new EbbinghausPageRankPolicy(options);
+): EbbinghausPageRankPolicy<M> {
+  return new EbbinghausPageRankPolicy<M>(options);
 }
 
 /**
@@ -239,10 +240,10 @@ export function buildEbbinghausPageRankPolicy(
  * opt-in — constructing a CompactionEngine without `scorePolicy` keeps
  * upstream behavior byte-for-byte, which `benchmark:no-regression` guards.
  */
-export function resolveRetentionScorePolicy(
+export function resolveRetentionScorePolicy<M extends HippoMessage = HippoMessage>(
   compaction: { retention?: "hippo" | "off" } | undefined,
-): RetentionScorePolicy | undefined {
+): RetentionScorePolicy<M> | undefined {
   return (compaction?.retention ?? "hippo") === "off"
     ? undefined
-    : buildEbbinghausPageRankPolicy();
+    : buildEbbinghausPageRankPolicy<M>();
 }

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { buildEbbinghausPageRankPolicy } from "../../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
+import { buildEbbinghausPageRankPolicy, type EbbinghausPageRankPolicy } from "hippo-retention";
 import { createSnipBoundary } from "../../src/context/compaction/SnipEngine.js";
 import type { CanonicalMessage } from "../../src/model/index.js";
 import { generateTranscript } from "../../benchmarks/syntheticTranscript.js";
@@ -49,7 +49,7 @@ function carryOverFixture(): { carried: CanonicalMessage; fresh: CanonicalMessag
 const TEN_TOKENS_PER_MESSAGE = (messages: CanonicalMessage[]): number => messages.length * 10;
 
 async function pick(
-  policy: ReturnType<typeof buildEbbinghausPageRankPolicy>,
+  policy: EbbinghausPageRankPolicy<CanonicalMessage>,
   candidates: CanonicalMessage[],
 ): Promise<CanonicalMessage[]> {
   return policy.pickRetained({
@@ -63,7 +63,7 @@ async function pick(
 test("a message kept verbatim by a previous compaction keeps a slot on the next one", async () => {
   const { carried, fresh } = carryOverFixture();
   const retained = await pick(
-    buildEbbinghausPageRankPolicy({ wSim: 1, wTime: 0, wRank: 0 }),
+    buildEbbinghausPageRankPolicy<CanonicalMessage>({ wSim: 1, wTime: 0, wRank: 0 }),
     [carried, ...fresh],
   );
 
@@ -84,7 +84,7 @@ test("without the retained marker the same message is dropped: a plain score fil
   const { fresh } = carryOverFixture();
   const unmarked = textMessage("The migration window closed in March.");
   const retained = await pick(
-    buildEbbinghausPageRankPolicy({ wSim: 1, wTime: 0, wRank: 0 }),
+    buildEbbinghausPageRankPolicy<CanonicalMessage>({ wSim: 1, wTime: 0, wRank: 0 }),
     [unmarked, ...fresh],
   );
 
@@ -98,7 +98,7 @@ test("PILOTDECK_CARRYOVER=off disables the allowance while retention keeps runni
   process.env.PILOTDECK_CARRYOVER = "off";
   try {
     const retained = await pick(
-      buildEbbinghausPageRankPolicy({ wSim: 1, wTime: 0, wRank: 0 }),
+      buildEbbinghausPageRankPolicy<CanonicalMessage>({ wSim: 1, wTime: 0, wRank: 0 }),
       [carried, ...fresh],
     );
     assert.ok(!retained.includes(carried), "the kill switch must restore the plain score fill");
@@ -112,7 +112,7 @@ test("PILOTDECK_CARRYOVER=off disables the allowance while retention keeps runni
 test("a zero carry-over share disables the allowance without the global switch", async () => {
   const { carried, fresh } = carryOverFixture();
   const retained = await pick(
-    buildEbbinghausPageRankPolicy({ wSim: 1, wTime: 0, wRank: 0, carryOverBudgetShare: 0 }),
+    buildEbbinghausPageRankPolicy<CanonicalMessage>({ wSim: 1, wTime: 0, wRank: 0, carryOverBudgetShare: 0 }),
     [carried, ...fresh],
   );
 

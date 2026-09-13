@@ -1,7 +1,7 @@
 PilotDeck-Hippo NOTICE
 ======================
 
-This repository is a competition fork of PilotDeck.
+This repository is a feature fork of PilotDeck.
 
 Upstream project
 ----------------
@@ -16,8 +16,8 @@ Fork baseline: upstream commit 85be774751e496501370d7cf95ed45388f407c93
 Hippo modifications (this fork)
 -------------------------------
 Selective retention before context compaction ("Hippo 海马记忆"):
-  - src/context/compaction/retention/*  (scoring policy, entity graph,
-    local embedding/BM25 fallback)
+  - src/context/compaction/retention/  (the `hippo-retention` package: scoring
+    policy, entity graph, local embedding/BM25 fallback; importable on its own)
   - src/context/compaction/CompactionEngine.ts (opt-in scorePolicy hook)
   - src/pilot/config (agent.compaction.retention switch)
   - tests/context/hippo-retention.spec.ts, tests/context/retention-wiring.spec.ts

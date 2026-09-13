@@ -1,5 +1,11 @@
 packages:
   - 'ui'
+  # Hippo's verbatim-retention policy, extracted so consumers import a package
+  # rather than reach into the tree by deep relative path. Linked with
+  # `workspace:*` rather than `file:` on purpose: `file:` snapshots the
+  # directory at install time, so later edits to the source would silently keep
+  # running the bytes captured by the last install.
+  - 'src/context/compaction/retention'
 
 allowBuilds:
   '@google/genai': true

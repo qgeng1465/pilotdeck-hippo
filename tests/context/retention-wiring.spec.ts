@@ -4,13 +4,8 @@ import test from "node:test";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import {
-  resolveRetentionScorePolicy,
-} from "../../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
-import {
-  embeddingLoadCacheForTests,
-  tryLoadTransformersEmbedding,
-} from "../../src/context/compaction/retention/LocalEmbedding.js";
+import { resolveRetentionScorePolicy, embeddingLoadCacheForTests, tryLoadTransformersEmbedding } from "hippo-retention";
+
 import { loadPilotConfig } from "../../src/pilot/config/loadPilotConfig.js";
 
 test("resolveRetentionScorePolicy defaults to hippo and honors the off switch", () => {

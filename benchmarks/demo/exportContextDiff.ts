@@ -5,12 +5,10 @@ import { execFileSync } from "node:child_process";
 import { runEngine } from "../engineRunner.js";
 import { generateTranscript, type SyntheticFact } from "../syntheticTranscript.js";
 import { TokenBudgetManager } from "../../src/context/budget/TokenBudgetManager.js";
-import { messageVisibleText } from "../../src/context/compaction/retention/MessageText.js";
-import {
-  buildEbbinghausPageRankPolicy,
-  EBBINGHAUS_DEFAULT_WEIGHTS,
-} from "../../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
-import type { RetentionScorePolicy } from "../../src/context/compaction/retention/RetentionTypes.js";
+import { messageVisibleText, buildEbbinghausPageRankPolicy, EBBINGHAUS_DEFAULT_WEIGHTS } from "hippo-retention";
+import type { RetentionScorePolicy } from "hippo-retention";
+
+
 import type { CanonicalMessage } from "../../src/model/index.js";
 
 // Judge-page export: the real post-compaction context, upstream vs Hippo, side by side.
@@ -49,7 +47,8 @@ const KEEP_TAIL_RATIO = 0.18;
 /** Cosine of the page's own display cap on a message preview (chars). */
 const PREVIEW_CHARS = 320;
 const CANDIDATE_PREVIEW_CHARS = 180;
-const DEFAULT_OUT = "/data/qiushuogeng/pilotdeck-demo-0912/sections/context-diff.json";
+/** Default output, relative to wherever the script is run from. */
+const DEFAULT_OUT = resolve(process.cwd(), "demo-out/context-diff.json");
 
 type ArmKey = "upstream" | "hippo";
 
@@ -97,10 +96,11 @@ function sourceRevision(): { gitHead: string | null; sourceDigest: string; files
   const repoRoot = resolve(dirname(import.meta.filename), "..", "..");
   const files = [
     "src/context/compaction/CompactionEngine.ts",
-    "src/context/compaction/retention/EbbinghausPageRankPolicy.ts",
-    "src/context/compaction/retention/EbbinghausScore.ts",
-    "src/context/compaction/retention/EntityGraph.ts",
-    "src/context/compaction/retention/CarryOver.ts",
+    "src/context/compaction/retention/src/EbbinghausPageRankPolicy.ts",
+    "src/context/compaction/retention/src/EbbinghausScore.ts",
+    "src/context/compaction/retention/src/EntityGraph.ts",
+    "src/context/compaction/retention/src/CarryOver.ts",
+    "src/context/compaction/retention/src/PseudoMessage.ts",
     "benchmarks/engineRunner.ts",
     "benchmarks/syntheticTranscript.ts",
   ];
@@ -128,14 +128,14 @@ function sourceRevision(): { gitHead: string | null; sourceDigest: string; files
  * score map afterwards, and so it knows which candidates were actually kept.
  */
 function spyScorePolicy(): {
-  policy: RetentionScorePolicy;
+  policy: RetentionScorePolicy<CanonicalMessage>;
   captured: () => { candidates: CanonicalMessage[]; queryHint: string; budgetTokens: number } | undefined;
   kept: () => CanonicalMessage[];
 } {
-  const base = buildEbbinghausPageRankPolicy();
+  const base = buildEbbinghausPageRankPolicy<CanonicalMessage>();
   let captured: { candidates: CanonicalMessage[]; queryHint: string; budgetTokens: number } | undefined;
   let kept: CanonicalMessage[] = [];
-  const policy: RetentionScorePolicy = {
+  const policy: RetentionScorePolicy<CanonicalMessage> = {
     id: base.id,
     get weights() {
       return base.weights;
@@ -314,7 +314,7 @@ async function main() {
         embedding: "BM25 fallback (no model path configured -> deterministic, offline)",
         scorePolicy: {
           upstream: "undefined (upstream summary-only path)",
-          hippo: "buildEbbinghausPageRankPolicy() with shipped default weights",
+          hippo: "buildEbbinghausPageRankPolicy<CanonicalMessage>() with shipped default weights",
         },
         weights: {
           wSim: EBBINGHAUS_DEFAULT_WEIGHTS.wSim,

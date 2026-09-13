@@ -1,4 +1,9 @@
 import type { CanonicalContentBlock, CanonicalMessage } from "../../model/index.js";
+import {
+  COMPACTION_CONTINUATION_TEXT,
+  INTERNAL_USER_TEXT_PREFIXES,
+  isSyntheticPseudoMessage,
+} from "hippo-retention";
 
 /**
  * Shared tool_call / tool_result pair integrity helpers.
@@ -6,7 +11,14 @@ import type { CanonicalContentBlock, CanonicalMessage } from "../../model/index.
  * Used by both SnipEngine (S4) and CompactionEngine to ensure that no
  * dangling tool_call or tool_result survives a message split (snip boundary
  * or compact boundary).
+ *
+ * The pseudo-message constants and predicate live in `hippo-retention` (their
+ * only consumer is the retention policy, which must not replay a boundary
+ * marker verbatim). They are re-exported here because the rest of the host —
+ * `CompactionEngine`, `SnipEngine`, the compaction specs, the demo exporter —
+ * has always reached them through this module.
  */
+export { isSyntheticPseudoMessage };
 
 export function collectToolCallIds(messages: CanonicalMessage[]): Set<string> {
   const ids = new Set<string>();
@@ -86,17 +98,6 @@ function isMediaReferenceWithId(
   return block.type === "media_reference" && typeof block.toolCallId === "string" && block.toolCallId.length > 0;
 }
 
-const CONTINUATION_TEXT =
-  "[system: the conversation above has been compacted. please continue with the current task.]";
-
-const INTERNAL_USER_TEXT_PREFIXES = [
-  "<compact-boundary",
-  "<snip-boundary",
-  "<memory-context>",
-  "<internal-compaction-control",
-  "<hook_context",
-];
-
 /** True only for an end-user request that can anchor a retained live tail. */
 export function isRealUserRequestMessage(message: CanonicalMessage): boolean {
   if (message.role !== "user" || message.metadata?.synthetic === true) {
@@ -112,30 +113,8 @@ export function isRealUserRequestMessage(message: CanonicalMessage): boolean {
     }
     const text = block.text.trim();
     return text.length > 0
-      && text !== CONTINUATION_TEXT
+      && text !== COMPACTION_CONTINUATION_TEXT
       && !INTERNAL_USER_TEXT_PREFIXES.some((prefix) => text.startsWith(prefix));
-  });
-}
-
-/**
- * True only for a message the runtime injected as bookkeeping rather than text
- * a participant produced: compact/snip boundary markers, the compaction
- * continuation sentinel, hook and memory context, and anything stamped
- * `metadata.synthetic`. These are the same messages
- * {@link isRealUserRequestMessage} refuses to read user intent out of, and
- * they are equally not conversation that can be replayed verbatim -- retaining
- * one replays a marker *in place of* a turn the budget was meant to preserve.
- *
- * Deliberately narrower than "not a real user request": tool results also fail
- * that test but do carry content, so they stay eligible.
- */
-export function isSyntheticPseudoMessage(message: CanonicalMessage): boolean {
-  if (message.metadata?.synthetic === true) return true;
-  return message.content.some((block) => {
-    if (block.type !== "text") return false;
-    const text = block.text.trim();
-    return text === CONTINUATION_TEXT
-      || INTERNAL_USER_TEXT_PREFIXES.some((prefix) => text.startsWith(prefix));
   });
 }
 
@@ -152,6 +131,6 @@ export function ensureTrailingUserMessage(
   if (last.role !== "assistant") return messages;
   return [
     ...messages,
-    { role: "user", content: [{ type: "text", text: CONTINUATION_TEXT }] },
+    { role: "user", content: [{ type: "text", text: COMPACTION_CONTINUATION_TEXT }] },
   ];
 }

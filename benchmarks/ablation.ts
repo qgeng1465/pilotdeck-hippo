@@ -2,10 +2,8 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { performance } from "node:perf_hooks";
 import { runEngine } from "./engineRunner.js";
-import {
-  buildEbbinghausPageRankPolicy,
-  EBBINGHAUS_DEFAULT_WEIGHTS,
-} from "../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
+import { buildEbbinghausPageRankPolicy, EBBINGHAUS_DEFAULT_WEIGHTS } from "hippo-retention";
+import type { CanonicalMessage } from "../src/model/index.js";
 import {
   generateTranscript,
   generateZhTranscript,
@@ -80,7 +78,7 @@ async function main() {
         const upstream = await timed(runEngine(transcript.messages, "upstream"));
 
         for (const combo of COMBOS) {
-          const policy = buildEbbinghausPageRankPolicy({
+          const policy = buildEbbinghausPageRankPolicy<CanonicalMessage>({
             wSim: combo.wSim,
             wTime: combo.wTime,
             wRank: combo.wRank,

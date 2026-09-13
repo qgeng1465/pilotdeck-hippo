@@ -3,8 +3,8 @@ import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { buildPostCompactMessages, CompactionEngine } from "../src/context/compaction/CompactionEngine.js";
 import { TokenBudgetManager } from "../src/context/budget/TokenBudgetManager.js";
-import { messageVisibleText } from "../src/context/compaction/retention/MessageText.js";
-import { buildEbbinghausPageRankPolicy } from "../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
+import { messageVisibleText, buildEbbinghausPageRankPolicy } from "hippo-retention";
+
 import { fakeModel } from "./engineRunner.js";
 import { factPresent } from "./factPresent.js";
 import type { CanonicalMessage } from "../src/model/index.js";

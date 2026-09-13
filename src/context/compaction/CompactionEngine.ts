@@ -10,9 +10,8 @@ import type {
   CanonicalUsage,
 } from "../../model/index.js";
 import { flattenToolResultContentText } from "../../model/index.js";
-import type { RetentionScorePolicy } from "./retention/RetentionTypes.js";
-import { isCarryOverEnabled, withHippoRetainedMarker } from "./retention/CarryOver.js";
-import { messageVisibleText } from "./retention/MessageText.js";
+import type { RetentionScorePolicy } from "hippo-retention";
+import { isCarryOverEnabled, withHippoRetainedMarker, messageVisibleText } from "hippo-retention";
 import { createHash, randomUUID } from "node:crypto";
 import type { TokenAccountingRuntime } from "../budget/TokenAccountingRuntime.js";
 import { TokenBudgetManager } from "../budget/TokenBudgetManager.js";
@@ -63,7 +62,7 @@ export type CompactionEngineOptions = {
   uuid?: () => string;
   eventEmitter?: AgentEventEmitter;
   /** Optional scored selective-retention policy (Hippo additive hook). */
-  scorePolicy?: RetentionScorePolicy;
+  scorePolicy?: RetentionScorePolicy<CanonicalMessage>;
 };
 
 export const COMPACT_SYSTEM_PROMPT_DEFAULT =
@@ -191,7 +190,7 @@ export type CompactionInput = {
   sessionId?: string;
   turnId?: string;
   /** Per-pass override for the engine-level scorePolicy. */
-  scorePolicy?: RetentionScorePolicy;
+  scorePolicy?: RetentionScorePolicy<CanonicalMessage>;
 };
 
 const DEFAULT_KEEP_TAIL_RATIO = 0.35;
@@ -636,7 +635,7 @@ async function planFullCompactionMessages(
   protectedToolNames: Iterable<string>,
   minTailMessages: number,
   estimateTurnTokens: (turnMessages: CanonicalMessage[]) => number,
-  scorePolicy?: RetentionScorePolicy,
+  scorePolicy?: RetentionScorePolicy<CanonicalMessage>,
   retentionBudgetRatio?: number,
 ): Promise<{
   messagesToSummarize: CanonicalMessage[];

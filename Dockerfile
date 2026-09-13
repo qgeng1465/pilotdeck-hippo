@@ -14,10 +14,15 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json ./
 # NOTE: edgeclaw-memory-core is consumed via a local `file:` dependency.
 # Copy the full directory before install so pnpm snapshots complete sources/types.
 COPY src/context/memory/edgeclaw-memory-core/ src/context/memory/edgeclaw-memory-core/
+# hippo-retention is a `workspace:*` dependency, so pnpm must see its
+# package.json while resolving. Only the manifest is needed here; the rest of
+# the tree arrives with `COPY src/ src/` below.
+COPY src/context/compaction/retention/package.json src/context/compaction/retention/
 COPY ui/package.json ui/
 COPY ui/scripts/ ui/scripts/
 
-# Single pnpm install resolves root + workspace (ui) + file dep (edgeclaw-memory-core).
+# Single pnpm install resolves root + workspaces (ui, hippo-retention) + file dep
+# (edgeclaw-memory-core).
 # Pin pnpm so CI builds do not pick up stricter build-script policy changes
 # before the lockfile/workspace config is updated.
 RUN npm install -g pnpm@10.32.1 \

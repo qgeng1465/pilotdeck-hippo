@@ -6,7 +6,7 @@
 
 | 文档 | 说明 |
 |---|---|
-| [demo.md](demo.md) | 现场 3–5 分钟复现路径：CLI A/B 对比 + Web UI 压缩分隔线徽章。README §7 指向此文件。 |
+| [demo.md](demo.md) | 3–5 分钟复现路径：CLI A/B 对比 + Web UI 压缩分隔线徽章。README §7 指向此文件。 |
 
 仓库根目录另有两份与本条目相关的说明（不在 docs/ 下）：`NOTICE`（fork 来源、许可证与 Hippo 改动清单）、`.env.example`（本地 embedding 与真 LLM 评测的环境变量模板）。
 

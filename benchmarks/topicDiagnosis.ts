@@ -1,9 +1,9 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { buildPostCompactMessages, CompactionEngine } from "../src/context/compaction/CompactionEngine.js";
-import { bm25Relevance } from "../src/context/compaction/retention/EbbinghausScore.js";
-import { messageVisibleText } from "../src/context/compaction/retention/MessageText.js";
-import { buildEbbinghausPageRankPolicy } from "../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
+import { bm25Relevance, messageVisibleText, buildEbbinghausPageRankPolicy } from "hippo-retention";
+
+
 import { fakeModel } from "./engineRunner.js";
 import { buildTranscript, TOPIC_SWITCH_QUERY, type TopicFact } from "./topicSwitch.js";
 import { factPresent } from "./factPresent.js";

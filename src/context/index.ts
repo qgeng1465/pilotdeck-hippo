@@ -92,11 +92,11 @@ export {
   messageVisibleText,
   resolveRetentionScorePolicy,
   tryLoadTransformersEmbedding,
-} from "./compaction/retention/index.js";
+} from "hippo-retention";
 export type {
   EbbinghausPolicyOptions,
   RetentionScorePolicy,
-} from "./compaction/retention/index.js";
+} from "hippo-retention";
 export {
   AutoCompactionPolicy,
   type AutoCompactionDecision,

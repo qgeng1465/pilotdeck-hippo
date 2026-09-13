@@ -1,8 +1,9 @@
 import { buildPostCompactMessages, CompactionEngine } from "../src/context/compaction/CompactionEngine.js";
 import { TokenBudgetManager } from "../src/context/budget/TokenBudgetManager.js";
-import { messageVisibleText } from "../src/context/compaction/retention/MessageText.js";
-import { buildEbbinghausPageRankPolicy } from "../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
-import type { RetentionScorePolicy } from "../src/context/compaction/retention/RetentionTypes.js";
+import { messageVisibleText, buildEbbinghausPageRankPolicy } from "hippo-retention";
+import type { RetentionScorePolicy } from "hippo-retention";
+
+
 import type { CanonicalMessage, CanonicalModelEvent, CanonicalModelRequest } from "../src/model/index.js";
 
 const FAKE_SUMMARY_TEXT = [
@@ -28,7 +29,7 @@ export type EngineVariant = "upstream" | "hippo";
 export async function runEngine(
   messages: CanonicalMessage[],
   variant: EngineVariant,
-  scorePolicy?: RetentionScorePolicy,
+  scorePolicy?: RetentionScorePolicy<CanonicalMessage>,
 ) {
   const policy = variant === "hippo"
     ? scorePolicy ?? buildEbbinghausPageRankPolicy()

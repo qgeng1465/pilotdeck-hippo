@@ -3,9 +3,11 @@ import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { buildPostCompactMessages, CompactionEngine } from "../src/context/compaction/CompactionEngine.js";
 import { TokenBudgetManager } from "../src/context/budget/TokenBudgetManager.js";
-import { messageVisibleText } from "../src/context/compaction/retention/MessageText.js";
-import { buildEbbinghausPageRankPolicy } from "../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
-import type { RetentionScorePolicy } from "../src/context/compaction/retention/RetentionTypes.js";
+import type { CanonicalMessage } from "../src/model/index.js";
+import { messageVisibleText, buildEbbinghausPageRankPolicy } from "hippo-retention";
+import type { RetentionScorePolicy } from "hippo-retention";
+
+
 import {
   generateTranscript,
   generateZhTranscript,
@@ -62,8 +64,8 @@ async function runVariant(
   finishReasons: string[];
 }> {
   const real = createRealModel(apiKey);
-  const policy: RetentionScorePolicy | undefined = variant === "hippo"
-    ? buildEbbinghausPageRankPolicy()
+  const policy: RetentionScorePolicy<CanonicalMessage> | undefined = variant === "hippo"
+    ? buildEbbinghausPageRankPolicy<CanonicalMessage>()
     : undefined;
   const engine = new CompactionEngine({
     model: real.model,

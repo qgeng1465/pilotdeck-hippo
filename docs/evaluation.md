@@ -278,6 +278,6 @@
   demo 单例 18/20 → 16/20（被误记的两条正是 `FACT1`、`FACT2`）。
 - **不受影响**：真 LLM 评测的 `correct` 列来自 `gradeView(judge.text, view)`（对模型回答做严格标签匹配），
   不经过标记匹配。各文件里的 `markerInBody` / `markerInSummaryOnly` 两列受影响：`benchmarks/` 下的 stub 脚本已全部重测，
-  但**两份真 LLM 的 `real-llm-topic-switch-*.json` 没有重跑**——那要花比赛的 API 额度，而 §4.7 的结论全部挂在 `correct` 列上。
+  但**两份真 LLM 的 `real-llm-topic-switch-*.json` 没有重跑**——那要花 API 额度，而 §4.7 的结论全部挂在 `correct` 列上。
   该文件里被引用的保留区计数因此已按上限改写（见 §4.7 第 3 条）：虚高只会**抬高**计数，不会压低，所以 "decorrelated 一侧为 0" 与 "shared 一侧非 0" 这两个方向性判断不受影响。
 - 复现：修正前的那份 JSON 仍在 git 历史里；`git log -p benchmarks/factPresent.ts` 与本节各表的新 JSON 可逐格对账。

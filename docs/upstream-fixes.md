@@ -40,7 +40,7 @@
 
 原实现每次翻倍涨 **2.2 / 4.0 / 4.1 / 4.1×**——**二次退化**（右列只有 2–10 ms 量级，单次采样噪声明显，只看原实现的增长趋势）。原因是它的合并循环每轮重扫全部候选对、却只合并一对，而 BPE 会把「一整段重复字符」当成**单个** pre-token，于是这正是最坏输入。Python / Rust 版 tiktoken 用堆实现，没有这个问题。
 
-本表由 `pnpm benchmark:tokenizer` 现场生成（结果 JSON：`benchmarks/results/tokenizer-scaling-2026-09-11T13-06-44-566Z.json`）；脚本在计时前先断言两实现在每个长度上取值一致，不一致就拒绝出表，避免拿两个不同的函数比时间。
+本表由 `pnpm benchmark:tokenizer` 即时生成（结果 JSON：`benchmarks/results/tokenizer-scaling-2026-09-11T13-06-44-566Z.json`）；脚本在计时前先断言两实现在每个长度上取值一致，不一致就拒绝出表，避免拿两个不同的函数比时间。
 
 症状落到用户身上是：`read_file` 读一个 300 行的持久化工具结果要 **79 秒**——足以让任何一个工具调用超时。
 

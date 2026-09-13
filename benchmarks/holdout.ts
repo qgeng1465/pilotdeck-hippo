@@ -2,11 +2,9 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { runEngine } from "./engineRunner.js";
 import { TokenBudgetManager } from "../src/context/budget/TokenBudgetManager.js";
-import { messageVisibleText } from "../src/context/compaction/retention/MessageText.js";
-import {
-  buildEbbinghausPageRankPolicy,
-  EBBINGHAUS_DEFAULT_WEIGHTS,
-} from "../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
+import type { CanonicalMessage } from "../src/model/index.js";
+import { messageVisibleText, buildEbbinghausPageRankPolicy, EBBINGHAUS_DEFAULT_WEIGHTS } from "hippo-retention";
+
 import {
   generateTranscript,
   generateZhTranscript,
@@ -103,7 +101,7 @@ async function scoreCell(
   variant: Variant,
 ): Promise<{ facts: number; postTokens: number; wallMs: number }> {
   const policy = variant.weights
-    ? buildEbbinghausPageRankPolicy({
+    ? buildEbbinghausPageRankPolicy<CanonicalMessage>({
         wSim: variant.weights.wSim,
         wTime: variant.weights.wTime,
         wRank: variant.weights.wRank,
@@ -241,7 +239,7 @@ async function main() {
         lang === "en" ? generateTranscript({ numPairs, seed }) : generateZhTranscript({ numPairs, seed }),
       );
       for (const variant of probeVariants) {
-        const policy = buildEbbinghausPageRankPolicy({
+        const policy = buildEbbinghausPageRankPolicy<CanonicalMessage>({
           wSim: variant.weights!.wSim,
           wTime: variant.weights!.wTime,
           wRank: variant.weights!.wRank,

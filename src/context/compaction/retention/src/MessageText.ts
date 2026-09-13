@@ -1,8 +1,10 @@
-import type { CanonicalMessage, CanonicalToolResultContentBlock } from "../../../model/index.js";
+import type { HippoInlineBlock, HippoMessage } from "./HippoMessage.js";
 
-function flattenToolResultContent(blocks: CanonicalToolResultContentBlock[]): string {
+function flattenToolResultContent(blocks: HippoInlineBlock[]): string {
   return blocks
-    .map((block) => block.type === "text" ? block.text : `[${block.type} binary payload]`)
+    .map((block) => block.type === "text" && typeof block.text === "string"
+      ? block.text
+      : `[${block.type} binary payload]`)
     .join("\n");
 }
 
@@ -22,7 +24,7 @@ function flattenToolResultContent(blocks: CanonicalToolResultContentBlock[]): st
  * Callers deciding whether a message is retainable at all should treat an empty
  * return here as "not retainable" (see `EbbinghausPageRankPolicy.pickRetained`).
  */
-export function messageVisibleText(message: CanonicalMessage): string {
+export function messageVisibleText(message: HippoMessage): string {
   const parts: string[] = [];
   for (const block of message.content) {
     switch (block.type) {

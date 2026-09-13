@@ -47,7 +47,7 @@ On `benchmark:extraction`'s default held-out base **20260921–23** (3 seeds), m
 
 ## 3. Reconciliation table: headline number → exact committed JSON row
 
-If a judge asks "where does 15.9 and 89–100% actually live", open these:
+If you want to know where 15.9 and 89–100% actually live, open these:
 
 | Number | File | Field |
 |---|---|---|

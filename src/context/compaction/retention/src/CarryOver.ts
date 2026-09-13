@@ -1,4 +1,4 @@
-import type { CanonicalMessage } from "../../../model/index.js";
+import type { HippoMessage } from "./HippoMessage.js";
 
 /**
  * Carry-over priority for messages the policy already kept verbatim.
@@ -72,7 +72,7 @@ export function isCarryOverEnabled(): boolean {
 }
 
 /** True when a previous compaction kept this message verbatim. */
-export function isHippoRetained(message: CanonicalMessage): boolean {
+export function isHippoRetained(message: HippoMessage): boolean {
   return message.metadata?.hippoRetained === true;
 }
 
@@ -82,7 +82,11 @@ export function isHippoRetained(message: CanonicalMessage): boolean {
  * engine's identity-based reporting working: the copy is what lands in
  * `messagesToKeep`, so the same object is still the one compared to report
  * which messages the policy contributed.
+ *
+ * Generic so the copy keeps the caller's message type; the spread is exactly
+ * `I` with one metadata field overridden, which is what the single cast
+ * asserts.
  */
-export function withHippoRetainedMarker(message: CanonicalMessage): CanonicalMessage {
-  return { ...message, metadata: { ...message.metadata, hippoRetained: true } };
+export function withHippoRetainedMarker<I extends HippoMessage>(message: I): I {
+  return { ...message, metadata: { ...message.metadata, hippoRetained: true } } as I;
 }

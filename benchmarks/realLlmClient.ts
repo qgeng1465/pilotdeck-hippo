@@ -1,8 +1,5 @@
-import { existsSync, readFileSync } from "node:fs";
-import { homedir } from "node:os";
-import { join, resolve } from "node:path";
 import { performance } from "node:perf_hooks";
-import { messageVisibleText } from "../src/context/compaction/retention/MessageText.js";
+import { messageVisibleText } from "hippo-retention";
 import type {
   CanonicalModelEvent,
   CanonicalModelRequest,
@@ -29,40 +26,29 @@ export function configureEndpoint(url: string): void {
 export type ChatUsage = { promptTokens: number; completionTokens: number };
 
 /**
- * Endpoint resolution, in priority order:
- * 1. PILOTDECK_EVAL_URL / PILOTDECK_EVAL_KEY env overrides;
- * 2. the competition-issued gateway file `poliet_deck.txt` in the repo root
- *    (【接口地址】+【API密钥】 lines) so evals spend the hackathon quota;
- * 3. the personal DeepSeek key at ~/deepseek_key.txt on the official API.
+ * Endpoint resolution: `PILOTDECK_EVAL_URL` + `PILOTDECK_EVAL_KEY`
+ * (or `DEEPSEEK_API_KEY`) from the environment, falling back to the public
+ * DeepSeek endpoint — which needs `DEEPSEEK_API_KEY` too, so either way the
+ * key is supplied by the caller's environment and never read off disk.
  */
 export function loadEndpoint(): { url: string; apiKey: string; source: string } {
   const envUrl = process.env.PILOTDECK_EVAL_URL;
   const envKey = process.env.PILOTDECK_EVAL_KEY ?? process.env.DEEPSEEK_API_KEY;
-  const competitionFile = resolve(process.cwd(), "poliet_deck.txt");
-  if (existsSync(competitionFile)) {
-    const text = readFileSync(competitionFile, "utf8");
-    const url = envUrl ?? text.match(/【接口地址】：\s*(\S+)/)?.[1];
-    const apiKey = envKey ?? text.match(/【API密钥】：\s*(\S+)/)?.[1];
-    if (url && apiKey) {
-      return {
-        url: `${url.replace(/\/+$/, "")}/chat/completions`,
-        apiKey,
-        source: "poliet_deck.txt (competition quota)",
-      };
-    }
+  if (!envKey) {
+    throw new Error(
+      "No API key for the real-LLM benchmarks. Set PILOTDECK_EVAL_KEY (with "
+      + "PILOTDECK_EVAL_URL for a custom OpenAI-compatible endpoint) or "
+      + "DEEPSEEK_API_KEY. See .env.example.",
+    );
   }
-  if (envUrl && envKey) {
+  if (envUrl) {
     return {
       url: `${envUrl.replace(/\/+$/, "")}/chat/completions`,
       apiKey: envKey,
-      source: "env override",
+      source: "PILOTDECK_EVAL_URL",
     };
   }
-  return {
-    url: DEFAULT_API_URL,
-    apiKey: readFileSync(join(homedir(), "deepseek_key.txt"), "utf8").trim(),
-    source: "~/deepseek_key.txt (personal)",
-  };
+  return { url: DEFAULT_API_URL, apiKey: envKey, source: DEFAULT_API_URL };
 }
 
 export async function chat(
@@ -160,9 +146,9 @@ export function createRealModel(apiKey: string) {
 }
 
 /**
- * The judge is asked for exactly `gene=… freq=… stat=…`, so grading is a
- * format match plus numeric equality — no second model in the loop, and no
- * room for a grader to be generous. Anything that does not match the format
+ * The model under test is asked for exactly `gene=… freq=… stat=…`, so grading
+ * is a format match plus numeric equality — no second model in the loop, and
+ * no room for a grader to be generous. Anything that does not match the format
  * (including the instructed `NOT_IN_CONTEXT` answer) counts as wrong.
  */
 export function gradeAnswer(answer: string, parsed: { gene: string; freq: string; stat: string }): boolean {

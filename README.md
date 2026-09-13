@@ -10,13 +10,7 @@
 
 # PilotDeck-Hippo：让压缩后的上下文还能逐字说出早期事实
 
-> PilotDeck 创造计划 · 方向三（Harness / Memory / 架构优化） · [English](README.en.md) · **在线 Demo：<https://qgeng1465.github.io/pilotdeck-hippo/>**
-
-<a href="https://qgeng1465.github.io/pilotdeck-hippo/assets/demo.mp4">
-  <img src="https://qgeng1465.github.io/pilotdeck-hippo/assets/demo-poster.png" alt="真实会话里压缩边界上的 Hippo 保留徽章" width="760">
-</a>
-
-**60 秒录屏（点图播放）**：前半是 `benchmark:demo` 的真实终端输出——同一份输入，上游保留 0/20 条早期事实，Hippo 16/20；后半是真实 Web UI 里一个**仍在进行**的任务被压缩**两次**，两次压缩边界行都带 `Hippo kept N msgs verbatim` 徽章。只有开头的标题卡是合成的，压缩时刻全部原速。
+> 一个 PilotDeck 的 feature fork · [English](README.en.md) · **在线 Demo：<https://qgeng1465.github.io/pilotdeck-hippo/>**
 
 **一句话。** PilotDeck 在上下文变长时会压缩对话：保留最近一段原文，把更早的内容写成摘要。摘要记得住大意，但容易丢掉那些必须一字不差的事实——文件名、数字、检查点、决策记录。Hippo 在压缩前挑出一小批最相关的消息，让它们的**原文**绕过摘要、直接留在压缩后的上下文里。
 
@@ -86,6 +80,8 @@ S(m) = 0.85 × sim(q, m)          # 和当前待办问题的相关度（BM25，�
 
 `scorePolicy` 不传就是纯上游路径，输出逐字节一致（由 golden fixture 守护）；本 fork 的 App 层默认开启，`agent.compaction.retention: off` 一行关回上游。
 
+打分策略本身是一个**独立包** `hippo-retention`（`src/context/compaction/retention/`，零运行时依赖，自带 `package.json` / 构建 / `lib/`），只认一个最小的消息结构契约（`role` + `content`），不依赖宿主类型：`buildEbbinghausPageRankPolicy<你的消息类型>()` 拿到的策略返回的就是你自己的消息类型。`pnpm pack` 出的 tarball 可以装进别的项目直接用，用法见[包内 README](src/context/compaction/retention/README.md)。
+
 设计细节、架构图与代码阅读入口：[docs/design.md](docs/design.md)（[English](docs/design.en.md)）。
 
 ## 30 秒自己复核
@@ -145,7 +141,7 @@ corepack pnpm benchmark:long-horizon    # 同一个任务连续压缩 3 轮（�
 corepack pnpm benchmark:tokenizer       # 分词器两实现的时间对比
 ```
 
-真 LLM 评测需要联网，端点解析顺序：① 环境变量 `PILOTDECK_EVAL_URL` + `PILOTDECK_EVAL_KEY` → ② 仓库根 `poliet_deck.txt`（可选的自备网关，密钥不入库）→ ③ `~/deepseek_key.txt`。
+真 LLM 评测需要联网，密钥只从环境变量读：`PILOTDECK_EVAL_KEY`（或 `DEEPSEEK_API_KEY`），配合 `PILOTDECK_EVAL_URL` 可指向任意 OpenAI 兼容端点；缺 key 会直接报错，不读磁盘（见 `.env.example`）。
 
 ```bash
 corepack pnpm benchmark:real-llm                # 单话题闭环
@@ -160,7 +156,7 @@ corepack pnpm benchmark:real-llm-topic-switch   # 同一个任务跨多次压缩
 - **换成真摘要器后，优势是有条件的。** 摘要预算宽裕时测不出差异（同配置重复跑的摆动就有 3–4 题），预算吃紧时才拉得开。
 - **默认权重换过，但不当成"优化带来的提升"。** 改权重是因为它对齐了当时的调参结果且少一项；重测修正后留出集上 rank 项的影响远小于噪声（5 胜 35 平 0 负，无显著），且修正后的调参网格也不再支持"当前默认居首"（详见 [§4.2](docs/evaluation.md#42-组件消融)）。默认值这次**没有**跟着改——证据不支持收益，而改动要重测整条流水线。真正的主效应是"逐字保留 vs 不做保留"。
 - **评测主要是合成对话**，事实集中在前面、问题在尾部。真实任务的时间特征、噪声和多轮提问可能改变最优权重。
-- **真 LLM 部分样本小**（每格 16 题、2 个 seed），而且摘要器和评审员是同一个模型，所以只声明方向，不宣称"提升了 X 个点"。
+- **真 LLM 部分样本小**（每格 16 题、2 个 seed），而且摘要和打分用的是同一个模型，所以只声明方向，不宣称"提升了 X 个点"。
 - **Hippo 会增加压缩后 token**（真 LLM 记录约 +5–24%）。展示时准确率和成本要一起给。
 
 ## 顺带修掉的四个上游缺陷
@@ -178,7 +174,9 @@ corepack pnpm benchmark:real-llm-topic-switch   # 同一个任务跨多次压缩
 
 - 上游基线：[OpenBMB/PilotDeck](https://github.com/OpenBMB/PilotDeck) `85be774`，fork 起点逐字节可比对（见 `NOTICE`）。
 - 本 fork 的改动集中在 `src/context/compaction/`（保留策略与接入）、`benchmarks/`（评测脚本）、`tests/context/`（专项测试）三处。
-- 仓库公开始终可读，无需授权即可 clone 复核；所有对外数字都来自仓库里已提交的 `benchmarks/results/*.json`，没有第三方评审。
+- 保留策略同时是一个可独立复用的包：`src/context/compaction/retention/`（`hippo-retention`），`pnpm pack` 后可直接装进别的项目。
+- `benchmarks/results/*.json` 里的 `endpoint` 字段如实记录当时调用的是哪个端点（含早期自建网关），**原样保留不改**——那是当时的真实测量条件。
+- 仓库公开始终可读，无需授权即可 clone 复核；所有对外数字都来自仓库里已提交的 `benchmarks/results/*.json`，没有第三方独立验证。
 - 测试与类型检查现状：根套件 `pnpm test` 533 项 / 531 通过 / 0 失败（2 项 skip）；UI 侧 `npx vitest run` 118 个文件 / 922 个用例 / 0 失败；`ui` 的 `tsc --noEmit` 退出码 0。
 
 ## 许可证与致谢

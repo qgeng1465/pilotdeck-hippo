@@ -2,10 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { CompactionEngine } from "../../src/context/compaction/CompactionEngine.js";
-import {
-  buildEbbinghausPageRankPolicy,
-  EBBINGHAUS_DEFAULT_WEIGHTS,
-} from "../../src/context/compaction/retention/EbbinghausPageRankPolicy.js";
+import { buildEbbinghausPageRankPolicy, EBBINGHAUS_DEFAULT_WEIGHTS } from "hippo-retention";
 import { mapAgentEvent } from "../../src/gateway/client/InProcessGateway.js";
 import type { AgentEvent } from "../../src/agent/protocol/events.js";
 import type { CanonicalMessage, CanonicalModelEvent, CanonicalModelRequest } from "../../src/model/index.js";

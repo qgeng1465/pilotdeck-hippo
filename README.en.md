@@ -10,13 +10,7 @@
 
 # PilotDeck-Hippo: keeping early facts quotable after compaction
 
-> PilotDeck Creation Program · Track 3 (Harness / Memory / Architecture) · [中文](README.md) · **Live demo: <https://qgeng1465.github.io/pilotdeck-hippo/>**
-
-<a href="https://qgeng1465.github.io/pilotdeck-hippo/assets/demo.mp4">
-  <img src="https://qgeng1465.github.io/pilotdeck-hippo/assets/demo-poster.png" alt="The Hippo retention badge on a compaction boundary in a real session" width="760">
-</a>
-
-**60-second recording (click to play)**: the first half is the real terminal output of `benchmark:demo` — same input, upstream keeps 0 of 20 early facts verbatim, Hippo 16 of 20. The second half is the real Web UI, where one **continuing** task is compacted **twice** and both compaction boundaries carry the `Hippo kept N msgs verbatim` badge. Only the opening title card is synthetic; every compaction moment plays at 1×.
+> A feature fork of PilotDeck · [中文](README.md) · **Live demo: <https://qgeng1465.github.io/pilotdeck-hippo/>**
 
 **In one sentence.** When PilotDeck's context grows, it compacts: the recent tail is kept verbatim and everything older is summarised. A summary keeps the gist but drops the things that have to be exact — file names, numbers, checkpoints, decisions. Hippo scores the messages that are about to be summarised, picks a small batch of the most relevant ones, and lets their **original text** skip summarisation and stay in the compacted context.
 
@@ -86,6 +80,8 @@ Three design constraints — this is what separates it from "tweak the summarisa
 
 Omit `scorePolicy` and you get the pure upstream path, byte-identical (guarded by a golden fixture). This fork's app layer enables it by default; `agent.compaction.retention: off` turns it back off.
 
+The scoring policy is itself a **standalone package**, `hippo-retention` (`src/context/compaction/retention/`: no runtime dependencies, its own `package.json`, build and committed `lib/`). It knows only a minimal message contract (`role` + `content`) and nothing about the host's types: `buildEbbinghausPageRankPolicy<YourMessage>()` gives you back a policy typed on *your* message type. A `pnpm pack` tarball installs into another project directly — see [the package README](src/context/compaction/retention/README.md).
+
 Design detail, architecture diagram and where to read the code: [docs/design.en.md](docs/design.en.md) ([中文](docs/design.md)).
 
 ## Verify it yourself in 30 seconds
@@ -145,7 +141,7 @@ corepack pnpm benchmark:long-horizon    # one task compacted 3 times in a row
 corepack pnpm benchmark:tokenizer       # the two tokenizer implementations, timed
 ```
 
-Real-LLM evaluation needs network. Endpoint resolution order: ① `PILOTDECK_EVAL_URL` + `PILOTDECK_EVAL_KEY` → ② `poliet_deck.txt` at the repo root (optional self-hosted gateway; the key is not committed) → ③ `~/deepseek_key.txt`.
+Real-LLM evaluation needs network. The key is read from the environment only: `PILOTDECK_EVAL_KEY` (or `DEEPSEEK_API_KEY`), with `PILOTDECK_EVAL_URL` pointing at any OpenAI-compatible endpoint. A missing key fails loudly instead of reading a file off disk (see `.env.example`).
 
 ```bash
 corepack pnpm benchmark:real-llm                # single-topic loop
@@ -160,7 +156,7 @@ Other installation paths, including the desktop app, are in [Appendix A](#append
 - **With a real summariser the advantage is conditional.** With a generous summary budget there is no measurable difference (repeats of the same configuration swing by 3–4 questions); it only separates when the budget is tight.
 - **The default weights changed, but we do not call that an improvement.** They changed to match the tuning result we had at the time and to drop one term; after the re-measurement the rank term's effect on the holdout set is far smaller than the noise (5 W / 35 T / 0 L, nothing significant), and the corrected tuning grid no longer supports "the current default comes first" either (see [§4.2](docs/evaluation.en.md#42-component-ablation)). The default was **not** changed this time — the evidence does not support a gain, and changing it would invalidate every measurement. The real effect is "verbatim retention vs none".
 - **The evaluation is mostly synthetic dialogue**, with facts skewed early and the question at the tail. Real temporal structure, noise and multi-turn questions may move the optimal weights.
-- **The real-LLM sample is small** (16 questions per cell, 2 seeds) and the summariser and the judge are the same model, so we state direction only, never "an X-point gain".
+- **The real-LLM sample is small** (16 questions per cell, 2 seeds) and the same model both summarises and grades, so we state direction only, never "an X-point gain".
 - **Hippo increases post-compaction tokens** (~+5–24% in the recorded real-LLM runs). Present accuracy and cost together.
 
 ## Four upstream bugs fixed along the way
@@ -178,7 +174,9 @@ Full evidence and reproduction commands: [docs/upstream-fixes.en.md](docs/upstre
 
 - Upstream baseline: [OpenBMB/PilotDeck](https://github.com/OpenBMB/PilotDeck) `85be774`; the fork point is byte-comparable (see `NOTICE`).
 - This fork's changes are confined to `src/context/compaction/` (policy and wiring), `benchmarks/` (evaluation scripts) and `tests/context/` (dedicated tests).
-- The repository has always been publicly readable, cloneable without any access grant. Every public number comes from the committed `benchmarks/results/*.json`; no third-party review.
+- The scoring policy is also a reusable package: `src/context/compaction/retention/` (`hippo-retention`), installable elsewhere after a `pnpm pack`.
+- The `endpoint` field in `benchmarks/results/*.json` records which endpoint each measurement actually used (including an early self-hosted gateway) and is **kept as-is** — that was the real measurement condition.
+- The repository has always been publicly readable, cloneable without any access grant. Every public number comes from the committed `benchmarks/results/*.json`; no third-party independent verification.
 - Current test and typecheck state: root suite `pnpm test` 533 items / 531 passed / 0 failed (2 skipped); UI `npx vitest run` 118 files / 922 tests / 0 failed; `ui`'s `tsc --noEmit` exits 0.
 
 ## License and credits

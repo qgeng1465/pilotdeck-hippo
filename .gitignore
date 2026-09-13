@@ -194,10 +194,12 @@ package-lock.json
 # Test output
 test-results/
 
-# Local test drafts (force-add intentional new tests with git add -f)
+# Local scratch dirs. `*.test.ts` is deliberately NOT ignored: upstream tracks
+# its `*.test.ts` suites, and ignoring the pattern here silently dropped 14 of
+# them (10 under ui/src, 4 under tests/gateway) from this fork -- a fresh clone
+# ran 523 of the suite's 533 cases while the README quoted 533.
 test/
 test.ts
-*.test.ts
 
 # Auto-Research-Skills (local-only)
 Auto-Research-Skills/

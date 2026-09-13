@@ -177,7 +177,7 @@ corepack pnpm benchmark:real-llm-topic-switch   # 同一个任务跨多次压缩
 - 保留策略同时是一个可独立复用的包：`src/context/compaction/retention/`（`hippo-retention`），`pnpm pack` 后可直接装进别的项目。
 - `benchmarks/results/*.json` 里的 `endpoint` 字段如实记录当时调用的是哪个端点（含早期自建网关），**原样保留不改**——那是当时的真实测量条件。
 - 仓库公开始终可读，无需授权即可 clone 复核；所有对外数字都来自仓库里已提交的 `benchmarks/results/*.json`，没有第三方独立验证。
-- 测试与类型检查现状：根套件 `pnpm test` 533 项 / 531 通过 / 0 失败（2 项 skip）；UI 侧 `npx vitest run` 118 个文件 / 922 个用例 / 0 失败；`ui` 的 `tsc --noEmit` 退出码 0。
+- 测试与类型检查现状：根套件 `pnpm test` 533 项 / 531 通过 / 0 失败（2 项 skip）；UI 侧 `npx vitest run` 118 个文件 / 922 个用例 / 0 失败；`ui` 的 `tsc --noEmit` 退出码 0。上面三个数字在**干净 clone 上跑同样的命令得到相同结果**（本 fork 早期把 `*.test.ts` 当本地草稿排除在版本控制外，上游的 14 个测试文件因此没进仓库，clone 只能跑到 523；已修正并补齐）。
 
 ## 许可证与致谢
 

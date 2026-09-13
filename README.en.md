@@ -177,7 +177,7 @@ Full evidence and reproduction commands: [docs/upstream-fixes.en.md](docs/upstre
 - The scoring policy is also a reusable package: `src/context/compaction/retention/` (`hippo-retention`), installable elsewhere after a `pnpm pack`.
 - The `endpoint` field in `benchmarks/results/*.json` records which endpoint each measurement actually used (including an early self-hosted gateway) and is **kept as-is** — that was the real measurement condition.
 - The repository has always been publicly readable, cloneable without any access grant. Every public number comes from the committed `benchmarks/results/*.json`; no third-party independent verification.
-- Current test and typecheck state: root suite `pnpm test` 533 items / 531 passed / 0 failed (2 skipped); UI `npx vitest run` 118 files / 922 tests / 0 failed; `ui`'s `tsc --noEmit` exits 0.
+- Current test and typecheck state: root suite `pnpm test` 533 items / 531 passed / 0 failed (2 skipped); UI `npx vitest run` 118 files / 922 tests / 0 failed; `ui`'s `tsc --noEmit` exits 0. All three reproduce **on a fresh clone** with the same commands (early on this fork listed `*.test.ts` as a local draft in `.gitignore`, which kept 14 of upstream's test files out of the repository and left a clone running 523 of the 533; fixed, and the files are tracked).
 
 ## License and credits
 

@@ -47,15 +47,13 @@ jobs:
       # fail-count gate, not tolerance for flakiness: any nonzero fail count
       # fails this step.
       #
-      # This job sees 507 tests, not the 517 a developer's working tree runs:
-      # `.gitignore` treats `*.test.ts` as local drafts, so upstream's four
-      # `tests/gateway/*.test.ts` files (10 cases) are absent from a fresh
-      # clone. The 10-count is checkable locally with
-      # `git check-ignore -v tests/gateway/upload-store.test.ts`; the expected
-      # 507 = 505 pass / 0 fail / 0 cancelled / 2 skipped. (An earlier version
-      # of this comment quoted 517 here and blamed the `cancelled` count on
-      # load — both wrong; the cancellations were a real upstream defect, now
-      # fixed. See README §5.)
+      # This job sees the same 533 tests a developer's working tree runs. It
+      # used to see fewer: `.gitignore` listed `*.test.ts` as a local draft, so
+      # upstream's four `tests/gateway/*.test.ts` files (10 cases) were absent
+      # from a fresh clone and this job ran 523. The ignore rule is gone and the
+      # files are tracked, so the two counts now agree -- if they ever diverge
+      # again, check `git check-ignore -v tests/gateway/upload-store.test.ts`.
+      # Expected summary: 531 pass / 0 fail / 0 cancelled / 2 skipped.
       - name: Test suite
         run: |
           set -o pipefail
